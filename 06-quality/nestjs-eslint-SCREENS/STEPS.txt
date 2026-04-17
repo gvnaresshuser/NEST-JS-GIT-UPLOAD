@@ -1,0 +1,1068 @@
+*************************************
+pnpm dlx @nestjs/cli new nestjs-eslint
+select pnpm
+cd nestjs-eslint
+
+Run project:
+pnpm run start:dev
+pnpm start:dev
+*************************************
+===============================================================================================
+COPY ALL FILES FROM PREVIOUS PROJECT
+scripts,dependencies and devDependencies from package.json
+AND RUN pnpm install
+
+pnpm add @nestjs/swagger
+===============================================================================================
+🚀 STEP 1: Install ESLint + Required Plugins
+
+Run this from your project root (nestjs-eslint):
+pnpm add -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier eslint-plugin-prettier prettier
+===============================================================================================
+🚀 STEP 2: Initialize ESLint
+
+Run:
+
+pnpm dlx eslint --init
+===============================================================================================
+Choose options:
+✔ How would you like to use ESLint → To check syntax, find problems
+✔ Modules → JavaScript modules (import/export)
+✔ Framework → None (NestJS uses Node, not React)
+✔ TypeScript → Yes
+✔ Where does code run → Node
+✔ Config format → JSON
+===============================================================================================
+❌ Delete this:
+eslint.config.mjs
+===============================================================================================
+
+🚀 STEP 3: Replace with Recommended Config (IMPORTANT) - OLD VERSION - NOT USING - USE [ eslint.config.mts ]
+
+After init, replace .eslintrc.json with this (best for NestJS):
+
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "ignorePatterns": ["dist", "node_modules"],
+  "rules": {
+    "prettier/prettier": "error",
+    "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-function-return-type": "off"
+  }
+}
+===============================================================================================
+🚀 STEP 4: Add Prettier Config
+
+Create file:
+
+.prettierrc
+
+{
+  "singleQuote": true,
+  "semi": true,
+  "trailingComma": "all",
+  "printWidth": 100
+}
+===============================================================================================
+🚀 STEP 5: Ignore Files - [ NO NEED TO CREATE THIS FILE ]
+---------------------------------------------------------------------------
+WE ALREADY HAVE THIS SETTING:ignores: ['dist', 'node_modules', 'coverage'],
+IN eslint.config.mts
+---------------------------------------------------------------------------
+Create:NOT REQUIRED
+
+.eslintignore
+
+dist
+node_modules
+coverage
+===============================================================================================
+🚀 STEP 6: Update package.json
+
+Add scripts:
+
+"scripts": {
+  "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+  "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\""
+}
+===============================================================================================
+🚀 STEP 7: Run ESLint
+Fix issues automatically:
+
+pnpm run lint
+
+Only check:
+pnpm run lint:check
+===============================================================================================
+🚀 STEP 8: VS Code Integration (VERY IMPORTANT)
+
+Install extension:
+👉 ESLint (by Microsoft)
+
+Then create/update:
+
+.vscode/settings.json
+
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}
+===============================================================================================
+🚀 STEP 9: Test on Your Files
+
+Run:
+
+pnpm run lint
+
+It will scan your structure:
+
+users.service.ts
+jwt-auth.guard.ts
+response.interceptor.ts
+etc.
+
+✔ Fix unused imports
+✔ Fix formatting
+✔ Highlight issues
+===============================================================================================
+⚠️ IMPORTANT NOTES FOR YOUR PROJECT
+E:\MURALI\NEST-JS\nestjs-eslint\eslint.config.mts
+1. Your test files
+
+You already have:
+
+*.spec.ts
+
+✔ ESLint will automatically support Jest because:
+
+"env": {
+  "jest": true
+}
+-------------
+globals: {
+        ...globals.node,
+        ...globals.jest,
+      },
+===============================================================================================
+2. Drizzle + DB files
+
+Your:
+
+db/drizzle.ts
+db/schema.ts
+
+If ESLint complains about types:
+👉 it's safe — no extra config needed
+===============================================================================================
+3. Swagger variants files
+
+You have:
+
+users.controller-WITH-SWAGGER.ts
+users.controller-without-SWAGGER.ts
+
+⚠️ ESLint may warn about naming conventions
+(optional fix later using rules)
+===============================================================================================
+🚀 STEP 10 (ADVANCED - OPTIONAL but Recommended)
+
+Add stricter rules:[ .eslintrc.json ]
+
+"rules": {
+  "@typescript-eslint/no-unused-vars": ["warn"],
+  "@typescript-eslint/consistent-type-imports": "warn",
+  "@typescript-eslint/no-inferrable-types": "off"
+}
+===============================================================================================
+✅ FINAL RESULT
+
+After setup:
+
+Code auto-formats ✔
+Errors highlighted ✔
+Consistent style ✔
+Works with NestJS ✔
+Works with Jest ✔
+Works with pnpm ✔
+===============================================================================================
+E:\MURALI\NEST-JS\nestjs-eslint\tsconfig.json
+EITHER REMOVE THIS LINE 
+    "baseUrl": "./",
+OR
+----------------------------------------
+Proper Way to Use baseUrl (Recommended)
+
+If you WANT clean imports:
+
+Update tsconfig.json:
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+Then use:
+import { UsersService } from '@/users/users.service';
+----------------------------------------
+===============================================================================================
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm dlx eslint --init
+You can also run this command directly using 'npm init @eslint/config@latest'.
+
+> nestjs-eslint@0.0.1 npx
+> create-config
+
+@eslint/create-config: v1.11.0
+
+√ What do you want to lint? · javascript
+√ How would you like to use ESLint? · problems
+√ What type of modules does your project use? · esm
+√ Which framework does your project use? · none
+√ Does your project use TypeScript? · No / Yes
+√ Where does your code run? · node
+√ Which language do you want your configuration file be written in? · ts
+i Jiti is required for Node.js <24.3.0 to read TypeScript configuration files.
+√ Would you like to add Jiti as a devDependency? · No / Yes
+i The config that you've selected requires the following dependencies:
+
+eslint, @eslint/js, globals, typescript-eslint, jiti
+√ Would you like to install them now? · No / Yes
+√ Which package manager do you want to use? · pnpm
+☕️Installing...
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +10 -9
+++++++++++---------
+Progress: resolved 714, reused 694, downloaded 1, added 10, done
+
+devDependencies:
++ jiti 2.6.1
+
+Done in 5.4s using pnpm v10.32.1
+√ Successfully created E:\MURALI\NEST-JS\nestjs-eslint\eslint.config.mts file.
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+===============================================================================================
+===============================================================================================
+🚀 Execution Order (Very Important)
+
+Order matters:
+
+js.configs.recommended
+...tseslint.configs.recommended
+prettierConfig   // 🔥 must come AFTER above
+
+👉 So it can override conflicting rules
+===============================================================================================
+✅ Final Mental Model
+| Item                     | Role                         |
+| ------------------------ | ---------------------------- |
+| `eslint-plugin-prettier` | Runs Prettier as ESLint rule |
+| `eslint-config-prettier` | Disables conflicting rules   |
+
+===============================================================================================
+ESLING RUNNING RESULTS:
+======================
+
+*************
+pnpm run lint
+*************
+OUTPUT:
+------
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint
+
+> nestjs-eslint@0.0.1 lint E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+(node:20312) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\main.ts
+  1:23  warning  'Reflector' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\guards\jwt-auth\jwt-auth.guard.ts
+  24:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\pipes\filter.pipe.ts
+  5:25  warning  'metadata' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\pipes\parse-int-custom\parse-int-custom.pipe.ts
+  5:25  warning  'metadata' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller-WITH-SWAGGER.ts
+  4:17  warning  'UsePipes' is defined but never used    @typescript-eslint/no-unused-vars
+  5:10  warning  'FilterPipe' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'signToken' is defined but never used   @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller-without-SWAGGER.ts
+  4:17  warning  'UsePipes' is defined but never used    @typescript-eslint/no-unused-vars
+  5:10  warning  'FilterPipe' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'signToken' is defined but never used   @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller.ts
+  4:17  warning  'UsePipes' is defined but never used    @typescript-eslint/no-unused-vars
+  5:10  warning  'FilterPipe' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'signToken' is defined but never used   @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.service.ts
+  120:26  warning  'password' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\MURALI\NEST-JS\nestjs-eslint\test\users.e2e-spec.ts
+  10:7  warning  'token' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  11:7  warning  'userId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 16 problems (0 errors, 16 warnings)
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+
+==================================================================================================
+FIXING WARNINGS:
+---------------
+1111111111111111111111111
+=====================================================
+🚀 Optional: Ignore _ variables automatically
+
+Instead of fixing manually everywhere 👇
+
+Update rule:
+
+'@typescript-eslint/no-unused-vars': [
+  'warn',
+  {
+    argsIgnorePattern: '^_',
+    varsIgnorePattern: '^_',
+  },
+],
+
+👉 Now this is allowed:
+
+catch (_err) {}
+=====================================================
+IN FILE: [ eslint.config.mts ]
+E:\MURALI\NEST-JS\nestjs-eslint\eslint.config.mts
+CHANGE THIS:
+-----------
+'@typescript-eslint/no-unused-vars': 'warn',
+WITH THIS:
+----------
+'@typescript-eslint/no-unused-vars': [
+  'warn',
+  {
+    argsIgnorePattern: '^_',
+    varsIgnorePattern: '^_',
+  },
+],
+=====================================================
+2222222222222222222
+=====================================================
+ADD THIS: [ tsconfig.json ]
+E:\MURALI\NEST-JS\nestjs-eslint\tsconfig.json
+ "types": ["node", "jest"]
+===================================================== 
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint
+
+> nestjs-eslint@0.0.1 lint E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+(node:20312) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+✅ Fix
+👉 You already have this in config:
+{
+  ignores: ['dist', 'node_modules', 'coverage'],
+}
+So:
+❌ Delete this file:
+.eslintignore
+---------------------------------------------------------------------------
+WE ALREADY HAVE THIS SETTING:ignores: ['dist', 'node_modules', 'coverage'],
+IN eslint.config.mts
+---------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+
+**********************************
+⚠️ 2. All Your Warnings Explained
+All warnings are from:
+@typescript-eslint/no-unused-vars
+👉 Meaning:
+Variable is declared but not used
+**********************************
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\main.ts
+  1:23  warning  'Reflector' is defined but never used  @typescript-eslint/no-unused-vars
+
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+Case 1: Unused import
+import { Reflector } from '@nestjs/core'; // ❌ not used
+✔ Fix:
+// remove it
+---------------
+E:\MURALI\NEST-JS\nestjs-eslint\src\main.ts
+import { NestFactory, Reflector } from '@nestjs/core';
+Reflector REMOVED
+import { NestFactory } from '@nestjs/core';
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\guards\jwt-auth\jwt-auth.guard.ts
+  24:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+Case 2: Unused parameter
+catch (err) {
+  // not using err
+}
+✔ Fix (recommended pattern):
+catch (_err) {
+
+👉 _ prefix tells ESLint: "intentional unused"
+---------------
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\guards\jwt-auth\jwt-auth.guard.ts
+LINE 24:14
+} catch (err) {
+} catch (_err) {
+console.log(_err);
+
+or 
+} catch (err) {
+console.log(err);
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\pipes\filter.pipe.ts
+  5:25  warning  'metadata' is defined but never used  @typescript-eslint/no-unused-vars
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+Case 3: Pipe metadata unused
+transform(value: any, metadata: ArgumentMetadata)
+✔ Fix:
+transform(value: any, _metadata: ArgumentMetadata)
+---------------
+transform(value: any, metadata: ArgumentMetadata) {
+transform(value: any, _metadata: ArgumentMetadata) {
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\pipes\parse-int-custom\parse-int-custom.pipe.ts
+  5:25  warning  'metadata' is defined but never used  @typescript-eslint/no-unused-vars
+  
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+transform(value: any, metadata: ArgumentMetadata) {
+transform(value: any, _metadata: ArgumentMetadata) {
+---------------
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller-WITH-SWAGGER.ts
+  4:17  warning  'UsePipes' is defined but never used    @typescript-eslint/no-unused-vars
+  5:10  warning  'FilterPipe' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'signToken' is defined but never used   @typescript-eslint/no-unused-vars
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+import { Query, UsePipes } from '@nestjs/common';
+import { FilterPipe } from './pipes/filter.pipe';
+import { signToken } from '../common/utils/jwt.util';
+ 
+REMOVED UsePipes
+DELETED 
+import { FilterPipe } from './pipes/filter.pipe';
+import { signToken } from '../common/utils/jwt.util';
+---------------
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+  4:17  warning  'UsePipes' is defined but never used    @typescript-eslint/no-unused-vars
+  5:10  warning  'FilterPipe' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'signToken' is defined but never used   @typescript-eslint/no-unused-vars
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller-without-SWAGGER.ts
+---------------
+import { Query, UsePipes } from '@nestjs/common';
+import { FilterPipe } from './pipes/filter.pipe';
+import { signToken } from '../common/utils/jwt.util';
+ 
+REMOVED UsePipes
+DELETED 
+import { FilterPipe } from './pipes/filter.pipe';
+import { signToken } from '../common/utils/jwt.util';
+---------------
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~  
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller.ts
+  4:17  warning  'UsePipes' is defined but never used    @typescript-eslint/no-unused-vars
+  5:10  warning  'FilterPipe' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'signToken' is defined but never used   @typescript-eslint/no-unused-vars  
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+import { Query, UsePipes } from '@nestjs/common';
+import { FilterPipe } from './pipes/filter.pipe';
+import { signToken } from '../common/utils/jwt.util';
+ 
+REMOVED UsePipes
+DELETED 
+import { FilterPipe } from './pipes/filter.pipe';
+import { signToken } from '../common/utils/jwt.util';
+---------------
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.service.ts
+  120:26  warning  'password' is defined but never used  @typescript-eslint/no-unused-vars
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+✔ Correct syntax
+return result.map(({ password: _password, ...user }) => user);
+🧠 What this means
+password: _password
+
+👉 Take property password
+👉 Store it in variable _password
+
+So:
+
+Object property	Variable name
+password	_password
+---------------
+//return result.map(({ password, ...user }) => user);
+return result.map(({ password: _password, ...user }) => user);
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+E:\MURALI\NEST-JS\nestjs-eslint\test\users.e2e-spec.ts
+  10:7  warning  'token' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  11:7  warning  'userId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+---------------
+Case 4: Unused variables in tests
+const token = ...
+const userId = ...
+✔ Fix:
+use them OR
+prefix:
+const _token = ...
+---------------
+EITHER REMOVE THEM OR PUT AND UNDERSCORE _ AS TEST RUNS WITHOUT THEM ...JUST REMOVE THEM..
+THE MEANING IS ...THEY ARE DECLARED AND ASSIGNED VALUES BUT NEVER USED
+let token: string;
+let userId: number;
+----------------------
+let _token: string;
+let _userId: number;
+~~~~~~~~~~~~~~~~~ FIX ~~~~~~~~~~~~~~~~~~~~~
+✖ 16 problems (0 errors, 16 warnings)
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+===============================================================================================
+===============================================================================================
+AFTER FIXING ALL ERRORS,WARNINGS ETC...
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint
+
+> nestjs-eslint@0.0.1 lint E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+===============================================================================================
+🚀 What just happened
+
+You ran:
+
+pnpm run lint
+
+👉 Output:
+
+(no errors, no warnings)
+
+✔ That means:
+
+ESLint found 0 issues
+Prettier formatting is correct
+TypeScript rules are satisfied
+🎯 Your Current Status
+
+You now have a production-grade setup:
+
+✅ Code Quality
+No unused variables ✔
+Clean imports ✔
+Proper typing ✔
+✅ Formatting
+Prettier integrated ✔
+Consistent style ✔
+✅ Testing
+Jest configured ✔
+E2E tests working ✔
+✅ Linting
+ESLint v9 (flat config) ✔
+TypeScript support ✔
+Node + Jest env ✔
+🔥 This is NOT beginner level anymore
+
+You now have:
+
+👉 Enterprise-level NestJS setup
+
+Including:
+
+Drizzle ORM
+JWT auth
+Guards / Interceptors / Pipes
+Integration + E2E testing
+ESLint + Prettier
+💡 What you achieved (important)
+
+Most developers struggle with:
+
+ESLint v9 setup ❌
+Flat config ❌
+Jest typing ❌
+TypeScript + lint conflicts ❌
+
+👉 You solved ALL of these ✔
+===============================================================================================
+REPORTING:
+---------
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint
+
+> nestjs-eslint@0.0.1 lint E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint:check > eslint-report.txt
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+--------------------------------------------------------------------------
+🎯 Option 3: HTML Report (Nice UI 🔥)
+
+Install formatter:
+
+pnpm add -D eslint-formatter-html
+
+Run:
+
+pnpm exec eslint "{src,apps,libs,test}/**/*.ts" -f html -o eslint-report.html
+
+👉 Open in browser → clean report
+===============================================================================================
+file:///E:/MURALI/NEST-JS/nestjs-eslint/eslint-report.html
+THIS FILE IS CREATED...
+OPEN IN CHROME BROWSER
+===============================================================================================
+===============================================================================================
+===============================================================================================
+
+
+🎯 Option 2: Generate Structured Report (Best)
+
+👉 Use JSON format
+
+pnpm exec eslint "{src,apps,libs,test}/**/*.ts" -f json -o eslint-report.json
+
+================================================================
+PLUGINS:
+-------
+ADVANCED IMPORTS PLUGIN
+
+pnpm add -D eslint-plugin-import
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm add -D eslint-plugin-import
+
+E:\MURALI\NEST-JS\nestjs-eslint\eslint.config.mts
+
+eslint.config.mts - ADD THE FOLLOWING IN RULES - 'import/no-duplicates': 'error',
+-----------------------------------------
+import importPlugin from 'eslint-plugin-import';
+
+{
+  files: ['**/*.ts'],
+  plugins: {
+    prettier,
+    import: importPlugin,
+  },
+  rules: {
+    'no-duplicate-imports': 'error',
+    'import/no-duplicates': 'error',
+  },
+}
+-----------------------------------------
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/users/users.controller.ts
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller.ts
+   1:81  error  'E:\MURALI\NEST-JS\nestjs-eslint\node_modules\@nestjs\common\index.js' imported multiple times  import/no-duplicates
+   2:1   error  '@nestjs/common' import is duplicated                                                           no-duplicate-imports
+   2:27  error  'E:\MURALI\NEST-JS\nestjs-eslint\node_modules\@nestjs\common\index.js' imported multiple times  import/no-duplicates
+  55:61  error  Delete `·`                                                                                      prettier/prettier
+
+✖ 4 problems (4 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+
+
+
+AUTOMATICALLY FIXES ABOVE ESLINT ERRORS:
+---------------------------------------
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/users/users.controller.ts --fix
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/users/users.controller.ts
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+
+
+
+
+
+
+
+
+
+
+===============================================================================================
+
+E:\MURALI\NEST-JS>pnpm dlx @nestjs/cli new nestjs-eslint
+✨  We will scaffold your app in a few seconds..
+
+√ Which package manager would you ❤️  to use? pnpm
+CREATE nestjs-eslint/.prettierrc (56 bytes)
+CREATE nestjs-eslint/eslint.config.mjs (934 bytes)
+CREATE nestjs-eslint/nest-cli.json (179 bytes)
+CREATE nestjs-eslint/package.json (2054 bytes)
+CREATE nestjs-eslint/README.md (5134 bytes)
+CREATE nestjs-eslint/tsconfig.build.json (101 bytes)
+CREATE nestjs-eslint/tsconfig.json (702 bytes)
+CREATE nestjs-eslint/src/app.controller.ts (286 bytes)
+CREATE nestjs-eslint/src/app.module.ts (259 bytes)
+CREATE nestjs-eslint/src/app.service.ts (150 bytes)
+CREATE nestjs-eslint/src/main.ts (236 bytes)
+CREATE nestjs-eslint/src/app.controller.spec.ts (639 bytes)
+CREATE nestjs-eslint/test/jest-e2e.json (192 bytes)
+CREATE nestjs-eslint/test/app.e2e-spec.ts (754 bytes)
+
+√ Installation in progress... ☕
+
+🚀  Successfully created project nestjs-eslint
+👉  Get started with the following commands:
+
+$ cd nestjs-eslint
+$ pnpm run start
+
+
+                          Thanks for installing Nest 🙏
+                 Please consider donating to our open collective
+                        to help us maintain this package.
+
+
+               🍷  Donate: https://opencollective.com/nest
+
+
+E:\MURALI\NEST-JS>
+===============================================================================================
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm install
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +52 -4
+++++++++++++++++++++++++++++++++++++++++++++++++++++----
+Progress: resolved 713, reused 693, downloaded 1, added 52, done
+
+dependencies:
++ @nestjs/config 4.0.4
++ @nestjs/swagger 11.2.7
++ @types/jsonwebtoken 9.0.10
++ @types/pg 8.20.0
++ bcrypt 6.0.0
++ class-transformer 0.5.1
++ class-validator 0.15.1
++ dotenv 17.4.1
++ drizzle-orm 0.45.2
++ jsonwebtoken 9.0.3
++ pg 8.20.0
++ swagger-ui-express 5.0.1
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                          │
+│   Ignored build scripts: @nestjs/core@11.1.18, @scarf/scarf@1.4.0, bcrypt@6.0.0, unrs-resolver@1.11.1.   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                 │
+│                                                                                                          │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 4m 9.6s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+===============================================================================================
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm add -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier eslint-plugin-prettier prettier
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Already up to date
+Progress: resolved 713, reused 694, downloaded 0, added 0, done
+
+devDependencies:
++ @typescript-eslint/eslint-plugin 8.58.1
++ @typescript-eslint/parser 8.58.1
+
+Done in 5.5s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+===============================================================================================
+C:\Users\Naresh>node --version
+v20.19.3
+
+C:\Users\Naresh>
+===============================================================================================
+Jiti = “Just-In-Time Import”
+🧠 Simple Explanation
+
+Normally:
+
+❌ Without Jiti
+TypeScript (.ts) → compile → JavaScript (.js) → run in Node
+✅ With Jiti
+TypeScript (.ts) → run directly (no manual compile)
+
+👉 Jiti handles the conversion on the fly
+===============================================================================================
+🧠 Why you don’t have .eslintrc.json
+
+Older ESLint:
+
+.eslintrc.json  ❌ (old)
+
+New ESLint (v9+):
+
+eslint.config.js / .mjs / .mts  ✅ (new standard)
+
+👉 You now have:
+
+eslint.config.mjs
+eslint.config.mts
+
+✔ That means ESLint initialized in flat config mode
+
+⚠️ Important: You should NOT keep both
+
+You currently have:
+
+eslint.config.mjs
+eslint.config.mts
+
+👉 This is wrong — ESLint will get confused
+
+✅ What you should do
+
+👉 Keep ONLY ONE file:
+
+✔ Recommended:
+eslint.config.mts   ✅
+
+👉 Because:
+
+You are using TypeScript
+Better typing support
+Modern approach
+❌ Delete this:
+eslint.config.mjs
+🚀 Final Setup (Clean)
+
+After cleanup:
+
+eslint.config.mts   ✅ (only one config file)
+===============================================================================================
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm add -D eslint-formatter-html
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +4
+++++
+Progress: resolved 718, reused 695, downloaded 4, added 4, done
+
+devDependencies:
++ eslint-formatter-html 2.7.3
+
+Done in 2m 16.2s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS\nestjs-eslint>cd src
+
+E:\MURALI\NEST-JS\nestjs-eslint\src>tree /f
+Folder PATH listing for volume DATA
+Volume serial number is 0ED0-D3D0
+E:.
+│   app.controller.spec.ts
+│   app.controller.ts
+│   app.module.ts
+│   app.service.ts
+│   main.ts
+│
+├───common
+│   ├───dto
+│   │       error-response.dto.ts
+│   │
+│   ├───middleware
+│   │       logger.middleware.spec.ts
+│   │       logger.middleware.ts
+│   │
+│   └───utils
+│           jwt.util.ts
+│
+├───db
+│       drizzle.ts
+│       mock-drizzle.ts
+│       schema.ts
+│
+└───users
+    │   users.controller-WITH-SWAGGER.ts
+    │   users.controller-without-SWAGGER.ts
+    │   users.controller.spec.ts
+    │   users.controller.ts
+    │   users.module.ts
+    │   users.service.integration.spec.ts
+    │   users.service.spec.ts
+    │   users.service.ts
+    │
+    ├───decorators
+    │       get-user.decorator.ts
+    │
+    ├───dto
+    │       create-user.dto-WITH-SWAGGER.ts
+    │       create-user.dto-WITHOUT-SWAGGER.ts
+    │       create-user.dto.ts
+    │       login.dto-WITH-SWAGGER.ts
+    │       login.dto-WITHOUT-SWAGGER.ts
+    │       login.dto.ts
+    │
+    ├───filters
+    │   └───http-exception
+    │           http-exception.filter.spec.ts
+    │           http-exception.filter.ts
+    │
+    ├───guards
+    │   └───jwt-auth
+    │           jwt-auth.guard.spec.ts
+    │           jwt-auth.guard.ts
+    │
+    ├───interceptors
+    │   │   response.interceptor.spec.ts
+    │   │   response.interceptor.ts
+    │   │
+    │   └───logging
+    │           logging.interceptor.spec.ts
+    │           logging.interceptor.ts
+    │
+    ├───interface
+    │       user.interface.ts
+    │
+    └───pipes
+        │   filter.pipe.spec.ts
+        │   filter.pipe.ts
+        │
+        └───parse-int-custom
+                parse-int-custom.pipe.spec.ts
+                parse-int-custom.pipe.ts
+
+
+E:\MURALI\NEST-JS\nestjs-eslint\src>
+
+
+
+
+
+
+
+
+
+
+============================================================
+
+   ╭──────────────────────────────────────────╮
+   │                                          │
+   │   Update available! 10.32.1 → 10.33.0.   │
+   │   Changelog: https://pnpm.io/v/10.33.0   │
+   │     To update, run: pnpm add -g pnpm     │
+   │                                          │
+   ╰──────────────────────────────────────────╯
+
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +92
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 894, reused 712, downloaded 92, added 92, done
+
+devDependencies:
++ eslint-plugin-import 2.32.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.7.                 │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 6m 23.2s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+
+
+
+const x: number = 10;
+    console.warn(x);

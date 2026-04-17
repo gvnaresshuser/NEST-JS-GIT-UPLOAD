@@ -1,0 +1,1071 @@
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+
+KEEP sslmode=verify-full
+
+
+MVC Pattern
+
+npm vs pnmp
+
+FP
+npm run start:dev
+Thunder Client in VS Code Editor
+
+npm install -g pnpm
+pnpm -v
+----------------------------
+✅ 2️.Node version issue (VERY COMMON)
+
+PNPM + Nest sometimes fails with:
+
+Old Node version
+Experimental Node version
+
+Check:
+
+node -v
+
+👉 Recommended for NestJS:
+
+Node 18  OR  Node 20
+
+✔ If using Node 16 / 21 → installation may fail.
+----------------------------
+
+pnpm -v
+node -v
+npm -v
+------------------------
+E:\MURALI\NEST-JS>pnpm -v
+10.32.1
+
+E:\MURALI\NEST-JS>node -v
+v20.19.3
+
+E:\MURALI\NEST-JS>npm -v
+11.7.0
+
+E:\MURALI\NEST-JS>nest -v
+11.0.16
+------------------------
+
+✅ STEP-1 Create Nest Project (PNPM)
+*************************************
+pnpm dlx @nestjs/cli new drizzle-nest-advanced
+select pnpm
+cd drizzle-nest-advanced
+
+Run project:
+pnpm run start:dev
+pnpm start:dev
+*************************************
+pnpn add class-transformer
+pnpn add class-validator
+OR
+pnpm add class-validator class-transformer
+
+--watch means nest js watches if any files have been modified and then automatically restarts the server.
+===============================================================================================
+What to generate using Nest CLI vs what to create manually
+
+pnpm dlx @nestjs/cli new drizzle-nest-advanced
+cd drizzle-nest-advanced
+pnpm start:dev
+===============================================================================================
+⚙️ 2. INSTALL REQUIRED DEPENDENCIES
+
+pnpm add drizzle-orm drizzle-kit pg
+pnpm add jsonwebtoken bcrypt cookie-parser dotenv
+pnpm add class-validator class-transformer
+pnpm add nodemailer axios uuid winston
+pnpm add helmet
+
+pnpm add -D @nestjs/swagger swagger-ui-express
+pnpm add -D @types/jsonwebtoken
+pnpm add -D @types/bcrypt
+pnpm add @nestjs/config
+pnpm add -D @types/nodemailer
+pnpm add -D @types/pg
+===============================================================================================
+🧱 3. GENERATE MODULES (AUTO)
+👉 Always generate using CLI (best practice)
+
+pnpm nest g module modules/users
+pnpm nest g module modules/auth
+pnpm nest g module modules/mail
+===============================================================================================
+🎮 4. GENERATE CONTROLLERS
+pnpm nest g controller modules/users
+pnpm nest g controller modules/auth
+pnpm nest g controller modules/mail
+===============================================================================================
+🧠 5. GENERATE SERVICES (PROVIDERS)
+pnpm nest g service modules/users
+pnpm nest g service modules/auth
+pnpm nest g service modules/mail
+===============================================================================================
+🧩 6. GENERATE COMMON FEATURES (IMPORTANT)
+🛡️ Guards
+pnpm nest g guard common/guards/jwt
+pnpm nest g guard common/guards/roles
+===============================================================================================
+🔁 Interceptors
+pnpm nest g interceptor common/interceptors/logging
+pnpm nest g interceptor common/interceptors/transform
+===============================================================================================
+❌ Filters
+pnpm nest g filter common/filters/http-exception
+pnpm nest g filter common/filters/all-exception
+===============================================================================================
+🔧 Pipes
+pnpm nest g pipe common/pipes/validation
+===============================================================================================
+⚙️ Middleware
+pnpm nest g middleware common/middleware/logger
+===============================================================================================
+OPEN PROJECT IN VS CODE EDITOR AND MANUALLY CREATE THE BELOW FILES
+code .
+
+❗ 7. FILES YOU MUST CREATE MANUALLY
+
+Nest CLI DOES NOT generate these 👇
+
+🗄️ DATABASE (Drizzle)
+
+👉 Create manually:
+
+src/database/db.ts
+src/database/schema.ts
+===============================================================================================
+🔐 CUSTOM DECORATORS
+src/common/decorators/user.decorator.ts
+src/common/decorators/roles.decorator.ts
+===============================================================================================
+🧾 LOGGER (Winston)
+src/common/logger/winston.logger.ts
+===============================================================================================
+⚙️ CONFIG FILES
+src/config/configuration.ts
+src/config/validation.ts   (optional advanced)
+===============================================================================================
+📬 EMAIL SETUP - ALREADY PRESENT
+src/modules/mail/mail.service.ts  (custom logic)
+===============================================================================================
+📦 DTOs (VERY IMPORTANT)
+
+👉 Create manually inside each module:
+
+src/modules/users/dto/create-user.dto.ts
+src/modules/auth/dto/login.dto.ts
+===============================================================================================
+🌍 ENV FILE
+.env
+===============================================================================================
+📁 8. FINAL FILE STRUCTURE (AFTER COMMANDS)
+src/
+ ├── modules/
+ │    ├── users/
+ │    │    ├── users.module.ts
+ │    │    ├── users.controller.ts
+ │    │    ├── users.service.ts
+ │    │    └── dto/
+ │    │         └── create-user.dto.ts
+ │
+ │    ├── auth/
+ │    │    ├── auth.module.ts
+ │    │    ├── auth.controller.ts
+ │    │    ├── auth.service.ts
+ │    │    └── dto/
+ │
+ │    └── mail/
+ │
+ ├── common/
+ │    ├── guards/
+ │    ├── interceptors/
+ │    ├── filters/
+ │    ├── pipes/
+ │    ├── middleware/
+ │    ├── decorators/
+ │    └── logger/
+ │
+ ├── database/
+ │    ├── db.ts
+ │    └── schema.ts
+ │
+ ├── config/
+ │
+ ├── app.module.ts
+ ├── main.ts
+===============================================================================================
+🎯 9. WHAT IS AUTO vs MANUAL (IMPORTANT)
+| Type               | CLI | Manual |
+| ------------------ | --- | ------ |
+| Module             | ✅   | ❌      |
+| Controller         | ✅   | ❌      |
+| Service            | ✅   | ❌      |
+| Guard              | ✅   | ❌      |
+| Pipe               | ✅   | ❌      |
+| Interceptor        | ✅   | ❌      |
+| Filter             | ✅   | ❌      |
+| Middleware         | ✅   | ❌      |
+| DTO                | ❌   | ✅      |
+| Database (Drizzle) | ❌   | ✅      |
+| Config             | ❌   | ✅      |
+| Custom Decorators  | ❌   | ✅      |
+| Logger (Winston)   | ❌   | ✅      |
+
+===============================================================================================
+npm i --save-dev @types/jsonwebtoken
+pnpm add -D @types/jsonwebtoken
+
+Parameter 'exception' implicitly has an 'any' type, but a better type may be inferred from usage.ts(7044)
+===============================================================================================
+EMAIL_USER=gvnaressh@gmail.com
+EMAIL_PASS=nlhvhyxqgqtaqeiz
+
+https://jwtsecrets.com/#generate
+super_secret_key_123
+6cdadfa020cb901e7579a0da6f6fae70b735348462a65e7aeceb4f0886decf26
+===============================================================================================
+npm i --save-dev @types/bcrypt
+pnpm add -D @types/bcrypt
+===============================================================================================
+pnpm list @types/bcrypt
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm list @types/bcrypt
+Legend: production dependency, optional only, dev only
+
+drizzle-nest-advanced@0.0.1 E:\MURALI\NEST-JS\drizzle-nest-advanced (PRIVATE)
+│
+│   devDependencies:
+└── @types/bcrypt@6.0.0
+
+1 package
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+npm i --save-dev @types/nodemailer
+pnpm add -D @types/nodemailer
+===============================================================================================
+npm i --save-dev @types/pg
+pnpm add -D @types/pg
+===============================================================================================
+🟢 Drizzle ORM
+Focuses on SQL-first approach
+Gives you full control
+Does NOT auto-create tables unless you run migrations ❌
+🔥 DRIZZLE PHILOSOPHY
+
+“You control the database — not the ORM”
+===============================================================================================
+🥈 OPTION 2: DRIZZLE MIGRATIONS (PRODUCTION WAY)
+🔧 STEP 1: CREATE CONFIG FILE
+
+📄 drizzle.config.ts
+
+import 'dotenv/config';
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+    schema: './src/db/schema.ts',
+    out: './drizzle',
+    dialect: 'postgresql',
+    dbCredentials: {
+        url: process.env.DATABASE_URL!
+    }
+});
+===============================================================================================
+🔧 STEP 2: GENERATE MIGRATION
+*************************
+pnpm drizzle-kit generate
+*************************
+
+👉 Creates SQL files automatically
+
+🔧 STEP 3: APPLY MIGRATION
+*************************
+pnpm drizzle-kit migrate
+*************************
+
+👉 Tables get created ✅
+===============================================================================================
+
+
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm drizzle-kit generate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-advanced\drizzle.config.ts'
+1 tables
+nestjs_users 4 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0000_fat_darwin.sql 🚀
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+🚀 NEXT STEP (VERY IMPORTANT)
+
+👉 Right now table is NOT created yet ❗
+You only generated SQL.
+
+▶️ RUN THIS NOW
+pnpm drizzle-kit migrate
+🧠 WHAT THIS DOES
+Command	Purpose
+generate	creates SQL file
+migrate	executes SQL on DB
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm drizzle-kit migrate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-advanced\drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] migrations applied successfully!
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+IF ANY NEW CHANGES IN SCHEMA ...RUN ONCE AGAIN
+
+changed  role: text('role').notNull(), // ✅ ADD THIS in schema.ts
+
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm drizzle-kit generate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-advanced\drizzle.config.ts'
+1 tables
+nestjs_users 4 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0001_thin_stardust.sql 🚀
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm drizzle-kit migrate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-advanced\drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] migrations applied successfully!
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name = 'nestjs_users';
+===============================================================================================
+IMPORTANT:
+=========
+✅ FIX (CLEAN & GUARANTEED)
+
+👉 We reset Drizzle migration state
+
+🧹 STEP 1: DELETE MIGRATION FOLDER
+rm -rf drizzle
+
+OR manually delete:
+
+drizzle/ folder ❌
+🧹 STEP 2: DROP TABLE (AGAIN)
+DROP TABLE IF EXISTS nestjs_users;
+🧹 STEP 3: DROP MIGRATION TABLE
+DROP TABLE IF EXISTS drizzle.__drizzle_migrations;
+🚀 STEP 4: REGENERATE MIGRATION
+pnpm drizzle-kit generate
+
+👉 You should now see:
+
+[✓] Your SQL migration file created
+🚀 STEP 5: APPLY MIGRATION
+pnpm drizzle-kit migrate
+🔍 STEP 6: VERIFY
+SELECT * FROM drizzle.__drizzle_migrations;
+
+👉 Now you should see records ✅
+
+🔍 STEP 7: VERIFY TABLE
+SELECT * FROM nestjs_users;
+
+👉 Table exists ✅
+
+🧠 WHY THIS FIX WORKS
+Before	After
+stale migration state ❌	clean state ✅
+drizzle confused ❌	fresh sync ✅
+table missing ❌	recreated ✅
+🎯 GOLDEN RULE
+
+“If migrations say success but nothing happens → reset migration state”
+===============================================================================================
+RATE LIMIT:
+==========
+pnpm add @nestjs/throttler
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\app.module.ts
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+
+  ThrottlerModule.forRoot([{
+      name: 'short',
+      ttl: 1000,
+      limit: 3,
+    }, {
+      name: 'long',
+      ttl: 60000,
+      limit: 100,
+    }]),
+	
+	 providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard, // ✅ FIX
+    },
+  ],
+  
+  60000 milliseconds
+-----------------------------------------------------------------------------
+USAGE:
+=====
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\modules\users\users.controller.ts
+import { Throttle } from '@nestjs/throttler';
+@Throttle({ short: { ttl: 1000, limit: 1 } })
+    @Get()
+    @UseGuards(JwtGuard)
+    findAll(@Query('limit') limit, @Query('offset') offset) {
+        return this.service.findAll(Number(limit) || 10, Number(offset) || 0);
+    }
+	
+===============================================================================================
+WINSTON - LOGGING TO FILE
+-------------------------
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\common\logger\winston.config.ts
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\common\logger\my-logger\my-logger.service.ts
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\common\logger\logger.module.ts
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\modules\users\users.module.ts
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\modules\users\users.controller.ts
+
+pnpm add winston nest-winston
+(Optional but recommended for rotation)
+pnpm add winston-daily-rotate-file
+
+🚀 2. Create Winston Config
+📁 src/common/logger/winston.config.ts
+ADD CODE
+
+---------------------------------------------------------
+nest g service common/logger/my-logger --no-spec
+
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>nest g service common/logger/my-logger --no-spec
+CREATE src/common/logger/my-logger/my-logger.service.ts (96 bytes)
+UPDATE src/app.module.ts (1846 bytes)
+
+---------------------------------------------------------
+
+🚀 Step 1: Create LoggerModule
+
+📁 src/common/logger/logger.module.ts
+
+import { Module } from '@nestjs/common';
+import { MyLoggerService } from './my-logger.service';
+
+@Module({
+  providers: [MyLoggerService],
+  exports: [MyLoggerService], // 🔥 VERY IMPORTANT
+})
+export class LoggerModule {}
+
+---------------------------------------------------------
+
+🚀 Step 2: Import LoggerModule in UsersModule
+
+📁 users.module.ts
+
+import { Module } from '@nestjs/common';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { LoggerModule } from '../../common/logger/logger.module';
+
+@Module({
+  imports: [LoggerModule], // ✅ IMPORTANT
+  controllers: [UsersController],
+  providers: [UsersService],
+})
+export class UsersModule {}
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+
+stopped
+
+
+
+
+
+
+
+
+app.useGlobalGuards(new ThrottlerGuard());
+import { Throttle } from '@nestjs/throttler';
+
+@Throttle({ default: { limit: 2, ttl: 60 } })
+@Post('login')
+login() {}
+
+
+
+
+
+===============================================================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS>pnpm dlx @nestjs/cli new drizzle-nest-advanced
+✨  We will scaffold your app in a few seconds..
+
+√ Which package manager would you ❤️  to use? pnpm
+CREATE drizzle-nest-advanced/.prettierrc (56 bytes)
+CREATE drizzle-nest-advanced/eslint.config.mjs (934 bytes)
+CREATE drizzle-nest-advanced/nest-cli.json (179 bytes)
+CREATE drizzle-nest-advanced/package.json (2063 bytes)
+CREATE drizzle-nest-advanced/README.md (5134 bytes)
+CREATE drizzle-nest-advanced/tsconfig.build.json (101 bytes)
+CREATE drizzle-nest-advanced/tsconfig.json (702 bytes)
+CREATE drizzle-nest-advanced/src/app.controller.ts (286 bytes)
+CREATE drizzle-nest-advanced/src/app.module.ts (259 bytes)
+CREATE drizzle-nest-advanced/src/app.service.ts (150 bytes)
+CREATE drizzle-nest-advanced/src/main.ts (236 bytes)
+CREATE drizzle-nest-advanced/src/app.controller.spec.ts (639 bytes)
+CREATE drizzle-nest-advanced/test/jest-e2e.json (192 bytes)
+CREATE drizzle-nest-advanced/test/app.e2e-spec.ts (694 bytes)
+
+√ Installation in progress... ☕
+
+🚀  Successfully created project drizzle-nest-advanced
+👉  Get started with the following commands:
+
+$ cd drizzle-nest-advanced
+$ pnpm run start
+
+
+                          Thanks for installing Nest 🙏
+                 Please consider donating to our open collective
+                        to help us maintain this package.
+
+
+               🍷  Donate: https://opencollective.com/nest
+
+
+E:\MURALI\NEST-JS>
+===============================================================================================
+cd drizzle-nest-advanced
+pnpm run start
+
+[7:52:48 am] Starting compilation in watch mode...
+
+[7:53:19 am] Found 0 errors. Watching for file changes.
+
+[Nest] 21764  - 27/03/2026, 7:53:37 am     LOG [NestFactory] Starting Nest application...
+[Nest] 21764  - 27/03/2026, 7:53:37 am     LOG [InstanceLoader] AppModule dependencies initialized +33ms
+[Nest] 21764  - 27/03/2026, 7:53:37 am     LOG [RoutesResolver] AppController {/}: +14ms
+[Nest] 21764  - 27/03/2026, 7:53:37 am     LOG [RouterExplorer] Mapped {/, GET} route +9ms
+[Nest] 21764  - 27/03/2026, 7:53:37 am     LOG [NestApplication] Nest application successfully started +7ms
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add drizzle-orm drizzle-kit pg
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +28
+++++++++++++++++++++++++++++
+Progress: resolved 767, reused 677, downloaded 0, added 28, done
+
+dependencies:
++ drizzle-kit 0.31.10
++ drizzle-orm 0.45.1
++ pg 8.20.0
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                      │
+│   Ignored build scripts: @nestjs/core@11.1.17, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.4,                     │
+│   unrs-resolver@1.11.1.                                                                                              │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                             │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 1m 35.3s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add jsonwebtoken bcrypt cookie-parser dotenv
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +18
+++++++++++++++++++
+Progress: resolved 785, reused 681, downloaded 14, added 18, done
+
+dependencies:
++ bcrypt 6.0.0
++ cookie-parser 1.4.7
++ dotenv 17.3.1
++ jsonwebtoken 9.0.3
+
+╭ Warning ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                   │
+│   Ignored build scripts: @nestjs/core@11.1.17, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.4,    │
+│   unrs-resolver@1.11.1.                                                                                           │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                          │
+│                                                                                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 8.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add class-validator class-transformer
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +9 -4
++++++++++----
+Progress: resolved 790, reused 700, downloaded 0, added 9, done
+
+dependencies:
++ class-transformer 0.5.1
++ class-validator 0.15.1
+
+╭ Warning ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                   │
+│   Ignored build scripts: @nestjs/core@11.1.17, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.4,    │
+│   unrs-resolver@1.11.1.                                                                                           │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                          │
+│                                                                                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 16.2s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add nodemailer axios uuid winston
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +26
+++++++++++++++++++++++++++
+Progress: resolved 816, reused 703, downloaded 23, added 26, done
+
+dependencies:
++ axios 1.13.6
++ nodemailer 8.0.4
++ uuid 13.0.0
++ winston 3.19.0
+
+╭ Warning ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                   │
+│   Ignored build scripts: @nestjs/core@11.1.17, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.4,    │
+│   unrs-resolver@1.11.1.                                                                                           │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                          │
+│                                                                                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 5.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add helmet
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 817, reused 726, downloaded 1, added 1, done
+
+dependencies:
++ helmet 8.1.0
+
+╭ Warning ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                   │
+│   Ignored build scripts: @nestjs/core@11.1.17, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.4,    │
+│   unrs-resolver@1.11.1.                                                                                           │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                          │
+│                                                                                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 3.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add -D @nestjs/swagger swagger-ui-express
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +7
++++++++
+Progress: resolved 824, reused 730, downloaded 4, added 7, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ @nestjs/swagger 11.2.6
++ swagger-ui-express 5.0.1
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                      │
+│   Ignored build scripts: @nestjs/core@11.1.17, @scarf/scarf@1.4.0, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12,   │
+│   esbuild@0.27.4, unrs-resolver@1.11.1.                                                                              │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                             │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 6.6s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g module modules/users
+CREATE src/modules/users/users.module.ts (86 bytes)
+UPDATE src/app.module.ts (330 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g module modules/auth
+CREATE src/modules/auth/auth.module.ts (85 bytes)
+UPDATE src/app.module.ts (399 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g module modules/mail
+CREATE src/modules/mail/mail.module.ts (85 bytes)
+UPDATE src/app.module.ts (468 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g controller modules/users
+CREATE src/modules/users/users.controller.ts (103 bytes)
+CREATE src/modules/users/users.controller.spec.ts (503 bytes)
+UPDATE src/modules/users/users.module.ts (174 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g controller modules/auth
+CREATE src/modules/auth/auth.controller.ts (101 bytes)
+CREATE src/modules/auth/auth.controller.spec.ts (496 bytes)
+UPDATE src/modules/auth/auth.module.ts (170 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g controller modules/mail
+CREATE src/modules/mail/mail.controller.ts (101 bytes)
+CREATE src/modules/mail/mail.controller.spec.ts (496 bytes)
+UPDATE src/modules/mail/mail.module.ts (170 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g service modules/users
+CREATE src/modules/users/users.service.ts (93 bytes)
+CREATE src/modules/users/users.service.spec.ts (471 bytes)
+UPDATE src/modules/users/users.module.ts (251 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g service modules/auth
+CREATE src/modules/auth/auth.service.ts (92 bytes)
+CREATE src/modules/auth/auth.service.spec.ts (464 bytes)
+UPDATE src/modules/auth/auth.module.ts (244 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g service modules/mail
+CREATE src/modules/mail/mail.service.ts (92 bytes)
+CREATE src/modules/mail/mail.service.spec.ts (464 bytes)
+UPDATE src/modules/mail/mail.module.ts (244 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g guard common/guards/jwt
+CREATE src/common/guards/jwt/jwt.guard.ts (309 bytes)
+CREATE src/common/guards/jwt/jwt.guard.spec.ts (163 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g guard common/guards/roles
+CREATE src/common/guards/roles/roles.guard.ts (311 bytes)
+CREATE src/common/guards/roles/roles.guard.spec.ts (171 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g interceptor common/interceptors/logging
+CREATE src/common/interceptors/logging/logging.interceptor.ts (322 bytes)
+CREATE src/common/interceptors/logging/logging.interceptor.spec.ts (203 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g interceptor common/interceptors/transform
+CREATE src/common/interceptors/transform/transform.interceptor.ts (324 bytes)
+CREATE src/common/interceptors/transform/transform.interceptor.spec.ts (211 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g filter common/filters/http-exception
+CREATE src/common/filters/http-exception/http-exception.filter.ts (201 bytes)
+CREATE src/common/filters/http-exception/http-exception.filter.spec.ts (208 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g filter common/filters/all-exception
+CREATE src/common/filters/all-exception/all-exception.filter.ts (200 bytes)
+CREATE src/common/filters/all-exception/all-exception.filter.spec.ts (204 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g pipe common/pipes/validation
+CREATE src/common/pipes/validation/validation.pipe.ts (234 bytes)
+CREATE src/common/pipes/validation/validation.pipe.spec.ts (187 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm nest g middleware common/middleware/logger
+CREATE src/common/middleware/logger/logger.middleware.ts (206 bytes)
+CREATE src/common/middleware/logger/logger.middleware.spec.ts (195 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src>pnpm add -D @types/jsonwebtoken
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +2
+++
+Progress: resolved 826, reused 734, downloaded 2, added 2, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ @types/jsonwebtoken 9.0.10
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                      │
+│   Ignored build scripts: @nestjs/core@11.1.17, @scarf/scarf@1.4.0, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12,   │
+│   esbuild@0.27.4, unrs-resolver@1.11.1.                                                                              │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                             │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 2m 38.4s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src>pnpm add -D @types/bcrypt
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 827, reused 736, downloaded 1, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ @types/bcrypt 6.0.0
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                      │
+│   Ignored build scripts: @nestjs/core@11.1.17, @scarf/scarf@1.4.0, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12,   │
+│   esbuild@0.27.4, unrs-resolver@1.11.1.                                                                              │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                             │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 32.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src>
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add @nestjs/config
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +4
+++++
+Progress: resolved 831, reused 741, downloaded 0, added 4, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ @nestjs/config 4.0.3
+
+Done in 4.7s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add -D @types/nodemailer
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 832, reused 741, downloaded 1, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ @types/nodemailer 7.0.11
+
+Done in 5s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add -D @types/pg
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +2 -1
+++-
+Progress: resolved 833, reused 743, downloaded 0, added 2, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ @types/pg 8.20.0
+
+Done in 1m 26.7s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+[10:10:06 am] Starting compilation in watch mode...
+
+[10:10:37 am] Found 0 errors. Watching for file changes.
+
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [NestFactory] Starting Nest application...
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [InstanceLoader] AppModule dependencies initialized +30ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [InstanceLoader] ConfigHostModule dependencies initialized +1ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [InstanceLoader] ConfigModule dependencies initialized +4ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [InstanceLoader] UsersModule dependencies initialized +3ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [InstanceLoader] MailModule dependencies initialized +0ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RoutesResolver] UsersController {/users}: +89ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/users, POST} route +3ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/users, GET} route +2ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/users/admin, GET} route +1ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/users/:id, GET} route +1ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +1ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +0ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RoutesResolver] AuthController {/auth}: +1ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/auth/login, POST} route +1ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RoutesResolver] MailController {/mail}: +0ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [RouterExplorer] Mapped {/mail/send, POST} route +3ms
+[Nest] 15732  - 27/03/2026, 10:18:13 am     LOG [NestApplication] Nest application successfully started +4ms
+
+===============================================================================================
+[3:09:42 pm] Starting compilation in watch mode...
+
+[3:09:56 pm] Found 0 errors. Watching for file changes.
+
+DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [NestFactory] Starting Nest application...
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [InstanceLoader] AppModule dependencies initialized +17ms
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [InstanceLoader] ConfigHostModule dependencies initialized +1ms
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +3ms
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [InstanceLoader] UsersModule dependencies initialized +1ms
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 11392  - 27/03/2026, 3:11:05 pm     LOG [InstanceLoader] MailModule dependencies initialized +0ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RoutesResolver] UsersController {/users}: +2083ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/users, POST} route +4ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/users, GET} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/users/admin, GET} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/users/:id, GET} route +0ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RoutesResolver] AuthController {/auth}: +0ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/auth/login, POST} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/auth/logout, POST} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/auth/refresh, POST} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RoutesResolver] MailController {/mail}: +0ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [RouterExplorer] Mapped {/mail/send, POST} route +1ms
+[Nest] 11392  - 27/03/2026, 3:11:07 pm     LOG [NestApplication] Nest application successfully started +2ms
+
+===============================================================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add @nestjs/throttler
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 834, reused 744, downloaded 0, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ @nestjs/throttler 6.5.0
+
+Done in 3m 30.4s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+[7:38:23 pm] Starting compilation in watch mode...
+
+[7:38:52 pm] Found 0 errors. Watching for file changes.
+
+DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [NestFactory] Starting Nest application...
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] ConfigHostModule dependencies initialized +14ms
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] ThrottlerModule dependencies initialized +1ms
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +2ms
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] UsersModule dependencies initialized +2ms
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 16892  - 27/03/2026, 7:40:14 pm     LOG [InstanceLoader] MailModule dependencies initialized +0ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RoutesResolver] UsersController {/users}: +3067ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/users, POST} route +3ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/users, GET} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/users/admin, GET} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/users/:id, GET} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RoutesResolver] AuthController {/auth}: +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/auth/login, POST} route +0ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/auth/logout, POST} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/auth/refresh, POST} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RoutesResolver] MailController {/mail}: +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [RouterExplorer] Mapped {/mail/send, POST} route +1ms
+[Nest] 16892  - 27/03/2026, 7:40:17 pm     LOG [NestApplication] Nest application successfully started +2ms
+
+===============================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add winston nest-winston
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 835, reused 744, downloaded 1, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ nest-winston 1.10.2
+
+Done in 2m 32.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>pnpm add winston-daily-rotate-file
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +4
+++++
+Progress: resolved 839, reused 745, downloaded 4, added 4, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ winston-daily-rotate-file 5.0.0
+
+Done in 13.2s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>
+===============================================================================================
+[8:27:58 pm] File change detected. Starting incremental compilation...
+
+[8:28:00 pm] Found 0 errors. Watching for file changes.
+
+DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [NestFactory] Starting Nest application...
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] LoggerModule dependencies initialized +17ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] ConfigHostModule dependencies initialized +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +2ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] MailModule dependencies initialized +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [InstanceLoader] UsersModule dependencies initialized +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RoutesResolver] UsersController {/users}: +42ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/users, POST} route +5ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/users, GET} route +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/users/admin, GET} route +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/users/:id, GET} route +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RoutesResolver] AuthController {/auth}: +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/auth/login, POST} route +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/auth/logout, POST} route +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/auth/refresh, POST} route +1ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RoutesResolver] MailController {/mail}: +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [RouterExplorer] Mapped {/mail/send, POST} route +0ms
+[Nest] 5704  - 27/03/2026, 8:28:03 pm     LOG [NestApplication] Nest application successfully started +3ms
+
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================

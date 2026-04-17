@@ -1,0 +1,177 @@
+============================== RULES ======================================
+rules: {
+  'prettier/prettier': 'error',
+
+  // Code quality
+  'no-console': ['warn', { allow: ['warn', 'error'] }],
+  'eqeqeq': ['error', 'always'],
+  'prefer-const': 'error',
+  'no-duplicate-imports': 'error',
+
+  // TypeScript rules
+  '@typescript-eslint/no-unused-vars': [
+    'warn',
+    {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+    },
+  ],
+  '@typescript-eslint/no-explicit-any': 'warn',
+  '@typescript-eslint/explicit-function-return-type': 'warn',
+  '@typescript-eslint/no-floating-promises': 'error',
+  '@typescript-eslint/no-misused-promises': 'error',
+  '@typescript-eslint/no-throw-literal': 'error',
+
+  // General
+  'consistent-return': 'error',
+}
+============================== RULES ======================================
+ERROR CODE:
+----------
+import { readFile } from 'fs';
+import { writeFile } from 'fs'; // duplicate import
+
+let age = 25;
+
+function test(a: any, b: number) {
+  if (a == b) {
+    console.log('Equal');
+  }
+
+  fetchData(); // floating promise
+
+  if (b > 10) {
+    return true;
+  }
+}
+
+async function fetchData() {
+  return 'data';
+}
+
+throw 'error';
+=========================================================
+▶️ Run ESLint
+pnpm run lint
+
+Auto-fix:
+pnpm run lint --fix
+=========================================================
+FIX CODE:
+--------
+import { readFile, writeFile } from 'fs'; // merged imports
+
+const age = 25; // prefer-const
+
+function test(a: unknown, b: number): boolean {
+  // eqeqeq
+  if (a === b) {
+    console.warn('Equal'); // no-console (allowed)
+  }
+
+  // no-floating-promises handled
+  fetchData().catch(console.error);
+
+  if (b > 10) {
+    return true;
+  }
+
+  return false; // consistent-return
+}
+
+async function fetchData(): Promise<string> {
+  return 'data';
+}
+
+// no-throw-literal
+throw new Error('error');
+======================================================
+ERRORS-WARNINGS:
+---------------
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/common/test-eslint.ts
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\common\test-eslint.ts
+   1:10  warning  'readFile' is defined but never used. Allowed unused vars must match /^_/u                                                                                          @typescript-eslint/no-unused-vars
+   1:31  error    Delete `␍`                                                                                                                                                          prettier/prettier
+   2:1   error    'fs' import is duplicated                                                                                                                                           no-duplicate-imports
+   2:10  warning  'writeFile' is defined but never used. Allowed unused vars must match /^_/u                                                                                         @typescript-eslint/no-unused-vars
+   2:52  error    Delete `␍`                                                                                                                                                          prettier/prettier
+   3:1   error    Delete `␍`                                                                                                                                                          prettier/prettier
+   4:5   error    'age' is never reassigned. Use 'const' instead                                                                                                                      prefer-const
+   4:5   warning  'age' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                      @typescript-eslint/no-unused-vars
+   4:14  error    Delete `␍`                                                                                                                                                          prettier/prettier
+   5:1   error    Delete `␍`                                                                                                                                                          prettier/prettier
+   6:60  error    Delete `␍`                                                                                                                                                          prettier/prettier
+   7:45  error    Delete `·␍`                                                                                                                                                         prettier/prettier
+   8:51  error    Delete `␍`                                                                                                                                                          prettier/prettier
+   9:1   warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+   9:10  error    Expected to return a value at the end of function 'test'                                                                                                            consistent-return
+   9:10  warning  'test' is defined but never used. Allowed unused vars must match /^_/u                                                                                              @typescript-eslint/no-unused-vars
+   9:18  warning  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   9:35  error    Delete `␍`                                                                                                                                                          prettier/prettier
+  10:1   error    Replace `····if·(a·==·b)·{␍` with `··if·(a·==·b)·{`                                                                                                                 prettier/prettier
+  10:11  error    Expected '===' and instead saw '=='                                                                                                                                 eqeqeq
+  11:1   error    Replace `········console.log('Equal');␍` with `····console.log('Equal');`                                                                                           prettier/prettier
+  11:9   warning  Unexpected console statement. Only these console methods are allowed: warn, error                                                                                   no-console
+  12:1   error    Replace `····}␍` with `··}`                                                                                                                                         prettier/prettier
+  13:1   error    Delete `␍`                                                                                                                                                          prettier/prettier
+  14:1   error    Replace `····fetchData();·//·floating·promise␍` with `··fetchData();·//·floating·promise`                                                                           prettier/prettier
+  14:5   error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  15:1   error    Delete `␍`                                                                                                                                                          prettier/prettier
+  16:1   error    Replace `····if·(b·>·10)·{␍` with `··if·(b·>·10)·{`                                                                                                                 prettier/prettier
+  17:5   error    Replace `····return·true;␍` with `return·true;`                                                                                                                     prettier/prettier
+  18:1   error    Replace `····}␍` with `··}`                                                                                                                                         prettier/prettier
+  19:2   error    Delete `␍`                                                                                                                                                          prettier/prettier
+  20:1   error    Delete `␍`                                                                                                                                                          prettier/prettier
+  21:1   warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  21:29  error    Delete `␍`                                                                                                                                                          prettier/prettier
+  22:1   error    Replace `····return·'data';␍` with `··return·'data';`                                                                                                               prettier/prettier
+  23:2   error    Delete `␍`                                                                                                                                                          prettier/prettier
+  24:1   error    Delete `␍`                                                                                                                                                          prettier/prettier
+  25:1   error    Expected an error object to be thrown                                                                                                                               no-throw-literal
+  25:15  error    Insert `⏎`                                                                                                                                                          prettier/prettier
+
+✖ 39 problems (31 errors, 8 warnings)
+  26 errors and 0 warnings potentially fixable with the `--fix` option.
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+=========================================================================
+AFTER RUNNING --fix
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/common/test-eslint-FIXED-CODE.ts --fix
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\common\test-eslint-FIXED-CODE.ts
+   1:10  warning  'readFile' is defined but never used. Allowed unused vars must match /^_/u                                                                                          @typescript-eslint/no-unused-vars
+   2:1   error    'fs' import is duplicated                                                                                                                                           no-duplicate-imports
+   2:10  warning  'writeFile' is defined but never used. Allowed unused vars must match /^_/u                                                                                         @typescript-eslint/no-unused-vars
+   4:7   warning  'age' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                      @typescript-eslint/no-unused-vars
+   9:1   warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+   9:10  error    Expected to return a value at the end of function 'test'                                                                                                            consistent-return
+   9:10  warning  'test' is defined but never used. Allowed unused vars must match /^_/u                                                                                              @typescript-eslint/no-unused-vars
+   9:18  warning  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  10:9   error    Expected '===' and instead saw '=='                                                                                                                                 eqeqeq
+  11:5   warning  Unexpected console statement. Only these console methods are allowed: warn, error                                                                                   no-console
+  14:3   error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  21:1   warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  25:1   error    Expected an error object to be thrown                                                                                                                               no-throw-literal
+
+✖ 13 problems (5 errors, 8 warnings)
+=========================================================
+👉 --fix only fixes auto-fixable issues (formatting, spacing, some imports).
+👉 The remaining errors are logic / best-practice issues → ESLint cannot fix them automatically.
+
+🔴 Why You Still See Errors
+
+From your output:
+
+❌ These are NOT auto-fixable
+no-unused-vars
+no-explicit-any
+eqeqeq
+no-console
+no-floating-promises
+consistent-return
+no-throw-literal
+
+👉 These require manual code changes

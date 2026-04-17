@@ -1,0 +1,117 @@
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/users/users.controller-WITH-SWAGGER.ts --fix
+
+BEFORE
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
+
+AFTER
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+
+=====================================================================================
+pnpm run lint:check
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint:check
+
+> nestjs-eslint@0.0.1 lint:check E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts"
+
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\app.module.ts
+  7:1  error  '@nestjs/common' import is duplicated  no-duplicate-imports
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\common\middleware\logger.middleware.ts
+  22:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\db\drizzle.ts
+  5:1  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\filters\http-exception\http-exception.filter.ts
+  7:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  8:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  9:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\guards\jwt-auth\jwt-auth.guard.ts
+   8:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  17:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  21:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  26:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller-WITH-SWAGGER.ts
+  4:1  error  '@nestjs/common' import is duplicated  no-duplicate-imports
+  5:1  error  '@nestjs/common' import is duplicated  no-duplicate-imports
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller-without-SWAGGER.ts
+    4:1  error    '@nestjs/common' import is duplicated                                              no-duplicate-imports
+    5:1  error    '@nestjs/common' import is duplicated                                              no-duplicate-imports
+   23:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   35:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   57:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   79:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   80:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   81:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  104:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  114:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  125:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  136:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  145:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  154:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  162:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.controller.ts
+  4:1  error  '@nestjs/common' import is duplicated  no-duplicate-imports
+  5:1  error  '@nestjs/common' import is duplicated  no-duplicate-imports
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.service.spec.ts
+  7:1  error  '@nestjs/common' import is duplicated  no-duplicate-imports
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\users\users.service.ts
+    6:1  error    'drizzle-orm' import is duplicated                                                 no-duplicate-imports
+    9:1  error    '@nestjs/common' import is duplicated                                              no-duplicate-imports
+   16:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   37:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   48:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   58:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  109:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+✖ 37 problems (10 errors, 27 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+========================================================================================
+ALL ERRORS FIXED:
+----------------
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint:check
+
+> nestjs-eslint@0.0.1 lint:check E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts"
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+===========================================================================================
+FINALLY:
+-------
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint:check
+
+> nestjs-eslint@0.0.1 lint:check E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts"
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm run lint
+
+> nestjs-eslint@0.0.1 lint E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>

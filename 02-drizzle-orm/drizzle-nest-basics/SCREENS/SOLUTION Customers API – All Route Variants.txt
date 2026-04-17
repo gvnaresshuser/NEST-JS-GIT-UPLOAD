@@ -1,0 +1,113 @@
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+---
+
+# 🚀 1. CREATE PROJECT (PNPM)
+
+```bash
+pnpm create nest-app customers-app
+```
+
+👉 OR (alternative):
+
+```bash
+pnpm dlx @nestjs/cli new customers-app
+```
+
+---
+
+# 📁 2. NAVIGATE
+
+```bash
+cd customers-app
+```
+
+---
+
+# 🧩 3. GENERATE MODULE / CONTROLLER / SERVICE
+
+👉 With pnpm, use:
+
+```bash
+pnpm nest g module modules/customers
+pnpm nest g controller modules/customers
+pnpm nest g service modules/customers
+```
+
+---
+
+# ⚠️ If `pnpm nest` not working
+
+👉 Use this instead:
+
+```bash
+pnpm dlx @nestjs/cli g module modules/customers
+pnpm dlx @nestjs/cli g controller modules/customers
+pnpm dlx @nestjs/cli g service modules/customers
+```
+
+---
+
+# 📦 4. INSTALL PACKAGES (PNPM STYLE)
+
+```bash
+pnpm add @nestjs/config
+pnpm add drizzle-orm pg
+```
+
+---
+
+# 📁 5. CREATE DTO FILES
+
+👉 Windows:
+
+```bash
+mkdir src\modules\customers\dto
+type nul > src\modules\customers\dto\params.dto.ts
+type nul > src\modules\customers\dto\search-customers.dto.ts
+```
+
+---
+
+# ▶️ 6. RUN PROJECT
+
+```bash
+pnpm start:dev
+```
+
+---
+
+# 🎯 7. COMPLETE PNPM COMMAND SUMMARY
+
+```bash
+pnpm create nest-app customers-app
+cd customers-app
+
+pnpm dlx @nestjs/cli g module modules/customers
+pnpm dlx @nestjs/cli g controller modules/customers
+pnpm dlx @nestjs/cli g service modules/customers
+
+pnpm add @nestjs/config drizzle-orm pg
+
+pnpm start:dev
+```
+
+---
+
+# 🧠 IMPORTANT DIFFERENCE (VERY SIMPLE)
+
+| Task    | npm               | pnpm           |
+| ------- | ----------------- | -------------- |
+| Install | npm install       | pnpm add       |
+| Run     | npm run start:dev | pnpm start:dev |
+| CLI     | npx nest          | pnpm dlx nest  |
+
+---
+
+# 🎓 TEACHING LINE
+
+👉
+**“pnpm is just a faster npm — NestJS code does not change, only commands change.”**
+
+---
+
+“package.json tells WHAT to install, pnpm-lock.yaml tells EXACTLY HOW to install.

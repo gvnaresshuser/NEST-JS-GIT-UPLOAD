@@ -1,0 +1,447 @@
+Test Create - REGISTER
+POST - http://localhost:3000/users
+{
+ "name":"GV Naressh",
+ "email":"gvnaressh@gmail.com",
+ "password":"123456"
+}
+RESPONSE:
+--------	
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "GV Naressh",
+    "email": "gvnaressh@gmail.com",
+    "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+  },
+  "timestamp": "2026-04-07T10:07:31.151Z",
+  "executionTime": "1323ms"
+}
+
+
+
+# 🧪 Test Login
+
+```http
+POST http://localhost:3000/users/login
+```
+ALREADY SUPPLYING BODY IN THE CODE...FOR TESTING PURPOSE
+{
+ "email":"gvnaressh@gmail.com",
+ "password":"123456"
+}
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": {
+    "message": "Login successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0",
+    "user": {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com"
+    }
+  },
+  "timestamp": "2026-04-07T10:09:20.991Z",
+  "executionTime": "1155ms"
+}
+
+------------------------------------
+
+# 🧪 3. Test
+
+Call any API:
+
+🔹 1. Normal GET (No JWT)
+GET http://localhost:3000/users
+
+✔️ Should return all users
+```
+RESPONSE:
+---------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:18:37.258Z",
+  "executionTime": "2051ms"
+}
+
+-------------------------------------------------
+🔹 2. Filter (Query)
+GET http://localhost:3000/users/search?search=ssh
+
+✔️ Tests:
+
+Query params
+ilike filtering
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:20:52.420Z",
+  "executionTime": "65ms"
+}
+
+🔹 3. JWT Protected Route
+GET http://localhost:3000/users/secure
+Authorization: Bearer <your_token>
+
+✔️ Tests:
+
+JWT Guard
+
+❌ Without token → Unauthorized
+
+WITHOUT TOKEN
+-------------
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "2026-04-07T10:10:34.993Z",
+  "path": "/users"
+}
+WITH TOKEN
+----------
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:22:23.240Z",
+  "executionTime": "2123ms"
+}
+
+🔹 4. JWT + Filter
+GET http://localhost:3000/users/secure/search?search=naressh
+Authorization: Bearer <token>
+
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0
+
+✔️ Tests:
+
+JWT + filtering together
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:23:22.544Z",
+  "executionTime": "872ms"
+}
+
+
+🔹 5. ParseIntPipe
+GET http://localhost:3000/users/1
+Authorization: Bearer <token>
+
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0
+
+✔️ Tests:
+
+ParseIntPipe
+JWT
+
+❌ Try:
+
+GET /users/abc
+
+👉 You’ll get:
+
+Validation failed (numeric string is expected)
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "GV Naressh",
+    "email": "gvnaressh@gmail.com",
+    "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+  },
+  "timestamp": "2026-04-07T10:25:01.999Z",
+  "executionTime": "747ms"
+}
+
+GET http://localhost:3000/users/abc
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "Validation failed (numeric string is expected)",
+  "timestamp": "2026-04-07T10:25:23.660Z",
+  "path": "/users/abc"
+}
+
+GET http://localhost:3000/users/1
+WITH INVALID TOKEN - CHANGE TOKEN A BIT
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "Invalid token",
+  "timestamp": "2026-04-07T10:26:13.118Z",
+  "path": "/users/1"
+}
+
+MIDDLEWARE - TESTING:
+--------------------
+LoggerMiddleware
+E:\MURALI\NEST-JS\testapp\src\common\middleware\logger.middleware.ts
+
+ADD THIS IN app.module.ts
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*'); // apply to all routes - .forRoutes('users'); - ONLY for users route
+  }
+  
+CHECKED CONSOLE...FOR MIDDLEWARE TESTING
+[GET] /users - 12ms
+---
+
+JWT-GAURD-TESTING:
+-----------------
+JwtAuthGuard
+E:\MURALI\NEST-JS\testapp\src\users\guards\jwt-auth\jwt-auth.guard.ts
+
+ADD THIS IN app.users.controller.ts
+
+   // ✅ 3. JWT PROTECTED ROUTE
+    @Get('secure')
+    @UseGuards(JwtAuthGuard)
+    findAllSecure() {
+        console.log("[ROUTE] - GET /users/secure (JWT)");
+        return this.usersService.findAll();
+    }
+	
+GET http://localhost:3000/users/secure
+Authorization: Bearer <your_token>
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0
+
+✔️ Tests:
+
+JWT Guard
+
+❌ Without token → Unauthorized
+
+WITHOUT TOKEN
+-------------
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "2026-04-07T10:10:34.993Z",
+  "path": "/users"
+}
+WITH TOKEN
+----------
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:22:23.240Z",
+  "executionTime": "2123ms"
+}
+
+FILTER-TESTING:
+==============
+
+E:\MURALI\NEST-JS\testapp\src\users\filters\http-exception\http-exception.filter.ts
+
+ADD THIS IN main.ts
+app.useGlobalFilters(new HttpExceptionFilter());
+
+@UseGuards(JwtAuthGuard)
+ @Get(':id')
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.usersService.findOne(id);
+    }
+
+TRY TO DO GET OPERATION WITHOUT SUPPLYING TOKEN - TO GENERATE ERROR
+
+GET http://localhost:3000/users
+	
+WITHOUT TOKEN:
+-------------
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "2026-04-07T02:35:05.843Z",
+  "path": "/users/1"
+}
+
+INTERCEPTORS-TESTING:
+--------------------
+ResponseInterceptor
+E:\MURALI\NEST-JS\testapp\src\users\interceptors\response.interceptor.ts
+
+ADD THIS IN main.ts
+app.useGlobalInterceptors(new ResponseInterceptor());
+
+GET http://localhost:3000/users
+
+
+WITHOUT TOKEN:
+-------------
+NO TOKEN PROVIDED
+
+
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "2026-04-07T02:54:03.721Z",
+  "path": "/users"
+}
+
+
+WITH TOKEN:
+-----------
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTUyODIzMywiZXhwIjoxNzc1NTMxODMzfQ.0K2tohUH0A7E01Vxx1YgHDoNDeHgamktClf6o4gSu6Q
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [],
+  "timestamp": "2026-04-07T02:56:27.699Z",
+  "executionTime": "2267ms"
+}
+
+PIPES-TESTING:
+-------------
+FilterPipe
+E:\MURALI\NEST-JS\testapp\src\users\pipes\filter.pipe.ts
+
+ADD THIS IN app.users.ts
+ //📄 5. Protect Routes
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @UsePipes(FilterPipe)
+    findAll(@Query() query: { search?: string; }) {
+        return this.usersService.findAllFiltered(query.search);
+    }
+
+WITH TOKEN:
+----------
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTUyODIzMywiZXhwIjoxNzc1NTMxODMzfQ.0K2tohUH0A7E01Vxx1YgHDoNDeHgamktClf6o4gSu6Q
+
+GET http://localhost:3000/users?search=h3	
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 3,
+      "name": "Naresh3",
+      "email": "naresh@gmail.com"
+    }
+  ],
+  "timestamp": "2026-04-07T03:00:12.965Z",
+  "executionTime": "62ms"
+}	
+
+
+CUSTOM DECORATOR-TESTING:
+------------------------
+GET http://localhost:3000/users/profile
+
+GetUser
+E:\MURALI\NEST-JS\testapp\src\users\decorators\get-user.decorator.ts
+
+ADD THIS IN - users.controller.ts
+
+ @Get('profile')
+    @UseGuards(JwtAuthGuard)
+    getProfile(@GetUser() user: any) {
+        return {
+            message: 'User profile fetched successfully',
+            user,
+        };
+    }
+
+WITH TOKEN:
+----------
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTUyODIzMywiZXhwIjoxNzc1NTMxODMzfQ.0K2tohUH0A7E01Vxx1YgHDoNDeHgamktClf6o4gSu6Q
+	
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": {
+    "message": "User profile fetched successfully",
+    "user": {
+      "id": 1,
+      "name": "Naresh",
+      "iat": 1775531757,
+      "exp": 1775535357
+    }
+  },
+  "timestamp": "2026-04-07T03:32:35.948Z",
+  "executionTime": "1ms"
+}
+
+-----------------------
+MIDDLEWARE
+JWT-GAURD
+FILTERS-EXCEPTION
+INTERFACES
+INTERCEPTORS-RESPONSE
+PIPES-FILTER PIPE 
+-----------------------
+
+https://local.drizzle.studio

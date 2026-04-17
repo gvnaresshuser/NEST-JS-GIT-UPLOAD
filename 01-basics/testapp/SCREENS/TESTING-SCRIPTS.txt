@@ -1,0 +1,458 @@
+WHAT WE WILL LEARN:
+------------------
+MIDDLEWARE
+GAURDS
+PIPES
+INTERCEPTORS
+FILTERS
+INTERFACES
+DECORATORS
+
+
+implements what - functions available to use - finally configure - use in controller,app.module.ts,main.ts
+
+FROM ROOT OF PROJECT FOLDER RUN THE FOLLOWING COMMAND TO INSTALL ALL DEPENDENCIES FROM package.json
+pnpm install
+
+Test Create - REGISTER
+POST - http://localhost:3000/users
+{
+ "name":"GV Naressh",
+ "email":"gvnaressh@gmail.com",
+ "password":"123456"
+}
+RESPONSE:
+--------	
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "GV Naressh",
+    "email": "gvnaressh@gmail.com",
+    "password": "$2b$10$EyrnL4luqIC4TDEJgexjs.i7/1yO/uY31p5wnvPrlgus6FUUl1Ybm"
+  },
+  "timestamp": "2026-04-08T03:24:54.716Z",
+  "executionTime": "1456ms"
+}
+
+
+
+# 🧪 Test Login - LOGIN
+
+```http
+POST http://localhost:3000/users/login
+```
+ALREADY SUPPLYING BODY IN THE CODE...FOR TESTING PURPOSE
+{
+ "email":"gvnaressh@gmail.com",
+ "password":"123456"
+}
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": {
+    "message": "Login successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU2MTg3NjUsImV4cCI6MTc3NTYyMjM2NX0.10FKkLRbbLpHYqyjkO3t8R64UM-vmQSfws76tri7Rgg",
+    "user": {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com"
+    }
+  },
+  "timestamp": "2026-04-08T03:26:05.874Z",
+  "executionTime": "1267ms"
+}
+
+------------------------------------
+MIDDLEWARE - TESTING:
+--------------------
+LoggerMiddleware
+E:\MURALI\NEST-JS\testapp\src\common\middleware\logger.middleware.ts
+
+ADD THIS IN app.module.ts
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*'); // apply to all routes - .forRoutes('users'); - ONLY for users route
+  }
+  
+CHECKED CONSOLE...FOR MIDDLEWARE TESTING
+[GET] /users - 2155ms
+---
+
+INTERCEPTORS-TESTING:
+--------------------
+ResponseInterceptor
+E:\MURALI\NEST-JS\testapp\src\users\interceptors\response.interceptor.ts
+
+ADD THIS IN main.ts
+app.useGlobalInterceptors(new ResponseInterceptor());
+
+GET http://localhost:3000/users
+
+
+# 🧪 3. Test
+
+Call any API:
+
+🔹 1. Normal GET (No JWT)
+GET http://localhost:3000/users
+
+✔️ Should return all users
+```
+RESPONSE:
+---------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:18:37.258Z",
+  "executionTime": "2051ms"
+}
+
+-------------------------------------------------
+
+FILTER-TESTING:
+==============
+
+E:\MURALI\NEST-JS\testapp\src\users\filters\http-exception\http-exception.filter.ts
+
+ADD THIS IN main.ts
+app.useGlobalFilters(new HttpExceptionFilter());
+
+// ✅ 2. FILTER (Query Param)
+ @Get('search')
+    findAllFilter(@Query('search') search?: string) {
+        console.log("[ROUTE] - GET /users/search?search=");
+        return this.usersService.findAllFiltered(search);
+    }
+	
+🔹 2. Filter (Query)
+GET http://localhost:3000/users/search?search=ssh
+
+✔️ Tests:
+
+Query params
+ilike filtering
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:20:52.420Z",
+  "executionTime": "65ms"
+}
+
+
+JWT-GAURD-TESTING:
+-----------------
+JwtAuthGuard
+E:\MURALI\NEST-JS\testapp\src\users\guards\jwt-auth\jwt-auth.guard.ts
+
+ADD THIS IN app.users.controller.ts
+
+   // ✅ 3. JWT PROTECTED ROUTE
+   @Get('secure')
+    @UseGuards(JwtAuthGuard)
+    findAllSecure() {
+        console.log("[ROUTE] - GET /users/secure (JWT)");
+        return this.usersService.findAll();
+    }
+
+🔹 3. JWT Protected Route
+GET http://localhost:3000/users/secure
+Authorization: Bearer <your_token>
+
+✔️ Tests:
+
+JWT Guard
+
+❌ Without token → Unauthorized
+
+WITHOUT TOKEN
+-------------
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "2026-04-07T10:10:34.993Z",
+  "path": "/users"
+}
+WITH TOKEN
+----------
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:22:23.240Z",
+  "executionTime": "2123ms"
+}
+
+🔹 4. JWT + Filter
+GET http://localhost:3000/users/secure/search?search=naressh
+Authorization: Bearer <token>
+
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NTY1NjAsImV4cCI6MTc3NTU2MDE2MH0.FuXTg2_CgbFyJbZNkYeKGEDpR-VcwcmHBtEOLRM85Q0
+
+// ✅ 4. JWT + FILTER COMBINED
+    @Get('secure/search')
+    @UseGuards(JwtAuthGuard)
+    findAllSecureFilter(@Query('search') search?: string) {
+        console.log("[ROUTE] - GET /users/secure/search");
+        return this.usersService.findAllFiltered(search);
+    }
+	
+✔️ Tests:
+
+JWT + filtering together
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T10:23:22.544Z",
+  "executionTime": "872ms"
+}
+
+
+//🔹 5. Custom Pipe Route(Separate);
+    @Get('custom/:id')
+    findOneCustom(
+        @Param('id', ParseIntCustomPipe) id: number
+    ) {
+        console.log('[ROUTE] - Custom ParseIntCustomPipe');
+        return this.usersService.findOne(id);
+    }
+
+✅ 5. Custom Pipe
+GET http://localhost:3000/users/custom/1
+
+✔️ Uses your custom pipe
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "GV Naressh",
+    "email": "gvnaressh@gmail.com",
+    "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+  },
+  "timestamp": "2026-04-07T10:51:13.896Z",
+  "executionTime": "1120ms"
+}
+
+	ALWAYS KEEP STATIC PIPES AND MIXED PIPE ABOVE DYNAMIC PIPE
+
+// ✅ 6. GET BY ID (ParseIntPipe + JWT)
+   
+GET http://localhost:3000/users/1
+Authorization: Bearer <token>
+
+Auth-->Bearer-->Bearer Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NjY0NTUsImV4cCI6MTc3NTU3MDA1NX0.PV7KO_U-0pKZ-JOwFbVXnNsT4fvBNU-oqJSUcfJSc8I
+
+ @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        console.log("[ROUTE] - GET /users/:id");
+        return this.usersService.findOne(id);
+    }
+	
+✔️ Tests:
+
+ParseIntPipe
+JWT
+
+❌ Try:
+
+GET /users/abc
+
+👉 You’ll get:
+
+Validation failed (numeric string is expected)
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "GV Naressh",
+    "email": "gvnaressh@gmail.com",
+    "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+  },
+  "timestamp": "2026-04-07T10:25:01.999Z",
+  "executionTime": "747ms"
+}
+
+GET http://localhost:3000/users/abc
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "Validation failed (numeric string is expected)",
+  "timestamp": "2026-04-07T10:25:23.660Z",
+  "path": "/users/abc"
+}
+
+GET http://localhost:3000/users/1
+WITH INVALID TOKEN - CHANGE TOKEN A BIT
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "Invalid token",
+  "timestamp": "2026-04-07T10:26:13.118Z",
+  "path": "/users/1"
+}
+
+SUPPOSE WE GIVE A USER ID THAT IS NOT AVAILABLE IN DATABASE TABLE..FOR EXAMPLE USER ID=2
+GET http://localhost:3000/users/2
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "User with ID 2 not found",
+  "timestamp": "2026-04-07T13:00:23.880Z",
+  "path": "/users/2"
+}
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+INTERCEPTORS-TESTING:
+--------------------
+ResponseInterceptor
+E:\MURALI\NEST-JS\testapp\src\users\interceptors\response.interceptor.ts
+
+ADD THIS IN main.ts
+app.useGlobalInterceptors(new ResponseInterceptor());
+
+GET http://localhost:3000/users
+
+
+WITHOUT TOKEN:
+-------------
+NO TOKEN PROVIDED
+
+
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "2026-04-07T02:54:03.721Z",
+  "path": "/users"
+}
+
+
+WITH TOKEN:
+-----------
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NjY0NTUsImV4cCI6MTc3NTU3MDA1NX0.PV7KO_U-0pKZ-JOwFbVXnNsT4fvBNU-oqJSUcfJSc8I
+
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com",
+      "password": "$2b$10$fmHa8y4ektLX/w0yHDbb8OhWdlilVdWRn7m1LumVg39db30cr98nO"
+    }
+  ],
+  "timestamp": "2026-04-07T13:02:37.956Z",
+  "executionTime": "985ms"
+}
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+CUSTOM DECORATOR-TESTING:
+------------------------
+GET http://localhost:3000/users/profile
+
+GetUser
+E:\MURALI\NEST-JS\testapp\src\users\decorators\get-user.decorator.ts
+
+ADD THIS IN - users.controller.ts
+
+ @Get('profile')
+    @UseGuards(JwtAuthGuard)
+    getProfile(@GetUser() user: any) {
+        return {
+            message: 'User profile fetched successfully',
+            user,
+        };
+    }
+
+WITH TOKEN:
+----------
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU1NjY0NTUsImV4cCI6MTc3NTU3MDA1NX0.PV7KO_U-0pKZ-JOwFbVXnNsT4fvBNU-oqJSUcfJSc8I
+	
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": {
+    "message": "User profile fetched successfully",
+    "user": {
+      "id": 1,
+      "name": "GV Naressh",
+      "iat": 1775566455,
+      "exp": 1775570055
+    }
+  },
+  "timestamp": "2026-04-07T13:03:18.419Z",
+  "executionTime": "2ms"
+}
+
+-----------------------
+MIDDLEWARE
+JWT-GAURD
+FILTERS-EXCEPTION
+INTERFACES
+INTERCEPTORS-RESPONSE
+PIPES-FILTER PIPE 
+-----------------------
+
+https://local.drizzle.studio

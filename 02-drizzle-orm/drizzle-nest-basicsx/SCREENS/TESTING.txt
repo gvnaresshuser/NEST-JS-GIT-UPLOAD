@@ -1,0 +1,261 @@
+Test URLs for NestJS + Drizzle CRUD.
+
+---
+
+# 🌐 Base URL
+
+```bash
+http://localhost:3000/users
+```
+
+---
+STUDIO:
+-------
+pnpm db:studio
+OPEN IN CHROME BROWSER
+https://local.drizzle.studio
+
+select * from nextjs_users_new;
+
+# 🧪 1. CREATE User
+
+### ✅ URL
+
+```bash
+POST http://localhost:3000/users
+```
+
+### ✅ Body (JSON)
+
+```json
+{
+  "name": "Naresh",
+  "email": "naresh@test.com",
+  "password": "123456",
+  "profession":"Engineer",
+  "address":"Plot:186/12 MVP COLONY"
+}
+```
+RESPONSE:
+---------
+{
+  "id": 1,
+  "name": "Naresh",
+  "email": "naresh@test.com",
+  "password": "123456",
+  "address": "Plot:186/12 MVP COLONY",
+  "profession": "Engineer"
+}
+---------------
+{
+  "name": "John",
+  "email": "john@test.com",
+  "password": "654321",
+  "profession":"Assistant",
+  "address":"Plot:12/186 ABC COLONY"
+}
+
+### 🧪 cURL
+
+```bash
+curl -X POST http://localhost:3000/users \
+-H "Content-Type: application/json" \
+-d '{"name":"Naresh","email":"naresh@test.com","password":"123456"}'
+```
+
+---
+
+# 📥 2. GET All Users
+
+### ✅ URL
+
+```bash
+GET http://localhost:3000/users
+```
+RESPONSE:
+---------
+[
+  {
+    "id": 1,
+    "name": "Naresh",
+    "email": "naresh@test.com",
+    "password": "123456",
+    "address": "Plot:186/12 MVP COLONY",
+    "profession": "Engineer"
+  },
+  {
+    "id": 2,
+    "name": "John",
+    "email": "john@test.com",
+    "password": "654321",
+    "address": "Plot:12/186 ABC COLONY",
+    "profession": "Assistant"
+  }
+]
+
+### 🧪 Browser / Postman
+
+Just open:
+
+```bash
+http://localhost:3000/users
+```
+
+---
+
+# 🔍 3. GET User by ID
+
+### ✅ URL
+
+```bash
+GET http://localhost:3000/users/2
+```
+RESPONSE:
+--------
+{
+  "id": 2,
+  "name": "John",
+  "email": "john@test.com",
+  "password": "654321",
+  "address": "Plot:12/186 ABC COLONY",
+  "profession": "Assistant"
+}
+
+---
+
+# ✏️ 4. UPDATE User
+
+### ✅ URL
+
+```bash
+PATCH http://localhost:3000/users/1
+```
+
+### ✅ Body
+
+```json
+{
+  "name": "Naresh Updated Name"
+}
+```
+RESPONSE:
+--------
+{
+  "name": "Updated Name",
+  "email": "test_naresh@test.com",
+  "password": "111111"
+}
+
+### 🧪 cURL
+
+```bash
+curl -X PATCH http://localhost:3000/users/1 \
+-H "Content-Type: application/json" \
+-d '{"name":"Updated Name"}'
+```
+
+---
+
+# ❌ 5. DELETE User
+
+### ✅ URL
+
+```bash
+DELETE http://localhost:3000/users/2
+```
+RESPONSE:
+--------
+{
+  "message": "User deleted successfully",
+  "data": {
+    "id": 3,
+    "name": "Updated Name",
+    "email": "naresh@test.com",
+    "password": "123456"
+  }
+}
+
+### 🧪 cURL
+
+```bash
+curl -X DELETE http://localhost:3000/users/1
+```
+
+---
+
+# ⚠️ Validation Test Cases
+
+### ❌ Missing name
+
+```json
+{
+  "email": "test@test.com",
+  "password": "123456"
+}
+```
+
+👉 Expected:
+
+```json
+{
+  "message": ["Name is required"]
+}
+```
+
+---
+
+### ❌ Invalid email
+
+```json
+{
+  "name": "Test",
+  "email": "wrong-email",
+  "password": "123456"
+}
+```
+
+---
+
+### ❌ Short password
+
+```json
+{
+  "name": "Test",
+  "email": "test@test.com",
+  "password": "123"
+}
+```
+
+---
+
+# 🧪 Quick Testing Tools
+
+You can use:
+
+* Postman
+* Thunder Client (VS Code)
+* curl (terminal)
+
+---
+
+# 🚀 Bonus (Real Testing Flow)
+
+1. Create user
+2. Get all users
+3. Get user by ID
+4. Update user
+5. Delete user
+
+---
+
+# 🎯 Example Full Flow
+
+```bash
+POST   /users
+GET    /users
+GET    /users/1
+PATCH  /users/1
+DELETE /users/1
+```
+
+---

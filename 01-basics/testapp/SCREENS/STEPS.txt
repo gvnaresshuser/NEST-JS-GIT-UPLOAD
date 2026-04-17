@@ -1,0 +1,378 @@
+pnpm add drizzle-orm pg @types/pg dotenv
+pnpm add -D drizzle-kit
+pnpm add @nestjs/config
+pnpm add class-validator class-transformer
+pnpm add jsonwebtoken @types/jsonwebtoken
+pnpm add bcrypt
+pnpm add -D @types/bcrypt
+======================================================================================================
+nest g module users
+nest g controller users
+nest g service users
+======================================================================================================
+mkdir src\users\dto
+mkdir src\users\pipes
+mkdir src\users\guards
+mkdir src\users\decorators
+mkdir src\users\interceptors
+mkdir src\users\filters
+mkdir src\users\interface
+======================================================================================================
+nest g pipe users/pipes/parse-int-custom
+nest g guard users/guards/jwt-auth
+nest g interceptor users/interceptors/logging
+nest g filter users/filters/http-exception
+======================================================================================================
+
+E:\MURALI\NEST-JS\testapp>pnpm drizzle-kit generate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\testapp\drizzle.config.ts'
+1 tables
+nestjs_concepts_users 3 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0000_sturdy_maggott.sql 🚀
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================================
+======================================================================================================
+======================================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS\testapp>code .
+
+E:\MURALI\NEST-JS\testapp>pnpm add drizzle-orm pg
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +15
++++++++++++++++
+Progress: resolved 689, reused 670, downloaded 0, added 15, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ drizzle-orm 0.45.2
++ pg 8.20.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17.                                             │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 3m 23.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>pnpm add -D drizzle-kit
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +13
++++++++++++++
+Progress: resolved 773, reused 683, downloaded 0, added 13, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ drizzle-kit 0.31.10
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                    │
+│   Ignored build scripts: @nestjs/core@11.1.17, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.4.   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.           │
+│                                                                                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 11.4s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>pnpm add @nestjs/config
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +4
+++++
+Progress: resolved 777, reused 687, downloaded 0, added 4, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ @nestjs/config 4.0.3
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                    │
+│   Ignored build scripts: @nestjs/core@11.1.17, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.4.   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.           │
+│                                                                                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 7.3s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>pnpm add class-validator class-transformer
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Already up to date
+Progress: resolved 777, reused 687, downloaded 0, added 0, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+Done in 5s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>pnpm add jsonwebtoken @types/jsonwebtoken
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +14
+++++++++++++++
+Progress: resolved 791, reused 701, downloaded 0, added 14, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ @types/jsonwebtoken 9.0.10
++ jsonwebtoken 9.0.3
+
+Done in 5.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================
+
+E:\MURALI\NEST-JS\testapp>nest g module users
+CREATE src/users/users.module.ts (86 bytes)
+UPDATE src/app.module.ts (322 bytes)
+
+E:\MURALI\NEST-JS\testapp>nest g controller users
+CREATE src/users/users.controller.ts (103 bytes)
+CREATE src/users/users.controller.spec.ts (503 bytes)
+UPDATE src/users/users.module.ts (174 bytes)
+
+E:\MURALI\NEST-JS\testapp>nest g service users
+CREATE src/users/users.service.ts (93 bytes)
+CREATE src/users/users.service.spec.ts (471 bytes)
+UPDATE src/users/users.module.ts (251 bytes)
+
+======================================================================================
+
+E:\MURALI\NEST-JS\testapp>mkdir src\users\dto
+
+E:\MURALI\NEST-JS\testapp>mkdir src\users\pipes
+
+E:\MURALI\NEST-JS\testapp>mkdir src\users\guards
+
+E:\MURALI\NEST-JS\testapp>mkdir src\users\decorators
+
+E:\MURALI\NEST-JS\testapp>mkdir src\users\interceptors
+
+E:\MURALI\NEST-JS\testapp>mkdir src\users\filters
+
+E:\MURALI\NEST-JS\testapp>mkdir src\users\interface
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================
+
+E:\MURALI\NEST-JS\testapp>nest g pipe users/pipes/parse-int-custom
+CREATE src/users/pipes/parse-int-custom/parse-int-custom.pipe.ts (238 bytes)
+CREATE src/users/pipes/parse-int-custom/parse-int-custom.pipe.spec.ts (205 bytes)
+
+E:\MURALI\NEST-JS\testapp>nest g guard users/guards/jwt-auth
+CREATE src/users/guards/jwt-auth/jwt-auth.guard.ts (313 bytes)
+CREATE src/users/guards/jwt-auth/jwt-auth.guard.spec.ts (180 bytes)
+
+E:\MURALI\NEST-JS\testapp>nest g interceptor users/interceptors/logging
+CREATE src/users/interceptors/logging/logging.interceptor.ts (322 bytes)
+CREATE src/users/interceptors/logging/logging.interceptor.spec.ts (203 bytes)
+
+E:\MURALI\NEST-JS\testapp>nest g filter users/filters/http-exception
+CREATE src/users/filters/http-exception/http-exception.filter.ts (201 bytes)
+CREATE src/users/filters/http-exception/http-exception.filter.spec.ts (208 bytes)
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================
+
+E:\MURALI\NEST-JS\testapp>pnpm add jsonwebtoken
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Already up to date
+Progress: resolved 791, reused 701, downloaded 0, added 0, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+Done in 5m 36.1s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================
+
+E:\MURALI\NEST-JS\testapp>code .
+
+E:\MURALI\NEST-JS\testapp>pnpm add dotenv
+
+   ╭──────────────────────────────────────────╮
+   │                                          │
+   │   Update available! 10.32.1 → 10.33.0.   │
+   │   Changelog: https://pnpm.io/v/10.33.0   │
+   │     To update, run: pnpm add -g pnpm     │
+   │                                          │
+   ╰──────────────────────────────────────────╯
+
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 792, reused 701, downloaded 1, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ dotenv 17.4.1
+
+Done in 4m 7.1s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================
+[9:11:39 pm] File change detected. Starting incremental compilation...
+
+[9:11:42 pm] Found 0 errors. Watching for file changes.
+
+DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [NestFactory] Starting Nest application...
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [InstanceLoader] ConfigHostModule dependencies initialized +32ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [InstanceLoader] AppModule dependencies initialized +1ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [InstanceLoader] UsersModule dependencies initialized +1ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RoutesResolver] AppController {/}: +24ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/, GET} route +7ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RoutesResolver] UsersController {/users}: +1ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/users/profile, GET} route +2ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/users/me, GET} route +2ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/users, POST} route +1ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/users/login, POST} route +1ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/users, GET} route +2ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/users/:id, GET} route +4ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +2ms
+[Nest] 22352  - 01/04/2026, 9:11:57 pm     LOG [NestApplication] Nest application successfully started +5ms
+^C^CTerminate batch job (Y/N)? ^C
+^C ELIFECYCLE  Command failed with exit code 3221225786.
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================
+E:\MURALI\NEST-JS\testapp>pnpm add bcrypt
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +3
++++
+Progress: resolved 795, reused 705, downloaded 0, added 3, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ bcrypt 6.0.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: bcrypt@6.0.0.                                                     │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 3m 52.6s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>pnpm add -D @types/bcrypt
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 796, reused 706, downloaded 0, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ @types/bcrypt 6.0.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: bcrypt@6.0.0.                                                     │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 4.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testapp>
+======================================================================================
+
+E:\MURALI\NEST-JS\testapp>pnpm db:generate
+
+> testapp@0.0.1 db:generate E:\MURALI\NEST-JS\testapp
+> pnpm drizzle-kit generate
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\testapp\drizzle.config.ts'
+1 tables
+nestjs_concepts_users 4 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0000_quick_baron_zemo.sql 🚀
+
+E:\MURALI\NEST-JS\testapp>pnpm db:migrate
+
+> testapp@0.0.1 db:migrate E:\MURALI\NEST-JS\testapp
+> pnpm drizzle-kit migrate
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\testapp\drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] migrations applied successfully!
+E:\MURALI\NEST-JS\testapp>pnpm db:studio
+
+> testapp@0.0.1 db:studio E:\MURALI\NEST-JS\testapp
+> pnpm drizzle-kit studio
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\testapp\drizzle.config.ts'
+Using 'pg' driver for database querying
+
+ Warning  Drizzle Studio is currently in Beta. If you find anything that is not working as expected or should be improved, feel free to create an issue on GitHub: https://github.com/drizzle-team/drizzle-kit-mirror/issues/new or write to us on Discord: https://discord.gg/WcRKz2FFxN
+
+Drizzle Studio is up and running on https://local.drizzle.studio
+
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================
+======================================================================================

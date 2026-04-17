@@ -1,0 +1,37 @@
+[5:57:02 am] File change detected. Starting incremental compilation...
+
+[5:57:04 am] Found 0 errors. Watching for file changes.
+
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [NestFactory] Starting Nest application...
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [InstanceLoader] AppModule dependencies initialized +13ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [InstanceLoader] UsersModule dependencies initialized +0ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RoutesResolver] AppController {/}: +6ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RouterExplorer] Mapped {/, GET} route +3ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RoutesResolver] UsersController {/users}: +0ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RouterExplorer] Mapped {/users, POST} route +1ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RouterExplorer] Mapped {/users, GET} route +1ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RouterExplorer] Mapped {/users/:id, GET} route +1ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +1ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +3ms
+[Nest] 23140  - 03/04/2026, 5:57:06 am     LOG [NestApplication] Nest application successfully started +2ms
+^C
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm add @nestjs/config
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +4
+++++
+Progress: resolved 784, reused 694, downloaded 0, added 4, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ @nestjs/config 4.0.3
+
+Done in 3m 11.1s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>

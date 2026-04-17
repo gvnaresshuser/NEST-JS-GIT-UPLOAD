@@ -1,0 +1,219 @@
+Step-by-step with Drizzle Kit (pnpm):
+
+---
+
+# ✅ Current State
+
+You already have a migration like:
+
+```
+0000_famous_the_renegades.sql
+```
+
+Table:
+
+```sql
+CREATE TABLE "nestjs_users_new" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "name" text,
+  "email" text,
+  "password" text,
+  "address" text,
+  "profession" text
+);
+```
+
+---
+
+# 🧑‍🏫 TASK FOR STUDENTS
+
+👉 Add a new column: `occupation`
+
+---
+
+# ✅ STEP 1: Update Schema File
+
+In your `schema.ts` (or wherever your table is defined):
+
+# BEFORE
+
+```ts
+export const users = pgTable("nestjs_users_new", {
+  id: serial("id").primaryKey(),
+  name: text("name"),
+  email: text("email"),
+  password: text("password"),
+  address: text("address"),
+  profession: text("profession"),
+});
+```
+
+# AFTER (add occupation)
+
+```ts
+export const users = pgTable("nestjs_users_new", {
+  id: serial("id").primaryKey(),
+  name: text("name"),
+  email: text("email"),
+  password: text("password"),
+  address: text("address"),
+  profession: text("profession"),
+  occupation: text("occupation"), // ✅ NEW FIELD
+});
+```
+
+---
+
+# ✅ STEP 2: Generate Migration
+
+Run:
+
+```bash
+pnpm drizzle-kit generate
+```
+
+👉 This will create a new migration file like:
+
+```
+0001_awesome_something.sql
+```
+
+# Generated SQL (expected)
+
+```sql
+ALTER TABLE "nestjs_users_new"
+ADD COLUMN "occupation" text;
+```
+
+---
+
+# ✅ STEP 3: Apply Migration
+
+```bash
+pnpm drizzle-kit migrate
+```
+
+✅ Now DB is updated with new column
+
+---
+
+# 🔍 Verify (Optional)
+
+Run:
+
+```sql
+SELECT * FROM nestjs_users_new;
+```
+
+You should see the `occupation` column.
+
+---
+
+# 🔄 STEP 4: Rollback Migration (IMPORTANT 🔥)
+
+👉 Drizzle **does NOT support automatic rollback like TypeORM**
+
+So you must **manually rollback**
+
+---
+
+ ✅ OPTION 1: Create Reverse Migration (BEST PRACTICE)
+
+# Step A: Remove field from schema
+
+```ts
+// remove occupation
+```
+
+---
+
+# Step B: Generate again
+
+```bash
+pnpm drizzle-kit generate
+```
+
+👉 New migration:
+
+```
+0002_remove_occupation.sql
+```
+
+# SQL will be:
+
+```sql
+ALTER TABLE "nestjs_users_new"
+DROP COLUMN "occupation";
+```
+
+---
+
+# Step C: Apply rollback
+
+```bash
+pnpm drizzle-kit migrate
+```
+
+✅ Column removed
+
+---
+
+# ⚠️ OPTION 2: Manual Rollback (Not Recommended for Students)
+
+Direct SQL:
+
+```sql
+ALTER TABLE "nestjs_users_new"
+DROP COLUMN "occupation";
+```
+
+---
+
+# 🧠 TEACHING POINTS (VERY IMPORTANT)
+
+Tell your students:
+
+# 1. Drizzle is **forward-only migration system**
+
+* No `down()` like TypeORM
+* You **write reverse migrations manually**
+
+---
+
+# 2. Golden Rule
+
+👉 “Never edit old migration files”
+
+---
+
+# 3. Always:
+
+* Update schema
+* Generate migration
+* Run migrate
+
+---
+
+# 🧪 BONUS ASSIGNMENT IDEA
+
+Ask students:
+
+👉 Add `phone_number`
+👉 Add `created_at`
+👉 Then rollback both
+
+---
+
+# 📌 Summary Commands
+
+```bash
+# Add column
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
+
+# Rollback (via reverse migration)
+# remove field from schema
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
+```
+

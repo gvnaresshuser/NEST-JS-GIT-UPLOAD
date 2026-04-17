@@ -1,0 +1,25 @@
+🚀 Test URLs
+🔢 ParseInt
+GET http://localhost:3000/users/int/10
+🔤 ParseBool
+GET http://localhost:3000/users/bool?active=true
+📊 ParseFloat
+GET http://localhost:3000/users/float?price=99.99
+🔑 UUID
+GET http://localhost:3000/users/uuid/550e8400-e29b-41d4-a716-446655440000
+📦 Array
+GET http://localhost:3000/users/array?ids=1,2,3,4
+🚫 Default
+GET http://localhost:3000/users/default
+🔒 Enum
+GET http://localhost:3000/users/enum?role=admin
+📅 Date
+GET http://localhost:3000/users/date?date=2026-03-31
+✅ Validation
+POST http://localhost:3000/users/validate
+{
+  "name": "Naresh",
+  "email": "test@gmail.com"
+}
+🔥 Custom Pipe
+GET http://localhost:3000/users/custom?name=   Naresh   

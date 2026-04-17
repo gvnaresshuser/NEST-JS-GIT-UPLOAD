@@ -1,0 +1,1 @@
+ALTER TABLE "nestjs_users_new" DROP COLUMN "occupation";

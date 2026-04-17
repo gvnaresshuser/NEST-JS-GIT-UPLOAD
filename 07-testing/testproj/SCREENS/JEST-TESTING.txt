@@ -1,0 +1,140 @@
+🎓 FULL NESTJS TESTING: [ JEST ]
+-----------------------
+| Layer       | Covered |
+| ----------- | ------- |
+| Service     | ✅       |
+| Controller  | ✅       |
+| Guard       | ✅       |
+| Pipe        | ✅       |
+| Interceptor | ✅       |
+| Filter      | ✅       |
+| Middleware  | ✅       |
+
+
+ALREADY AVAILABLE IN PACKAGE.JSON - JUST CHECK
+pnpm add -D @types/jest
+-----------------------------------------------------------------------------------
+add this in package.json under jest section
+
+ "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
+
+-----------------------------------------------------------------------------------
+Update tsconfig.json
+Open your tsconfig.json (NOT tsconfig.build.json)
+Add:
+
+{
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  }
+}
+
+ADD THIS "types": ["jest", "node"] IN "compilerOptions" SECTION IN FILE "tsconfig.json"
+-----------------------------------------------------------------------------------
+🚀 1. How to Run Tests with pnpm
+From your project root:
+pnpm test
+
+👀 2. Watch Mode
+pnpm test:watch
+
+📊 3. Coverage Report
+pnpm test:cov
+
+🌍 4. E2E Testing
+pnpm test:e2e
+
+🎯 5. Run Only Users Module
+pnpm exec jest users
+OR
+pnpm exec jest src/users
+
+6. Run Specific File
+pnpm exec jest src/users/users.service.spec.ts
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+🧠 2. Types of Testing in NestJS
+
+You should teach these 3:
+
+✅ 1. Unit Testing
+Test individual components
+Service, Controller, Pipes, Guards
+
+✅ 2. Integration Testing
+Test interaction between modules (Service + DB mock)
+
+✅ 3. E2E Testing
+Test full API flow (HTTP request → response)
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+🚀 1. How to Run Tests with pnpm
+
+From your project root:
+
+pnpm test
+
+👉 Same as npm run test
+👉 Runs all *.spec.ts files inside src (because of your Jest config)
+
+👀 2. Watch Mode (BEST for Teaching)
+pnpm test:watch
+
+👉 This is 🔥 for students:
+
+Auto reruns tests
+Shows failures instantly
+📊 3. Coverage Report
+pnpm test:cov
+
+👉 After running:
+
+Open folder: /coverage/index.html
+Shows % of tested code
+🌍 4. E2E Testing
+pnpm test:e2e
+
+👉 Runs tests from:
+
+/test/jest-e2e.json
+🎯 5. Run Only Users Module
+pnpm exec jest users
+
+OR
+
+pnpm exec jest src/users
+
+👉 This is very useful for your structure
+
+🎯 6. Run Specific File
+pnpm exec jest src/users/users.service.spec.ts
+🎯 7. Run Single Test Case
+it.only('should create user', () => {
+
+👉 Only this test will run
+
+🧠 8. Important Note (Your Jest Config)
+
+You already have:
+
+"rootDir": "src",
+"testRegex": ".*\\.spec\\.ts$"
+
+👉 This means:
+
+Jest will ONLY look inside src
+So your structure is perfect ✅

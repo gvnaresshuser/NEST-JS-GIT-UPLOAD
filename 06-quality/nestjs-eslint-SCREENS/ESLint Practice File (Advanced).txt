@@ -1,0 +1,117 @@
+ESLint Practice File (Advanced)
+Create a file:
+👉 src/eslint-practice.ts
+
+import { Controller } from '@nestjs/common';
+import { Controller as Controller2 } from '@nestjs/common'; // ❌ duplicate import
+
+@Controller()
+export class PracticeController {
+  private name: any = 'Naresh'; // ❌ no-explicit-any
+
+  constructor() {}
+
+  testMethod(_unusedParam: string, value: number) {
+    let count = 10; // ❌ prefer-const
+    let result; // ❌ no-unused-vars
+
+    const a = 5;
+    const b = '5';
+
+    if (a == b) { // ❌ eqeqeq
+      console.log('Loose equality'); // ❌ no-console
+    }
+
+    if (value) {
+      return;
+    } else {
+      return; // ❌ no-else-return
+    }
+
+    for (let i = 0; i < 5; i++) {
+      // ❌ prefer-const (i not reassigned outside loop)
+      console.log(i);
+    }
+
+    const obj = { a: 1 };
+    obj.a = 2; // ❌ prefer-const doesn't apply but good test
+
+    const arr = [1, 2, 3];
+    arr.map((item) => {
+      console.log(item); // ❌ no-console
+    });
+
+    const unusedVar = 100; // ❌ no-unused-vars
+
+    return count;
+  }
+}
+=====================================================================
+✅ 🧪 Run ESLint
+🔍 Show errors only:
+pnpm exec eslint src/eslint-practice.ts
+🔧 Auto-fix:
+pnpm exec eslint src/eslint-practice.ts --fix
+=====================================================================
+✅ 🎯 What You Will See
+Errors & Warnings from:
+no-duplicate-imports
+prefer-const
+eqeqeq
+no-console
+no-unused-vars
+no-explicit-any
+no-else-return
+=====================================================================
+✅ 🔥 Extra Rules (Add These for Full Practice)
+
+Add these to your config 👇
+
+rules: {
+  // existing rules...
+
+  'no-unused-vars': 'warn',
+  'no-else-return': 'error',
+  'no-var': 'error',
+  'arrow-body-style': ['error', 'as-needed'],
+  'no-trailing-spaces': 'error',
+  'eol-last': 'error',
+}
+=====================================================================
+✅ 🚀 Real Developer Workflow
+Step 1: Check errors
+pnpm exec eslint src/eslint-practice.ts
+=====================================================================
+Step 2: Auto-fix safe issues
+pnpm exec eslint src/eslint-practice.ts --fix
+=====================================================================
+Step 3: Manually fix remaining
+🔥 BONUS: Block Bad Code Before Commit (Husky Setup)
+=====================================================================
+If you want 💪 real production setup:
+
+pnpm add -D husky lint-staged
+npx husky install
+
+Add in package.json:
+
+"lint-staged": {
+  "*.{ts,js}": [
+    "eslint --fix"
+  ]
+}
+=====================================================================
+Then:
+
+npx husky add .husky/pre-commit "pnpm lint-staged"
+
+👉 Now ESLint runs before every commit 🚀
+=====================================================================
+🧠 Final Outcome
+
+After this practice, you’ll understand:
+
+Which rules auto-fix vs manual
+How ESLint behaves in real projects
+How to enforce clean code in CI/CD
+=====================================================================

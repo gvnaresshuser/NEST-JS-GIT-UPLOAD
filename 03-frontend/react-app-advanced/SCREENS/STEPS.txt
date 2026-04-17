@@ -1,0 +1,140 @@
+***********************************************************
+npm create vite@latest react-app-advanced -- --template react
+***********************************************************
+
+cd react-app-advanced
+code .
+
+npm install react-router-dom
+npm install sweetalert2
+
+GOOGLE SEARCH
+react js vite with tailwind css
+https://tailwindcss.com/docs/installation/using-vite
+
+npm install tailwindcss @tailwindcss/vite
+
+vite.config.js
+import tailwindcss from '@tailwindcss/vite'
+tailwindcss()
+
+index.css
+@import "tailwindcss";
+
+npm run dev
+
+TO TEST TAILWIND CSS INSTALLATION, HAVE THE FOLLOWING IN App.jsx FILE
+<h1 className="text-3xl font-bold underline text-red-500">
+        Hello world!
+      </h1>
+===================================================================================
+🚀 1. INSTALL AXIOS
+npm install axios
+===================================================================================
+📁 2. CREATE API FILE
+📄 src/api.js
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:3000',
+  withCredentials: true, // ✅ IMPORTANT for cookies
+});
+
+export default api;
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===================================================================================
+
+E:\MURALI\NEST-JS>npm create vite@latest react-app-advanced -- --template react
+Need to install the following packages:
+create-vite@9.0.3
+Ok to proceed? (y) y
+
+> npx
+> create-vite react-app-advanced --template react
+
+|
+o  Install with npm and start now?
+|  Yes
+|
+o  Scaffolding project in E:\MURALI\NEST-JS\react-app-advanced...
+|
+o  Installing dependencies with npm...
+
+added 151 packages, and audited 152 packages in 26s
+
+36 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+|
+o  Starting dev server...
+
+> react-app-advanced@0.0.0 dev
+> vite
+
+
+  VITE v8.0.3  ready in 1387 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+
+===================================================================================
+
+E:\MURALI\NEST-JS>cd react-app-advanced
+
+E:\MURALI\NEST-JS\react-app-advanced>code .
+
+E:\MURALI\NEST-JS\react-app-advanced>npm install tailwindcss @tailwindcss/vite
+
+added 13 packages, and audited 165 packages in 9s
+
+37 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+E:\MURALI\NEST-JS\react-app-advanced>
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================

@@ -1,0 +1,361 @@
+Assignment: Products CRUD (Fresh Project)
+
+* ✅ Nest CLI commands
+* ✅ `pnpm add` dependencies
+* ✅ Files to create manually
+* ✅ Clear separation (what CLI generates vs manual)
+
+---
+
+# 🎯 📝 Assignment: Products CRUD (Fresh Project)
+
+---
+
+# 🚀 ✅ STEP 1: Create New Project
+
+```bash
+pnpm dlx @nestjs/cli new drizzle-nest-products
+cd drizzle-nest-products
+```
+
+---
+
+# 📦 ✅ STEP 2: Install Dependencies
+
+## 🔹 Production deps
+
+```bash
+pnpm add drizzle-orm pg dotenv class-validator class-transformer @nestjs/config
+```
+
+---
+
+## 🔹 Dev deps
+
+```bash
+pnpm add -D drizzle-kit @types/pg
+```
+
+---
+
+# 🧱 ✅ STEP 3: Generate Products Module (CLI)
+
+```bash
+nest g resource products
+```
+
+👉 Select:
+
+* REST API
+* CRUD → YES
+
+---
+
+## ❌ DELETE (IMPORTANT)
+
+```bash
+src/products/entities ❌
+```
+
+---
+
+# 📁 ✅ STEP 4: Create Database Folder (MANUAL)
+
+```bash
+mkdir src/database
+```
+
+---
+
+# 🗄️ ✅ STEP 5: Create Schema (MANUAL)
+
+## 📁 `src/database/products.schema.ts`
+
+```ts
+import { pgTable, serial, text, integer } from 'drizzle-orm/pg-core';
+
+export const products = pgTable('products', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description'),
+  price: integer('price').notNull(),
+  stock: integer('stock').notNull(),
+});
+```
+
+---
+
+# ⚙️ ✅ STEP 6: Create DB Module (MANUAL)
+
+## 📁 `src/database/database.module.ts`
+
+```ts
+import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+
+export const DRIZZLE = 'DRIZZLE_DB';
+
+@Module({
+  providers: [
+    {
+      provide: DRIZZLE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.get<string>('DATABASE_URL');
+
+        console.log('DATABASE_URL:', databaseUrl);
+
+        const pool = new Pool({
+          connectionString: databaseUrl,
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        });
+
+        return drizzle(pool);
+      },
+    },
+  ],
+  exports: [DRIZZLE],
+})
+export class DatabaseModule {}
+```
+
+---
+
+# ⚙️ ✅ STEP 7: Configure ConfigModule
+
+## 📁 `src/app.module.ts`
+
+```ts
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ProductsModule } from './products/products.module';
+import { DatabaseModule } from './database/database.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    DatabaseModule,
+    ProductsModule,
+  ],
+})
+export class AppModule {}
+```
+
+---
+
+# 🧾 ✅ STEP 8: Update DTOs (MANUAL FIX)
+
+## 📁 `create-product.dto.ts`
+
+```ts
+import { IsNotEmpty, IsNumber, Min } from 'class-validator';
+
+export class CreateProductDto {
+  @IsNotEmpty()
+  name!: string;
+
+  description?: string;
+
+  @IsNumber()
+  @Min(1)
+  price!: number;
+
+  @IsNumber()
+  @Min(0)
+  stock!: number;
+}
+```
+
+---
+
+# 🧠 ✅ STEP 9: Update Service (MANUAL)
+
+## 📁 `products.service.ts`
+
+```ts
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { products } from '../database/products.schema';
+import { eq } from 'drizzle-orm';
+import { DRIZZLE } from '../database/database.module';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+
+@Injectable()
+export class ProductsService {
+  constructor(@Inject(DRIZZLE) private readonly db: any) {}
+
+  async create(dto: CreateProductDto) {
+    const result = await this.db.insert(products).values(dto).returning();
+    return result[0];
+  }
+
+  async findAll() {
+    return this.db.select().from(products);
+  }
+
+  async findOne(id: number) {
+    const result = await this.db
+      .select()
+      .from(products)
+      .where(eq(products.id, id));
+
+    if (!result.length) throw new NotFoundException('Product not found');
+
+    return result[0];
+  }
+
+  async update(id: number, dto: UpdateProductDto) {
+    const result = await this.db
+      .update(products)
+      .set(dto)
+      .where(eq(products.id, id))
+      .returning();
+
+    if (!result.length) throw new NotFoundException('Product not found');
+
+    return result[0];
+  }
+
+  async remove(id: number) {
+    const result = await this.db
+      .delete(products)
+      .where(eq(products.id, id))
+      .returning();
+
+    if (!result.length) throw new NotFoundException('Product not found');
+
+    return {
+      message: 'Product deleted successfully',
+      data: result[0],
+    };
+  }
+}
+```
+
+---
+
+# 🔌 ✅ STEP 10: Update Module
+
+## 📁 `products.module.ts`
+
+```ts
+import { Module } from '@nestjs/common';
+import { ProductsService } from './products.service';
+import { ProductsController } from './products.controller';
+import { DatabaseModule } from '../database/database.module';
+
+@Module({
+  imports: [DatabaseModule],
+  controllers: [ProductsController],
+  providers: [ProductsService],
+})
+export class ProductsModule {}
+```
+
+---
+
+# ⚙️ ✅ STEP 11: Drizzle Config (MANUAL)
+
+## 📁 `drizzle.config.ts` (ROOT)
+
+```ts
+import 'dotenv/config';
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  schema: './src/database/products.schema.ts',
+  out: './drizzle',
+  dialect: 'postgresql',
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+---
+
+# 🌱 ✅ STEP 12: Create `.env`
+
+```env
+DATABASE_URL=your_postgres_url_here
+```
+
+---
+
+# ▶️ ✅ STEP 13: Run DB Commands
+
+```bash
+pnpm db:generate
+pnpm db:push
+pnpm db:studio
+```
+
+---
+
+# 🧪 ✅ STEP 14: Run App
+
+```bash
+pnpm start:dev
+```
+
+---
+
+# 🌐 TEST URLS
+
+```bash
+POST   http://localhost:3000/products
+GET    http://localhost:3000/products
+GET    http://localhost:3000/products/1
+PATCH  http://localhost:3000/products/1
+DELETE http://localhost:3000/products/1
+```
+
+---
+
+# 🎯 CLEAR BREAKDOWN (IMPORTANT FOR STUDENTS)
+
+## 🔹 CLI Used
+
+```bash
+pnpm dlx @nestjs/cli new drizzle-nest-products
+nest g resource products
+```
+
+---
+
+## 🔹 pnpm add
+
+```bash
+pnpm add drizzle-orm pg dotenv class-validator class-transformer @nestjs/config
+pnpm add -D drizzle-kit @types/pg
+```
+
+---
+
+## 🔹 Manual Files Created
+
+* `src/database/products.schema.ts`
+* `src/database/database.module.ts`
+* `drizzle.config.ts`
+* `.env`
+
+---
+
+# 🏆 Learning Outcome
+
+Students will learn:
+
+✔ Nest CLI
+✔ Drizzle ORM
+✔ ConfigModule
+✔ Dependency Injection
+✔ DTO validation
+✔ Full CRUD
+
+---

@@ -1,0 +1,257 @@
+Ccomplete TypeORM version of your Users module so you clearly see how it differs from Drizzle.
+
+ENTITY-WAY-WITH-TYPE-ORM
+---
+
+# 🧱 1. users/entity/user.entity.ts (REAL ENTITY)
+
+👉 This is the **database table definition** in TypeORM
+
+```ts
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+
+@Entity('nestjs_users_new')
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column({ unique: true })
+  email: string;
+
+  @Column()
+  password: string;
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  profession: string;
+
+  @Column({ nullable: true })
+  occupation: string; // ✅ new field
+}
+```
+
+---
+
+# 📦 2. users/dto/create-user.dto.ts
+
+```ts
+export class CreateUserDto {
+  name: string;
+  email: string;
+  password: string;
+  address?: string;
+  profession?: string;
+  occupation?: string;
+}
+```
+
+---
+
+# 📦 3. users/dto/update-user.dto.ts
+
+```ts
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateUserDto } from './create-user.dto';
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
+```
+
+---
+
+# ⚙️ 4. users/users.service.ts (Repository Usage)
+
+👉 THIS is where TypeORM is very different from Drizzle
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  create(createUserDto: CreateUserDto) {
+    const user = this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
+  }
+
+  findAll() {
+    return this.userRepository.find();
+  }
+
+  findOne(id: number) {
+    return this.userRepository.findOneBy({ id });
+  }
+
+  update(id: number, updateUserDto: UpdateUserDto) {
+    return this.userRepository.update(id, updateUserDto);
+  }
+
+  remove(id: number) {
+    return this.userRepository.delete(id);
+  }
+}
+```
+
+---
+
+# 🌐 5. users/users.controller.ts
+
+```ts
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { UsersService } from './users.service';
+
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(+id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(+id);
+  }
+}
+```
+
+---
+
+# 🧩 6. users/users.module.ts
+
+```ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
+import { User } from './entities/user.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([User])],
+  controllers: [UsersController],
+  providers: [UsersService],
+})
+export class UsersModule {}
+```
+
+---
+
+# 🗄️ 7. app.module.ts (DB Connection)
+
+```ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+
+@Module({
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      autoLoadEntities: true,
+      synchronize: true, // ⚠️ dev only
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    }),
+    UsersModule,
+  ],
+})
+export class AppModule {}
+```
+
+---
+
+# ⚠️ 8. Migrations (TypeORM Way)
+
+Generate:
+
+```bash
+npx typeorm migration:generate src/migrations/AddOccupation
+```
+
+Run:
+
+```bash
+npx typeorm migration:run
+```
+
+---
+
+# 🧠 FINAL COMPARISON (VERY IMPORTANT)
+
+| Feature     | TypeORM          | Drizzle      |
+| ----------- | ---------------- | ------------ |
+| Entity      | ✅ Required       | ❌ Not used   |
+| Repository  | ✅ Required       | ❌ Not needed |
+| Query style | Abstracted       | SQL-like     |
+| Migration   | CLI + decorators | schema diff  |
+
+---
+
+# 🎯 What You Should Take Away
+
+👉 TypeORM is:
+
+* Structured
+* Layered
+* More abstraction
+
+👉 Drizzle is:
+
+* Lightweight
+* Direct
+* More control
+
+---
+
+# 🚀 BEST TEACHING STRATEGY
+
+Show students:
+
+1. This TypeORM setup
+2. Then your Drizzle setup
+
+Then ask:
+
+👉 “Which one feels simpler?”
+
+---
+
+If you want next:
+✅ I can give **same project side-by-side (TypeORM vs Drizzle)**
+✅ Or convert your current Drizzle project into TypeORM for demo purposes

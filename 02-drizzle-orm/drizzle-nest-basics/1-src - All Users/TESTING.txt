@@ -1,0 +1,74 @@
+
+==============================================
+pnpm run start:dev
+
+src-LESSON-02-TESTING:
+=====================
+INSTALL THUNDER CLIENT IN VS CODE Editor
+GET
+http://localhost:3000
+return
+Hello World!
+
+USERS:
+=====
+GET
+http://localhost:3000/users
+[]
+GET
+http://localhost:3000/users/1
+{
+  "id": "1"
+}
+GET
+http://localhost:3000/users/interns
+{
+  "id": "interns"
+}
+
+POST
+http://localhost:3000/users
+body
+{
+	"name":"GVN",
+	"email":"gvnaressh@gmail.com",
+	"role":"ADMIN"
+}
+
+PATCH
+http://localhost:3000/users/1
+body
+{
+	"name":"GVN",
+	"email":"gvnaressh@gmail.com",
+	"role":"ADMIN"
+}
+return
+{
+  "id": "1",
+  "name": "GVN",
+  "email": "gvnaressh@gmail.com",
+  "role": "ADMIN"
+}
+
+DELETE
+http://localhost:3000/users/1
+no body required
+return
+{
+  "id": "1"
+}
+
+QUERY PARAMETER
+GET
+http://localhost:3000/users?role=ADMIN
+return
+[]
+
+QUERY PARAMETER
+GET
+http://localhost:3000/users?role=ADMIN&age=42
+return
+[]
+
+============================================================================================

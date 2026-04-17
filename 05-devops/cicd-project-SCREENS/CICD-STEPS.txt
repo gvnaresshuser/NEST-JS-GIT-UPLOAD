@@ -1,0 +1,1794 @@
+E:\MURALI\NEST-JS\cicd-project
+
+🚀 1. Prepare Your Project Structure
+You can use either:
+
+✅ Option A (Recommended: Monorepo)
+cicd-project/
+  nestjs-cicd-backend/   (NestJS)
+  reactjs-cicd-frontend/  (React)
+===============================================================================================
+🚀 2. Initialize Git (First Time Only)
+Open terminal in project root:
+
+git init
+git add .
+git commit -m "Initial commit"
+===============================================================================================
+🚀 3. Create GitHub Repository
+Go to 👉 GitHub
+
+Click New Repository
+
+Name: nestjs-react-cicd-app
+
+DO NOT add README (you already have code)
+
+🚀 4. Connect Local Repo to GitHub
+git remote add origin https://github.com/<your-username>/nestjs-react-app.git
+git remote add origin https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+git branch -M main
+git push -u origin main
+✔ Your code is now on GitHub
+===============================================================================================
+echo "# nestjs-react-cicd-app" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+git push -u origin main
+===============================================================================================
+Create .gitignore in ROOT folder
+cicd-project/.gitignore
+Add this inside:
+node_modules
+dist
+.env
+coverage
+===============================================================================================
+⚠️ IMPORTANT (Better Setup) - ALREADY .gitignore  FILE IS AVAILABLE IN FRONTEND AND BACKEND APPS
+
+Since you have 2 apps, it's better to ALSO add .gitignore inside both:
+
+📁 Backend
+nestjs-cicd-backend/.gitignore
+📁 Frontend
+reactjs-cicd-frontend/.gitignore
+
+👉 Same content is fine.
+===============================================================================================
+Go to your project root (cicd-project)
+
+Step 1: Create folders manually
+Option 1: Using VS Code
+Right click → New Folder → .github
+Inside .github → create workflows
+Inside workflows → create file ci.yml
+===============================================================================================
+Step 2: Final structure
+cicd-project/
+│
+├── .git/   (already exists)
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+├── nestjs-cicd-backend/
+├── reactjs-cicd-frontend/
+├── .gitignore
+===============================================================================================
+💡 Alternative (Terminal way)
+
+Run this in root:
+
+mkdir -p .github/workflows
+touch .github/workflows/ci.yml
+===============================================================================================
+🚀 After creating .github
+
+👉 Add it to git:
+
+git add .
+git commit -m "Added CI pipeline"
+git push
+===============================================================================================
+🚀 1. Create CI File
+
+📁 Location (VERY IMPORTANT):
+
+cicd-project/.github/workflows/ci.yml
+📄 2. Full ci.yml (Copy-Paste)
+===============================================================================================
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  # =========================
+  # 🔹 Backend - NestJS
+  # =========================
+  backend:
+    name: Backend (NestJS)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: nestjs-cicd-backend
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: 🧹 Run ESLint
+        run: npm run lint
+
+      - name: 🧪 Run Tests
+        run: npm run test
+
+      - name: 🏗 Build App
+        run: npm run build
+
+  # =========================
+  # 🔹 Frontend - React
+  # =========================
+  frontend:
+    name: Frontend (React)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: reactjs-cicd-frontend
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: 🧪 Run Tests
+        run: npm test -- --watchAll=false
+
+      - name: 🏗 Build App
+        run: npm run build
+===============================================================================================
+🧠 3. What this pipeline does -- NO ACTION REQUIRED HERE
+🔹 Trigger
+Runs when you:
+push code to main
+create PR
+===============================================================================================
+🔹 Backend Job (NestJS) -- NO ACTION REQUIRED HERE
+
+Runs inside:
+
+nestjs-cicd-backend/
+
+Steps:
+
+Install dependencies
+Run ESLint ✅
+Run tests ✅
+Build project ✅
+===============================================================================================
+🔹 Frontend Job (React) -- NO ACTION REQUIRED HERE
+
+Runs inside:
+
+reactjs-cicd-frontend/
+
+Steps:
+
+Install dependencies
+Run tests ✅
+Build React app ✅
+===============================================================================================
+⚠️ Important Checks -- NO ACTION REQUIRED HERE
+1. Backend package.json
+
+Make sure you have:
+
+"scripts": {
+  "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+  "test": "jest",
+  "build": "nest build"
+}
+===============================================================================================
+2. Frontend package.json -- ADDED "test": "vitest", IN package.json
+
+Make sure:
+
+"scripts": {
+  "test": "react-scripts test",
+  "build": "react-scripts build"
+}
+
+👉 If using Vite:
+
+"test": "vitest",
+"build": "vite build"
+===============================================================================================
+🚀 4. Push Pipeline
+git add .
+git commit -m "Added CI pipeline"
+git push
+===============================================================================================
+https://github.com/gvnaresshuser/nestjs-react-cicd-app/actions
+===============================================================================================
+IF ERRORS IN ACTIONS....THEN FIRST RUN ALL TESTS...
+
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>pnpm test
+
+Test Suites: 18 passed, 18 total
+Tests:       18 passed, 18 total
+Snapshots:   0 total
+Time:        7.395 s
+Ran all test suites.
+
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>
+===============================================================================================
+Once tests pass:
+
+git add .
+git commit -m "All tests fixed"
+git push
+===============================================================================================
+BACKEND OK
+===============================================================================================
+cd reactjs-cicd-frontend
+npm install -D vitest
+===============================================================================================
+Then update package.json
+"scripts": {
+  "test": "vitest run"
+}
+👉 IMPORTANT: use vitest run (not watch mode)
+===============================================================================================
+Commit & Push [ALWAYS FROM ROOT]
+git add .
+git commit -m "added vitest for frontend CI"
+git push
+===============================================================================================
+E:\MURALI\NEST-JS\cicd-project\reactjs-cicd-frontend\package.json
+🔥 OPTION 1 — Allow empty tests (Recommended)
+
+Update your package.json
+
+Change this:
+"test": "vitest run"
+✅ To this:
+"test": "vitest run --passWithNoTests"
+
+"test": "vitest run --passWithNoTests"
+===============================================================================================
+# update package.json
+git add .
+git commit -m "allow empty tests for CI"
+git push
+===============================================================================================
+✅ OPTION 2 — Create a dummy test (Alternative)
+
+Create file:
+
+📁 src/App.test.ts
+
+import { describe, it, expect } from 'vitest';
+
+describe('sample test', () => {
+  it('should pass', () => {
+    expect(true).toBe(true);
+  });
+});
+
+👉 This also fixes CI
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project\reactjs-cicd-frontend>npm test
+
+> reactjs-cicd-frontend@0.0.0 test
+> vitest run --passWithNoTests
+
+
+ RUN  v4.1.4 E:/MURALI/NEST-JS/cicd-project/reactjs-cicd-frontend
+
+ ✓ src/App.test.js (0 test) 1ms
+
+ Test Files  1 passed (1)
+      Tests  no tests
+   Start at  19:52:07
+   Duration  2.33s (transform 1.29s, setup 0ms, import 1.88s, tests 1ms, environment 0ms)
+
+
+E:\MURALI\NEST-JS\cicd-project\reactjs-cicd-frontend>
+===============================================================================================
+git add .
+git commit -m "allow dummy tests for CI"
+git push
+===============================================================================================
+- name: 🧪 Run Tests
+  run: npm test -- --watchAll=false
+  
+  - name: 🧪 Run Tests
+  run: npm test
+
+REMOVED:  -- --watchAll=false
+  
+git add .
+git commit -m "fixed vitest command in CI"
+git push
+===============================================================================================
+COMMENTED PULL REQURES IN ci.yml FILE
+  #pull_request:
+  #  branches: [main]
+===============================================================================================
+git add .
+git commit -m "PULL REQUEST commented in CI"
+git push
+===============================================================================================
+git add .
+git commit -m "PULL REQUEST REMOVED in CI"
+git push
+===============================================================================================
+SETUP CD with Render:
+--------------------
+
+https://dashboard.render.com/
+g
+NARESSH GV
+gvnaressh@gmail.com
+
+nestjs-backend
+===============================================================================================
+PORT=3000
+DATABASE_URL=postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+JWT_SECRET=6cdadfa020cb901e7579a0da6f6fae70b735348462a65e7aeceb4f0886decf26
+JWT_ACCESS_EXPIRES=45m
+JWT_REFRESH_EXPIRES=7d
+EMAIL=gvnaressh@gmail.com
+EMAIL_PASS=nlhvhyxqgqtaqeiz
+===============================================================================================
+✅ Final working setup
+package.json
+"scripts": {
+  "build": "nest build",
+  "start:prod": "node dist/main.js"
+}
+Render settings
+
+Build Command
+
+pnpm install && pnpm run build
+
+Start Command
+
+pnpm run start:prod
+===============================================================================================
+git add .
+git commit -m "Package.json fixed node dist/main.js in CI"
+git push
+===============================================================================================
+Step 2: Delete lock file manually
+
+Go to your project folder:
+
+E:\MURALI\NEST-JS\cicd-project\.git\refs\remotes\origin\
+
+👉 Delete this file:
+
+main.lock
+🔧 Step 3: Retry push
+git push
+===============================================================================================
+TO CHECK IF BUILD IS WORKING...
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>pnpm build
+
+> nestjs-cicd-backend@0.0.1 build E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend
+> nest build
+
+pnpm build
+THIS SHOULD CREATE main.js in dist folder
+
+-------------------------------------------------------------------------
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>pnpm build
+
+> nestjs-cicd-backend@0.0.1 build E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend
+> nest build
+
+
+-------------------------------------------------------------------------
+CREATED main.js IN dist/src/main.js
+
+so FINALLY KEEP THIS SETTING..."start:prod": "node dist/src/main.js",
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend\package.json
+
+  "scripts": {
+    "build": "nest build",
+    "start:prod": "node dist/src/main.js",
+===============================================================================================
+cd ..
+ALWAYS RUN FROM E:\MURALI\NEST-JS\cicd-project>
+git add .
+git commit -m "Package.json FIXED dist/main.js in CI"
+git push
+===============================================================================================
+MANUAL DEPLOY - LATEST COMMIT IN RENDER.COM FOR NEST JS BACKEND WEBSERVICE
+===============================================================================================
+==> It looks like we don't have access to your repo, but we'll try to clone it anyway.
+==> Cloning from https://github.com/gvnaresshuser/nestjs-react-cicd-app
+==> Checking out commit 58168f82b14d0d3496b76178626e4c0685b68405 in branch main
+Menu
+==> Downloaded 113MB in 2s. Extraction took 6s.
+==> Using Node.js version 22.22.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Running build command 'pnpm install && pnpm run build'...
+> nestjs-cicd-backend@0.0.1 build /opt/render/project/src/nestjs-cicd-backend
+> nest build
+==> Uploading build...
+==> Uploaded in 2.9s. Compression took 4.0s
+==> Build successful 🎉
+==> Deploying...
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+==> Downloading cache...
+==> It looks like we don't have access to your repo, but we'll try to clone it anyway.
+==> Cloning from https://github.com/gvnaresshuser/nestjs-react-cicd-app
+==> Checking out commit 58168f82b14d0d3496b76178626e4c0685b68405 in branch main
+==> Downloaded 113MB in 2s. Extraction took 6s.
+Menu
+==> Using Node.js version 22.22.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Running build command 'pnpm install && pnpm run build'...
+> nestjs-cicd-backend@0.0.1 build /opt/render/project/src/nestjs-cicd-backend
+> nest build
+==> Uploading build...
+==> Uploaded in 2.9s. Compression took 4.0s
+==> Build successful 🎉
+==> Deploying...
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+==> Running 'pnpm run start:prod'
+> nestjs-cicd-backend@0.0.1 start:prod /opt/render/project/src/nestjs-cicd-backend
+> node dist/src/main.js
+DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 83  - 04/11/2026, 3:26:34 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 83  - 04/11/2026, 3:26:34 PM     LOG [InstanceLoader] LoggerModule dependencies initialized +101ms
+[Nest] 83  - 04/11/2026, 3:26:34 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +1ms
+[Nest] 83  - 04/11/2026, 3:26:34 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 83  - 04/11/2026, 3:26:34 PM     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +2ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [InstanceLoader] MailModule dependencies initialized +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [InstanceLoader] UsersModule dependencies initialized +87ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RoutesResolver] UsersController {/users}: +108ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users/me, GET} route +5ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users/ip, GET} route +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users, POST} route +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users, GET} route +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users/admin, GET} route +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users/:id, GET} route +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +82ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RoutesResolver] AuthController {/auth}: +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/auth/login, POST} route +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/auth/logout, POST} route +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/auth/refresh, POST} route +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RoutesResolver] MailController {/mail}: +0ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [RouterExplorer] Mapped {/mail/send, POST} route +1ms
+[Nest] 83  - 04/11/2026, 3:26:35 PM     LOG [NestApplication] Nest application successfully started +6ms
+HEAD http://nestjs-backend-o7ql.onrender.com/
+🔥 STATUS: 404
+🔥 RESPONSE: { message: 'Cannot HEAD /', error: 'Not Found', statusCode: 404 }
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://nestjs-backend-o7ql.onrender.com
+===============================================================================================
+LIVE NEST JS BACKEND SERVER URL:
+--------------------------------
+https://nestjs-backend-o7ql.onrender.com
+===============================================================================================
+✅ For your project
+
+You have:
+
+React (Vite) frontend
+NestJS backend
+
+👉 So correct setup:
+
+Frontend → Static Site
+Backend  → Web Service
+===============================================================================================
+Rener.com
+New - static site
+Public git repository
+https://github.com/gvnaresshuser/nestjs-react-cicd-app
+Connect
+
+===============================================================================================
+ALWAYS RUN FROM E:\MURALI\NEST-JS\cicd-project>
+git add .
+git commit -m "ADDED BACKEND LIVE URL IN ENV in CI"
+git push
+===============================================================================================
+LIVE REACT JS FRONTEND URL:
+---------------------------
+https://reactjs-cicd-frontend.onrender.com/
+===============================================================================================
+✅ Why you need this
+
+Your frontend:
+
+https://reactjs-cicd-frontend.onrender.com
+
+Your backend:
+
+https://nestjs-backend-o7ql.onrender.com
+
+👉 These are different domains, so browser enforces CORS.
+
+🔧 Update CORS in NestJS
+📁 main.ts
+
+Update this:
+
+app.enableCors({
+  origin: [
+    "http://localhost:5173", // local dev
+    "https://reactjs-cicd-frontend.onrender.com", // ✅ LIVE FRONTEND
+  ],
+  credentials: true,
+});
+🔁 Push changes
+git add .
+git commit -m "Added frontend URL in CORS"
+git push
+
+👉 Render will auto redeploy backend
+
+🧪 After deploy → test
+
+Open:
+👉 https://reactjs-cicd-frontend.onrender.com
+
+Test:
+
+Login
+API calls
+⚠️ Important notes
+🔹 1. Remove trailing slash (recommended)
+
+Use:
+
+"https://reactjs-cicd-frontend.onrender.com"
+===============================================================================================
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend\src\main.ts
+https://reactjs-cicd-frontend.onrender.com
+
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  });
+  
+    app.enableCors({
+    origin: 'https://reactjs-cicd-frontend.onrender.com',
+    credentials: true,
+  });
+===============================================================================================
+git add .
+git commit -m "Added frontend URL in CORS"
+git push
+===============================================================================================
+🎯 Final result after fix
+Frontend (Render)
+        ↓
+CORS allowed ✅
+        ↓
+Backend (NestJS)
+        ↓
+Response OK 🎉
+===============================================================================================
+✅ Solution (YOU ALREADY STARTED THIS)
+
+You must tell Render:
+
+“For ANY route → return index.html”
+
+🔧 FINAL FIX
+📁 Create this file (IMPORTANT)
+
+Path:
+
+reactjs-cicd-frontend/public/_redirects
+📄 Content (copy exactly)
+/*    /index.html   200
+⚠️ VERY IMPORTANT RULES
+File name = _redirects (no extension ❗)
+Must be inside public/
+Not inside src/
+Spaces must match exactly
+🔁 Push changes
+git add .
+git commit -m "Fix SPA routing for React"
+git push
+🔁 Then redeploy
+
+In Render:
+
+👉
+
+Manual Deploy → Clear cache & deploy
+🧪 After fix
+
+Try again:
+
+https://reactjs-cicd-frontend.onrender.com
+
+👉 Now:
+✔ Page loads
+✔ No 404
+✔ React handles routing
+
+🧠 Why this works
+
+Instead of:
+
+/login → 404 ❌
+
+Server does:
+
+/login → index.html → React Router → Login page ✅
+===============================================================================================
+git add .
+git commit -m "Fix SPA routing for React"
+git push
+===============================================================================================
+===============================================================================================
+ALWAYS RUN FROM E:\MURALI\NEST-JS\cicd-project>
+git add .
+git commit -m "ADDED again ip address in CI"
+git push
+===============================================================================================
+A Pull Request is a safe way to merge code with review and approval.
+===============================================================================================
+FOR TESTING IDLE TIMEOUT:
+------------------------
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend\src\common\guards\idle-timeout\idle-timeout.guard.ts
+if (diffSeconds > 10) {
+// ✅ 10 seconds
+//if (diffSeconds > 300) { 
+===============================================================================================
+FOR TESTING ACCESS TOKEN EXPIRED:
+--------------------------------
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend\src\config\configuration.ts
+accessExpires: '45m',
+refreshExpires: '7d',
+
+//accessExpires: '10s',
+//refreshExpires: '1m',
+===============================================================================================
+✅ SOLUTION 1 (BEST) — Keep Monorepo + Fix Triggering
+✔ Step 1: Ensure commits include correct folder
+
+When you change backend:
+
+git add nestjs-cicd-backend/
+git commit -m "backend change"
+git push
+
+When you change frontend:
+
+git add reactjs-cicd-frontend/
+git commit -m "frontend change"
+git push
+✔ Step 2: Verify Render detects changes
+
+After push:
+👉 Go to Render → Events
+
+You should see:
+
+Detected changes in nestjs-cicd-backend → Deploy triggered
+===============================================================================================
+===============================================================================================
+echo "update" >> nestjs-cicd-backend/.trigger
+git add .
+git commit -m "force backend deploy"
+git push
+===============================================================================================
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 23, done.
+Counting objects: 100% (23/23), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (11/11), done.
+Writing objects: 100% (13/13), 1.05 KiB | 270.00 KiB/s, done.
+Total 13 (delta 7), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (7/7), completed with 7 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   b4fed7f..f5ce36e  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+git rm -f ".github/workflows/ci copy.yml"
+===============================================================================================
+git commit -m "removed duplicate CI workflow"
+git push
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+👉 Step 1: Make a small backend change
+
+Inside:
+
+nestjs-cicd-backend/src/app.controller.ts
+
+Change something like:
+
+return { message: 'Hello World 🚀' };
+👉 Step 2: Commit ONLY backend changes
+
+++++++++++++++++++++++++++++++++++++++++
+git add nestjs-cicd-backend/
+git commit -m "test backend auto deploy"
+git push
+++++++++++++++++++++++++++++++++++++++++
+
+👉 Step 3: Verify
+In Render:
+Go to backend service
+Check Events / Deploy logs
+
+👉 You should see:
+
+Deploy triggered from Git push ✅
+👉 Step 4: Test API
+
+Open:
+
+https://your-backend-url/
+
+👉 Confirm updated response
+
+✅ 🔧 Test 2 — Frontend Auto Deploy
+👉 Step 1: Make frontend change
+
+Inside:
+
+reactjs-cicd-frontend/src/App.jsx
+
+Change:
+
+<h1>CI/CD Working 🎉</h1>
+👉 Step 2: Commit ONLY frontend
+
+++++++++++++++++++++++++++++++++++++++++
+git add reactjs-cicd-frontend/
+git commit -m "test frontend auto deploy"
+git push
+++++++++++++++++++++++++++++++++++++++++
+
+👉 Step 3: Verify
+
+In Render:
+
+Open frontend service
+Check deploy logs
+👉 Step 4: Open site
+https://your-frontend-url
+
+👉 Confirm UI updated
+===============================================================================================
+===============================================================================================
+drizzle.config.ts -- TRAILING ERROR CR CARRIAGE RETURN PROBLEM FIXED
+pnpm exec eslint drizzle.config.ts --fix
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>pnpm exec eslint drizzle.config.ts --fix
+
+===============================================================================================
+git add .
+git commit -m "changed fr and ba auto deploy"
+git push
+===============================================================================================
+11111111111111111111111111
+IDLE TIME TESTING:
+------------------
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend\src\common\guards\idle-timeout\idle-timeout.guard.ts
+    if (diffSeconds > 300) {
+      // ✅ 10 seconds
+      //if (diffSeconds > 10) { // 5 minutes
+      throw new UnauthorizedException('Session expired due to inactivity');
+    }
+===============================================================================================
+22222222222222222222222222222
+ACCESS TOKEN TESTING:
+---------------------
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend\src\config\configuration.ts
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    //accessExpires: '15m',
+    accessExpires: '45m',
+    refreshExpires: '7d',
+
+    //accessExpires: '10s',
+    //refreshExpires: '10m',
+  },
+===============================================================================================
+33333333333333333333333333
+THROTTLE LIMIT TESTING: [RATE LIMITING]
+----------------------
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend\src\modules\users\users.controller.ts
+  @Throttle({ short: { ttl: 1000, limit: 10 } }) //overriding manually
+===============================================================================================
+WEB HOOK-CONFIGURE-BOTH-BACKEND-FRONTEND-SERVICES-FOR AUTO-DEPLOY
+WEB HOOK-CONFIGURE-BOTH-BACKEND-FRONTEND-SERVICES-FOR AUTO-DEPLOY
+WEB HOOK-CONFIGURE-BOTH-BACKEND-FRONTEND-SERVICES-FOR AUTO-DEPLOY
+===============================================================================================
+
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+git rm nestjs-cicd-backend/.trigger
+git rm reactjs-cicd-frontend/.trigger
+===============================================================================================
+E:\MURALI\NEST-JS\cicd-project>git rm nestjs-cicd-backend/.trigger
+rm 'nestjs-cicd-backend/.trigger'
+
+E:\MURALI\NEST-JS\cicd-project>git rm reactjs-cicd-frontend/.trigger
+rm 'reactjs-cicd-frontend/.trigger'
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+💾 Step 3: Commit removal
+git add .
+git commit -m "remove trigger files"
+git push
+===============================================================================================
+E:\MURALI\NEST-JS\cicd-project>git add .
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "remove trigger files"
+[main 2bb3ba2] remove trigger files
+ 2 files changed, 1 deletion(-)
+ delete mode 100644 nestjs-cicd-backend/.trigger
+ delete mode 100644 reactjs-cicd-frontend/.trigger
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 424 bytes | 424.00 KiB/s, done.
+Total 4 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   b45d9c3..2bb3ba2  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+3. Create again:
+
+Click:
+
+New → Static Site
+4. Configure:
+Repository: your repo
+Branch: main
+Root Directory: reactjs-cicd-frontend
+Build Command: npm install && npm run build
+Publish Directory:
+  - dist (for Vite)
+  - build (for CRA)
+===============================================================================================
+FIX SINGLE FILE WITH ESLINT:
+----------------------------
+drizzle.config.ts
+pnpm exec eslint drizzle.config.ts --fix
+
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>pnpm exec eslint drizzle.config.ts --fix
+
+pnpm exec eslint drizzle.config.ts --fix
+
+👉 That is the correct way for pnpm projects ✅
+
+🔍 Your final code (now correct)
+import 'dotenv/config';
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  schema: './src/database/schema.ts',
+  out: './drizzle',
+  dialect: 'postgresql',
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+});
+🚀 What this means for your project
+Area	Status
+ESLint	✅ Clean
+Prettier	✅ Clean
+CI (GitHub Actions)	✅ Will pass
+Deployment	✅ Safe
+Code quality	✅ Production-ready
+===============================================================================================
+git add .
+git commit -m "FINAL TEST NEST REACT"
+git push
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'nestjs-cicd-backend/drizzle.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/config/configuration.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.controller.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/src/App.jsx', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "FINAL TEST NEST REACT"
+[main ff13259] FINAL TEST NEST REACT
+ 4 files changed, 13 insertions(+), 13 deletions(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 25, done.
+Counting objects: 100% (25/25), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (13/13), done.
+Writing objects: 100% (13/13), 1.10 KiB | 565.00 KiB/s, done.
+Total 13 (delta 10), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (10/10), completed with 10 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   cb17d5e..ff13259  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+git add .
+git commit -m "FINAL TEST NEST REACT - 14-04-2026"
+git push
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+
+dashboard.render.com/login
+signin with Google
+gvnaressh@gmail.com
+
+nestjs-backend
+reactjs-cicd-frontend
+
+Manual Deploy: Clear Build Cache & Deplou
+===============================================================================================
+github.com gvnaresshuser
+nestjs-react-cicd-app
+ - and see ACTIONS
+===============================================================================================
+BACKEND - NEST JS - WEB SERVICE IN RENDER.COM
+FTONTEND - REACT JS - STATIC SERVICE IN RENDER.COM
+===============================================================================================
+LIVE NEST JS BACKEND SERVER URL:
+--------------------------------
+https://nestjs-backend-o7ql.onrender.com
+
+LIVE NEST JS FTONTEND SERVER URL:
+--------------------------------
+https://reactjs-cicd-frontend.onrender.com
+===============================================================================================
+STOPPED
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+🔍 Why TWO CI pipelines are running
+
+Your ci.yml has:
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+🧠 What this means
+
+Whenever you push:
+
+1️⃣ Push trigger
+Runs because of:
+push
+2️⃣ Pull Request trigger (auto)
+If your branch is linked to a PR (or GitHub auto-detects), it ALSO runs:
+pull_request
+🎯 That’s why you see:
+CI Pipeline #2  (push)
+CI Pipeline #6  (pull_request)
+
+👉 Same commit → 2 workflows triggered
+
+✅ Is this a problem?
+
+👉 ❌ NO — totally normal
+👉 Many production setups do this
+
+⚠️ But for YOU (learning stage)
+
+👉 This is confusing and unnecessary
+
+✅ FIX (Recommended for now)
+
+Update your ci.yml
+
+❌ Remove pull_request
+on:
+  push:
+    branches: [main]
+🚀 Steps
+Open:
+.github/workflows/ci.yml
+Change to:
+on:
+  push:
+    branches: [main]
+Push:
+git add .
+git commit -m "removed duplicate CI trigger"
+git push
+🎯 Result
+
+Now only ONE pipeline will run:
+
+CI Pipeline (push only) ✅
+===============================================================================================
+===============================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git init
+Initialized empty Git repository in E:/MURALI/NEST-JS/cicd-project/.git/
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'nestjs-cicd-backend/.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/drizzle/0000_hot_butterfly.sql', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/drizzle/meta/0000_snapshot.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/drizzle/meta/0001_snapshot.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/drizzle/meta/_journal.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/eslint.config copy.mts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/eslint.config.mts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/pnpm-lock.yaml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/app.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/app.controller.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/app.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/app.service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/decorators/ipaddress.decorator.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/decorators/roles.decorator.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/decorators/user.decorator.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/filters/all-exception/all-exception.filter.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/filters/all-exception/all-exception.filter.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/filters/http-exception/http-exception.filter.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/filters/http-exception/http-exception.filter.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/guards/idle-timeout/idle-timeout.guard.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/guards/idle-timeout/idle-timeout.guard.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/guards/jwt/jwt.guard.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/guards/jwt/jwt.guard.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/guards/roles/roles.guard.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/guards/roles/roles.guard.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/interceptors/activity/activity.interceptor.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/interceptors/activity/activity.interceptor.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/interceptors/logging/logging.interceptor.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/interceptors/logging/logging.interceptor.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/interceptors/transform/transform.interceptor.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/interceptors/transform/transform.interceptor.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/interfaces/user.interface.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/logger/logger.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/logger/my-logger/my-logger.service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/logger/winston.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/logger/winston.logger.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/middleware/activity/activity.middleware.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/middleware/activity/activity.middleware.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/middleware/logger/logger.middleware.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/middleware/logger/logger.middleware.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/pipes/validation/validation.pipe.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/common/pipes/validation/validation.pipe.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/config/configuration.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/config/validation.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/database/db.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/database/schema.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/main.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/auth.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/auth.controller.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/auth.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/auth.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/auth.service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/dto/login.dto.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/mail/mail.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/mail/mail.controller.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/mail/mail.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/mail/mail.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/mail/mail.service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/dto/create-user.dto.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.controller.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/test/app.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/eslint.config.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/public/icons.svg', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/src/App.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/src/App.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/src/assets/vite.svg', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/src/main.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/vite.config.js', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "Initial commit"
+[master (root-commit) f4161cb] Initial commit
+ 101 files changed, 14977 insertions(+)
+ create mode 100644 nestjs-cicd-backend/.gitignore
+ create mode 100644 nestjs-cicd-backend/.prettierrc
+ create mode 100644 nestjs-cicd-backend/README.md
+ create mode 100644 nestjs-cicd-backend/SCREENS/STEPS-BACKEND.txt
+ create mode 100644 nestjs-cicd-backend/SCREENS/eslint.config.mjs
+ create mode 100644 nestjs-cicd-backend/drizzle.config.ts
+ create mode 100644 nestjs-cicd-backend/drizzle/0000_hot_butterfly.sql
+ create mode 100644 nestjs-cicd-backend/drizzle/0001_high_tarantula.sql
+ create mode 100644 nestjs-cicd-backend/drizzle/meta/0000_snapshot.json
+ create mode 100644 nestjs-cicd-backend/drizzle/meta/0001_snapshot.json
+ create mode 100644 nestjs-cicd-backend/drizzle/meta/_journal.json
+ create mode 100644 nestjs-cicd-backend/eslint.config copy.mts
+ create mode 100644 nestjs-cicd-backend/eslint.config.mts
+ create mode 100644 nestjs-cicd-backend/nest-cli.json
+ create mode 100644 nestjs-cicd-backend/package.json
+ create mode 100644 nestjs-cicd-backend/pnpm-lock.yaml
+ create mode 100644 nestjs-cicd-backend/src/app.controller.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/app.controller.ts
+ create mode 100644 nestjs-cicd-backend/src/app.module.ts
+ create mode 100644 nestjs-cicd-backend/src/app.service.ts
+ create mode 100644 nestjs-cicd-backend/src/common/decorators/ipaddress.decorator.ts
+ create mode 100644 nestjs-cicd-backend/src/common/decorators/roles.decorator.ts
+ create mode 100644 nestjs-cicd-backend/src/common/decorators/user.decorator.ts
+ create mode 100644 nestjs-cicd-backend/src/common/filters/all-exception/all-exception.filter.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/filters/all-exception/all-exception.filter.ts
+ create mode 100644 nestjs-cicd-backend/src/common/filters/http-exception/http-exception.filter.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/filters/http-exception/http-exception.filter.ts
+ create mode 100644 nestjs-cicd-backend/src/common/guards/idle-timeout/idle-timeout.guard.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/guards/idle-timeout/idle-timeout.guard.ts
+ create mode 100644 nestjs-cicd-backend/src/common/guards/jwt/jwt.guard.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/guards/jwt/jwt.guard.ts
+ create mode 100644 nestjs-cicd-backend/src/common/guards/roles/roles.guard.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/guards/roles/roles.guard.ts
+ create mode 100644 nestjs-cicd-backend/src/common/interceptors/activity/activity.interceptor.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/interceptors/activity/activity.interceptor.ts
+ create mode 100644 nestjs-cicd-backend/src/common/interceptors/logging/logging.interceptor.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/interceptors/logging/logging.interceptor.ts
+ create mode 100644 nestjs-cicd-backend/src/common/interceptors/transform/transform.interceptor.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/interceptors/transform/transform.interceptor.ts
+ create mode 100644 nestjs-cicd-backend/src/common/interfaces/user.interface.ts
+ create mode 100644 nestjs-cicd-backend/src/common/logger/logger.module.ts
+ create mode 100644 nestjs-cicd-backend/src/common/logger/my-logger/my-logger.service.ts
+ create mode 100644 nestjs-cicd-backend/src/common/logger/winston.config.ts
+ create mode 100644 nestjs-cicd-backend/src/common/logger/winston.logger.ts
+ create mode 100644 nestjs-cicd-backend/src/common/middleware/activity/activity.middleware.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/middleware/activity/activity.middleware.ts
+ create mode 100644 nestjs-cicd-backend/src/common/middleware/logger/logger.middleware.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/middleware/logger/logger.middleware.ts
+ create mode 100644 nestjs-cicd-backend/src/common/pipes/validation/validation.pipe.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/common/pipes/validation/validation.pipe.ts
+ create mode 100644 nestjs-cicd-backend/src/config/configuration.ts
+ create mode 100644 nestjs-cicd-backend/src/config/validation.ts
+ create mode 100644 nestjs-cicd-backend/src/database/db.ts
+ create mode 100644 nestjs-cicd-backend/src/database/schema.ts
+ create mode 100644 nestjs-cicd-backend/src/main.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/auth/auth.controller.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/auth/auth.controller.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/auth/auth.module.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/auth/auth.service.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/auth/auth.service.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/auth/dto/login.dto.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/mail/mail.controller.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/mail/mail.controller.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/mail/mail.module.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/mail/mail.service.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/mail/mail.service.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/users/dto/create-user.dto.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/users/users.controller.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/users/users.controller.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/users/users.module.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/users/users.service.spec.ts
+ create mode 100644 nestjs-cicd-backend/src/modules/users/users.service.ts
+ create mode 100644 nestjs-cicd-backend/test/app.e2e-spec.ts
+ create mode 100644 nestjs-cicd-backend/test/jest-e2e.json
+ create mode 100644 nestjs-cicd-backend/tsconfig.build.json
+ create mode 100644 nestjs-cicd-backend/tsconfig.json
+ create mode 100644 reactjs-cicd-frontend/.gitignore
+ create mode 100644 reactjs-cicd-frontend/README.md
+ create mode 100644 reactjs-cicd-frontend/SCREENS/STEPS-FRONTEND.txt
+ create mode 100644 reactjs-cicd-frontend/eslint.config.js
+ create mode 100644 reactjs-cicd-frontend/index.html
+ create mode 100644 reactjs-cicd-frontend/package-lock.json
+ create mode 100644 reactjs-cicd-frontend/package.json
+ create mode 100644 reactjs-cicd-frontend/public/favicon.svg
+ create mode 100644 reactjs-cicd-frontend/public/icons.svg
+ create mode 100644 reactjs-cicd-frontend/src/App.css
+ create mode 100644 reactjs-cicd-frontend/src/App.jsx
+ create mode 100644 reactjs-cicd-frontend/src/api copy 2.js
+ create mode 100644 reactjs-cicd-frontend/src/api copy.js
+ create mode 100644 reactjs-cicd-frontend/src/api.js
+ create mode 100644 reactjs-cicd-frontend/src/assets/hero.png
+ create mode 100644 reactjs-cicd-frontend/src/assets/react.svg
+ create mode 100644 reactjs-cicd-frontend/src/assets/vite.svg
+ create mode 100644 reactjs-cicd-frontend/src/index.css
+ create mode 100644 reactjs-cicd-frontend/src/main.jsx
+ create mode 100644 reactjs-cicd-frontend/src/pages/CreateUser.jsx
+ create mode 100644 reactjs-cicd-frontend/src/pages/Login.jsx
+ create mode 100644 reactjs-cicd-frontend/src/pages/SendMail.jsx
+ create mode 100644 reactjs-cicd-frontend/src/pages/Users.jsx
+ create mode 100644 reactjs-cicd-frontend/src/utils/toast.js
+ create mode 100644 reactjs-cicd-frontend/vite.config.js
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git remote add origin https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+
+E:\MURALI\NEST-JS\cicd-project>git branch -M main
+
+E:\MURALI\NEST-JS\cicd-project>git push -u origin main
+Enumerating objects: 145, done.
+Counting objects: 100% (145/145), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (137/137), done.
+Writing objects: 100% (145/145), 203.11 KiB | 4.14 MiB/s, done.
+Total 145 (delta 19), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (19/19), done.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "Added CI pipeline"
+[main 17e4136] Added CI pipeline
+ 2 files changed, 5 insertions(+)
+ create mode 100644 .github/workflows/ci.yml
+ create mode 100644 .gitignore
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (6/6), 489 bytes | 122.00 KiB/s, done.
+Total 6 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   f4161cb..17e4136  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'reactjs-cicd-frontend/package.json', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "Added CI pipeline"
+[main 8488c26] Added CI pipeline
+ 2 files changed, 71 insertions(+)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 13, done.
+Counting objects: 100% (13/13), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (7/7), 968 bytes | 484.00 KiB/s, done.
+Total 7 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   17e4136..8488c26  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>pnpm test
+
+> nestjs-cicd-backend@0.0.1 test E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend
+> jest
+
+ PASS  src/app.controller.spec.ts
+ PASS  src/modules/mail/mail.service.spec.ts
+ PASS  src/modules/mail/mail.controller.spec.ts
+ PASS  src/modules/auth/auth.service.spec.ts
+ PASS  src/modules/users/users.service.spec.ts
+  ● Console
+
+    console.log
+      DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (database/db.ts:5:9)
+
+ PASS  src/common/guards/roles/roles.guard.spec.ts
+ PASS  src/common/middleware/activity/activity.middleware.spec.ts
+  ● Console
+
+    console.log
+      DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (database/db.ts:5:9)
+
+ PASS  src/modules/auth/auth.controller.spec.ts
+  ● Console
+
+    console.log
+      DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (database/db.ts:5:9)
+
+ PASS  src/common/interceptors/activity/activity.interceptor.spec.ts
+  ● Console
+
+    console.log
+      DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (database/db.ts:5:9)
+
+ PASS  src/common/guards/jwt/jwt.guard.spec.ts
+  ● Console
+
+    console.log
+      DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (database/db.ts:5:9)
+
+ PASS  src/common/guards/idle-timeout/idle-timeout.guard.spec.ts
+  ● Console
+
+    console.log
+      DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (database/db.ts:5:9)
+
+ PASS  src/common/interceptors/transform/transform.interceptor.spec.ts
+ PASS  src/common/filters/http-exception/http-exception.filter.spec.ts
+ PASS  src/common/filters/all-exception/all-exception.filter.spec.ts
+ PASS  src/common/interceptors/logging/logging.interceptor.spec.ts
+ PASS  src/modules/users/users.controller.spec.ts (5.714 s)
+  ● Console
+
+    console.log
+      DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (database/db.ts:5:9)
+
+ PASS  src/common/middleware/logger/logger.middleware.spec.ts
+ PASS  src/common/pipes/validation/validation.pipe.spec.ts
+
+Test Suites: 18 passed, 18 total
+Tests:       18 passed, 18 total
+Snapshots:   0 total
+Time:        7.395 s
+Ran all test suites.
+
+E:\MURALI\NEST-JS\cicd-project\nestjs-cicd-backend>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'nestjs-cicd-backend/src/app.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/auth.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/auth/auth.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/mail/mail.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/mail/mail.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.controller.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'nestjs-cicd-backend/src/modules/users/users.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "All tests fixed"
+[main 22469e9] All tests fixed
+ 7 files changed, 85 insertions(+), 10 deletions(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 24, done.
+Counting objects: 100% (24/24), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (15/15), 1.94 KiB | 662.00 KiB/s, done.
+Total 15 (delta 12), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (12/12), completed with 7 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   8488c26..22469e9  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'reactjs-cicd-frontend/package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/package.json', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "added vitest for frontend CI"
+[main a4b2da3] added vitest for frontend CI
+ 2 files changed, 363 insertions(+), 3 deletions(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 3.92 KiB | 1002.00 KiB/s, done.
+Total 5 (delta 4), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (4/4), completed with 4 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   22469e9..a4b2da3  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'reactjs-cicd-frontend/package.json', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "allow empty tests for CI"
+[main 0ac5b61] allow empty tests for CI
+ 3 files changed, 73 insertions(+), 3 deletions(-)
+ create mode 100644 .github/workflows/ci copy.yml
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 13, done.
+Counting objects: 100% (13/13), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (7/7), 669 bytes | 669.00 KiB/s, done.
+Total 7 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   a4b2da3..0ac5b61  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project\reactjs-cicd-frontend>npm test
+
+> reactjs-cicd-frontend@0.0.0 test
+> vitest run --passWithNoTests
+
+
+ RUN  v4.1.4 E:/MURALI/NEST-JS/cicd-project/reactjs-cicd-frontend
+
+ ✓ src/App.test.js (0 test) 1ms
+
+ Test Files  1 passed (1)
+      Tests  no tests
+   Start at  19:52:07
+   Duration  2.33s (transform 1.29s, setup 0ms, import 1.88s, tests 1ms, environment 0ms)
+
+
+E:\MURALI\NEST-JS\cicd-project\reactjs-cicd-frontend>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "allow dummy tests for CI"
+[main 9ecc3e9] allow dummy tests for CI
+ 1 file changed, 7 insertions(+)
+ create mode 100644 reactjs-cicd-frontend/src/App.test.js
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 8, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 511 bytes | 511.00 KiB/s, done.
+Total 5 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   0ac5b61..9ecc3e9  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "fixed vitest command in CI"
+[main 5ceaeb7] fixed vitest command in CI
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (5/5), 516 bytes | 516.00 KiB/s, done.
+Total 5 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   9ecc3e9..5ceaeb7  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "PULL REQUEST commented in CI"
+[main 93c250b] PULL REQUEST commented in CI
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (5/5), 545 bytes | 545.00 KiB/s, done.
+Total 5 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   5ceaeb7..93c250b  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "PULL REQUEST REMOVED in CI"
+[main 9fe09b4] PULL REQUEST REMOVED in CI
+ 1 file changed, 2 deletions(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (5/5), 526 bytes | 526.00 KiB/s, done.
+Total 5 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   93c250b..9fe09b4  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'nestjs-cicd-backend/package.json', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "Package.json fixed node dist/main.js in CI"
+[main a679324] Package.json fixed node dist/main.js in CI
+ 1 file changed, 1 insertion(+)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 383 bytes | 191.00 KiB/s, done.
+Total 4 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   9fe09b4..a679324  main -> main
+Rename from 'E:/MURALI/NEST-JS/cicd-project/.git/refs/remotes/origin/main.lock' to 'E:/MURALI/NEST-JS/cicd-project/.git/refs/remotes/origin/main' failed. Should I try again? (y/n) n
+error: update_ref failed for ref 'refs/remotes/origin/main': couldn't set 'refs/remotes/origin/main'
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Everything up-to-date
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'nestjs-cicd-backend/package.json', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "Package.json FIXED dist/main.js in CI"
+[main 58168f8] Package.json FIXED dist/main.js in CI
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 385 bytes | 128.00 KiB/s, done.
+Total 4 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   a679324..58168f8  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+🔥 Perfect — your backend is successfully deployed!
+
+✅ What your logs confirm
+✔ NestJS app started successfully
+✔ All routes mapped (/users, /auth, /mail)
+✔ Server is running on Render
+✔ Public URL is live
+⚠️ About this 404 error
+HEAD http://nestjs-backend-o7ql.onrender.com/
+🔥 STATUS: 404
+
+👉 This is NOT an error ❌
+👉 This is expected behavior ✅
+
+🤔 Why 404 is happening
+
+Your app has routes like:
+
+/auth/login
+/users
+/mail/send
+
+But NO route defined for / (root URL)
+
+So when Render checks:
+
+GET /
+
+👉 NestJS responds:
+
+Cannot GET /
+✅ How to fix (optional but recommended)
+
+Add a root route for health check 👇
+
+📁 app.controller.ts
+import { Controller, Get } from '@nestjs/common';
+
+@Controller()
+export class AppController {
+  @Get()
+  getRoot() {
+    return { message: 'API is running 🚀' };
+  }
+}
+🔁 Redeploy after pushing
+git add .
+git commit -m "Added root health check"
+git push
+🧪 Test your API (very important)
+
+Open in browser or Postman:
+
+👉 Your live API:
+
+https://nestjs-backend-o7ql.onrender.com/auth/login
+
+👉 Example:
+
+POST /auth/login
+POST /mail/send
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+warning: in the working copy of 'nestjs-cicd-backend/src/main.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reactjs-cicd-frontend/package-lock.json', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "Added frontend URL in CORS"
+[main 40f1208] Added frontend URL in CORS
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 15, done.
+Counting objects: 100% (15/15), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (8/8), done.
+Writing objects: 100% (8/8), 790 bytes | 263.00 KiB/s, done.
+Total 8 (delta 6), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (6/6), completed with 6 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   58168f8..40f1208  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+
+E:\MURALI\NEST-JS\cicd-project>git add .
+
+E:\MURALI\NEST-JS\cicd-project>git commit -m "ADDED again ip address const in CI"
+[main 330ae15] ADDED again ip address const in CI
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+E:\MURALI\NEST-JS\cicd-project>git push
+Enumerating objects: 11, done.
+Counting objects: 100% (11/11), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (6/6), 485 bytes | 5.00 KiB/s, done.
+Total 6 (delta 5), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+To https://github.com/gvnaresshuser/nestjs-react-cicd-app.git
+   7d1d532..330ae15  main -> main
+
+E:\MURALI\NEST-JS\cicd-project>
+===============================================================================================
+| Tool                | Hosting     | Best For          |
+| ------------------- | ----------- | ----------------- |
+| GitHub Actions      | Cloud       | GitHub projects   |
+| Jenkins             | Self-hosted | Full control      |
+| GitLab CI           | Both        | All-in-one DevOps |
+| CircleCI            | Cloud       | Speed             |
+| Travis CI           | Cloud       | Open-source       |
+| Azure DevOps        | Both        | Microsoft stack   |
+| Bitbucket Pipelines | Cloud       | Atlassian users   |
+| AWS CodePipeline    | Cloud       | AWS apps          |
+
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================

@@ -1,0 +1,158 @@
+TESTING-Lesson-02-users.controller-1.ts
+==============================================
+pnpm run start:dev
+
+src-LESSON-02-TESTING:
+=====================
+INSTALL THUNDER CLIENT IN VS CODE Editor
+GET
+http://localhost:3000
+return
+Hello World!
+
+USERS:
+=====
+GET
+http://localhost:3000/users
+[]
+GET
+http://localhost:3000/users/1
+{
+  "id": "1"
+}
+GET
+http://localhost:3000/users/interns
+{
+  "id": "interns"
+}
+
+POST
+http://localhost:3000/users
+body
+{
+	"name":"GVN",
+	"email":"gvnaressh@gmail.com",
+	"role":"ADMIN"
+}
+
+PATCH
+http://localhost:3000/users/1
+body
+{
+	"name":"GVN",
+	"email":"gvnaressh@gmail.com",
+	"role":"ADMIN"
+}
+return
+{
+  "id": "1",
+  "name": "GVN",
+  "email": "gvnaressh@gmail.com",
+  "role": "ADMIN"
+}
+
+DELETE
+http://localhost:3000/users/1
+no body required
+return
+{
+  "id": "1"
+}
+
+QUERY PARAMETER
+GET
+http://localhost:3000/users?role=ADMIN
+return
+[]
+
+QUERY PARAMETER
+GET
+http://localhost:3000/users?role=ADMIN&age=42
+return
+[]
+
+============================================================================================
+
+GET http://localhost:3000/users/filter?role=ENGINEER
+return
+{
+  "id": "filter"
+}
+IF WE MOVE STATIC ROUTE ABOVE DYNAMIC ROUTE WE GET FOLLOWING RETURN VALUE
+[
+  "ENGINEER"
+]
+
+
+
+
+FILTER DTO:
+==========
+//----------------- USING FILTER DTO -------------------
+//VALID GET http://localhost:3000/users?role=ADMIN&age=25
+//INVALID GET http://localhost:3000/users?role=NARESSH
+@Get()
+findAll(@Query() query: FilterUsersDto) {
+   return query;
+}
+==========================================================
+CONFIGURE THIS FILTER IN main.ts FILE
+
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+import { ValidationPipe } from '@nestjs/common';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true
+    })
+  );
+
+  await app.listen(process.env.PORT ?? 3000);
+}
+bootstrap();
+
+==========================================================
+//VALID GET http://localhost:3000/users?role=ADMIN&age=25
+{
+  "role": "ADMIN",
+  "age": 25
+}
+
+//INVALID GET http://localhost:3000/users?role=NARESSH
+{
+  "message": [
+    "role must be one of the following values: INTERN, ENGINEER, ADMIN"
+  ],
+  "error": "Bad Request",
+  "statusCode": 400
+}
+
+******************************************
+pnpm add class-validator class-transformer
+******************************************
+
+PS E:\MURALI\NEST-JS\drizzle-nest-basics> pnpm add class-validator class-transformer
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +9 -4
++++++++++----
+Progress: resolved 673, reused 654, downloaded 0, added 9, done
+
+dependencies:
++ class-transformer 0.5.1
++ class-validator 0.15.1
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17, unrs-resolver@1.11.1.                       │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 3m 22.4s using pnpm v10.32.1
+PS E:\MURALI\NEST-JS\drizzle-nest-basics> 

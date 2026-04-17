@@ -1,0 +1,707 @@
+Production-ready setup for NestJS app.
+
+We’ll cover:
+
+✅ Validation using `class-validator`
+✅ Global Validation Pipe
+✅ Proper DTOs
+✅ Real Update API flow
+✅ Drizzle ORM integration (based on your DB)
+
+---
+FIRST STEP - CREATE ALL REQUIRED FILES WITH ONE COMMAND
+
+*********************
+nest g resource users
+*********************
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>nest g resource users
+√ What transport layer do you use? REST API
+√ Would you like to generate CRUD entry points? Yes
+CREATE src/users/users.controller.ts (928 bytes)
+CREATE src/users/users.controller.spec.ts (586 bytes)
+CREATE src/users/users.module.ts (257 bytes)
+CREATE src/users/users.service.ts (635 bytes)
+CREATE src/users/users.service.spec.ts (471 bytes)
+CREATE src/users/dto/create-user.dto.ts (31 bytes)
+CREATE src/users/dto/update-user.dto.ts (173 bytes)
+CREATE src/users/entities/user.entity.ts (22 bytes)
+UPDATE src/app.module.ts (324 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+
+# 🚀 1. Install Validation Packages
+
+In NestJS:
+
+```bash
+npm install class-validator class-transformer
+```
+USE THIS COMMAND - AS WE ARE USING PNPM
+pnpm add class-validator class-transformer
+
+---
+https://github.com/typestack/class-validator#validation-decorators
+
+# 🧱 2. Create Proper DTOs
+
+## 📥 create-user.dto.ts
+
+```ts
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+
+export class CreateUserDto {
+  @IsNotEmpty({ message: 'Name is required' })
+  name: string;
+
+  @IsEmail({}, { message: 'Invalid email format' })
+  email: string;
+
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  password: string;
+}
+```
+
+---
+
+## 🔄 update-user.dto.ts
+
+```ts
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateUserDto } from './create-user.dto';
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
+```
+
+👉 All fields optional automatically ✔
+
+---
+
+# 🌍 3. Enable Global Validation Pipe
+
+## main.ts
+
+```ts
+import { ValidationPipe } from '@nestjs/common';
+
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,            // remove extra fields
+    forbidNonWhitelisted: true, // throw error for unknown fields
+    transform: true,            // auto type conversion
+  }),
+);
+```
+
+---
+
+# 🎮 4. Controller (Real API Flow)
+
+## users.controller.ts
+
+```ts
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) { }
+
+  // ✅ Create User
+  @Post()
+  create(@Body() dto: CreateUserDto) {
+    return this.usersService.create(dto);
+  }
+
+  // ✅ Update User
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(+id, dto);
+  }
+}
+```
+
+---
+
+# ⚙️ 5. Service Logic
+
+## users.service.ts
+
+```ts
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+};
+
+@Injectable()
+export class UsersService {
+  private users: User[] = [];
+
+  create(dto: CreateUserDto): User {
+    const user: User = {
+      id: Date.now(),
+      ...dto,
+    };
+
+    this.users.push(user);
+    return user;
+  }
+
+  update(id: number, dto: UpdateUserDto): User {
+    const user = this.users.find(u => u.id === id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    Object.assign(user, dto);
+    return user;
+  }
+}
+```
+
+---
+
+# 🧪 6. Testing APIs (Thunder Client / Postman)
+
+## ✅ Create User
+
+```
+POST http://localhost:3000/users
+```
+
+```json
+{
+  "name": "Naresh",
+  "email": "naresh@test.com",
+  "password": "123456"
+}
+```
+
+---
+
+## ❌ Invalid Request
+
+```json
+{
+  "name": "",
+  "email": "wrong"
+}
+```
+
+👉 Response:
+
+```json
+{
+  "message": [
+    "Name is required",
+    "Invalid email format"
+  ]
+}
+```
+
+---
+
+## 🔄 Update User
+
+```
+PATCH http://localhost:3000/users/1774878725501 -- whatever id is created use that
+```
+
+```json
+{
+  "email": "new@test.com"
+}
+```
+
+👉 Only email updates ✔
+
+---
+
+SAVE FOLDER AS src-No-Database
+
+# 🧬 7. Drizzle ORM Integration (IMPORTANT 🔥)
+
+Since you're using PostgreSQL + Drizzle:
+
+## Install
+
+```bash
+npm install drizzle-orm pg
+```
+WHENEVER INSTALLING PACKAGES - STOP SERVER
+
+pnpm add drizzle-orm pg dotenv
+pnpm add -D @types/pg
+pnpm add drizzle-kit studio
+
+ADD IN package.json FILE
+"scripts": {
+  "db:generate": "drizzle-kit generate",
+  "db:migrate": "drizzle-kit migrate",
+  "db:push": "drizzle-kit push",
+  "db:studio": "drizzle-kit studio"
+}
+
+
+
+CHECK IN package.json FILE
+"drizzle-orm": "^0.45.2",
+"pg": "^8.20.0",
+"dotenv": "^17.3.1",
+"drizzle-kit": "^0.31.10",
+"studio": "^0.13.5"
+
+CREATE drizzle.config.ts IN ROOT
+-----------
+import 'dotenv/config';
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+    schema: './src/database/schema.ts',
+    out: './drizzle',
+    dialect: 'postgresql',
+    dbCredentials: {
+        url: process.env.DATABASE_URL!
+    }
+});
+-----------
+pnpm run db:studio
+http://localhost:4983
+https://local.drizzle.studio
+
+CREATE .env FILE IN THE ROOT AND ADD DATABASE_URL
+
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+
+---
+CREATE FOLDER AND FILE: src/database/db.ts
+
+## db.ts
+
+```ts
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+});
+
+export const db = drizzle(pool);
+```
+
+---
+
+CREATE FOLDER AND FILE: src/database/users.schema.ts
+CHANGE TABLE NAME TO THE ONE NOT AVAILABLE IN DATABASE -- nextjs_users_new
+This is the table that will be mapped to users object by drizzle orm.
+
+## users.schema.ts
+
+```ts
+import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('nextjs_users_new', {
+  id: serial('id').primaryKey(),
+  name: text('name'),
+  email: text('email'),
+  password: text('password'),
+});
+```
+
+---
+
+## users.service.ts (DB version)
+
+👉 eq means "equals"
+👉 It is used to create WHERE conditions in SQL queries
+
+```ts
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+};
+
+@Injectable()
+export class UsersService {
+  private users: User[] = [];
+
+  create(dto: CreateUserDto): User {
+    const user: User = {
+      id: Date.now(),
+      ...dto,
+    };
+
+    this.users.push(user);
+    return user;
+  }
+
+  update(id: number, dto: UpdateUserDto): User {
+    const user = this.users.find(u => u.id === id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    Object.assign(user, dto);
+    return user;
+  }
+}
+```
+## users.controller.ts
+---
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) { }
+
+  // ✅ Create User
+  @Post()
+  create(@Body() dto: CreateUserDto) {
+    return this.usersService.create(dto);
+  }
+
+  // ✅ Update User
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(+id, dto);
+  }
+}
+---
+
+# 🔥 8. What You Achieved
+
+✅ Clean DTO validation
+✅ No duplicate update DTO (thanks to `PartialType`)
+✅ Secure input filtering
+✅ Real API structure
+✅ Database integration with Drizzle
+
+
+TESTING ENDPOINTS:
+=================
+Schema → Push/Migrate → Tables Created → API Works
+
+You must create tables first
+Create Tables in DB
+pnpm db:push
+
+👉 This will:
+
+Create tables in PostgreSQL
+Sync schema instantly
+🧬 Alternative (Production Way)
+pnpm db:generate
+pnpm db:migrate
+
+👉 This creates and runs migrations
+============================================
+
+********************
+pnpm run db:generate
+********************
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle\0000_certain_quasar.sql
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm run db:generate
+
+> drizzle-nest-basicsx@0.0.1 db:generate E:\MURALI\NEST-JS\drizzle-nest-basicsx
+> drizzle-kit generate
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+1 tables
+nextjs_users_new 4 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0000_certain_quasar.sql 🚀
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+================================================================================
+CAREFUL WHEN USING THESE COMMANDS - USE IF IT IS A NEW DATABASE
+********************
+pnpm run db:migrate
+********************
+********************
+pnpm run db:push
+********************
+================================================================================
+❗ Golden Rule
+| Situation   | Command            |
+| ----------- | ------------------ |
+| New DB      | migrate            |
+| Existing DB | introspect + push  |
+| Learning    | push               |
+| Production  | generate + migrate |
+
+================================================================================
+✅ What you can do (SAFE METHOD)
+
+You already have:
+
+CREATE TABLE "nextjs_users_new" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "name" text,
+  "email" text,
+  "password" text
+);
+
+👉 This is perfect — it only creates a new table
+👉 It does NOT touch existing tables
+================================================================================
+IF ANY DRIZZLE ERROR OR ISSUE DO THE FOLLOWING:
+-----------------------------------------------
+pnpm remove drizzle-orm
+pnpm add drizzle-orm
+pnpm dedupe
+
+OR
+
+Delete node_modules (if still issue)
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+
+👉 Windows:
+
+rmdir /s /q node_modules
+del pnpm-lock.yaml
+pnpm install
+================================================================================
+✅ Then Test APIs
+POST
+POST http://localhost:3000/users
+{
+  "name": "Naresh",
+  "email": "test@gmail.com",
+  "password": "123456"
+}
+---------------
+response
+{
+  "id": 1,
+  "name": "Naresh",
+  "email": "test@gmail.com",
+  "password": "123456"
+}
+---------------
+PATCH
+PATCH http://localhost:3000/users/1
+{
+  "email": "new@test.com"
+}
+---------------
+response
+{
+  "id": 1,
+  "name": "Naresh",
+  "email": "new@test.com",
+  "password": "123456"
+}
+---------------
+================================================================================
+Test APIs (Complete Set)
+✅ GET ALL
+GET http://localhost:3000/users
+Response
+[
+  {
+    "id": 1,
+    "name": "Naresh",
+    "email": "new@test.com",
+    "password": "123456"
+  }
+]
+✅ GET BY ID
+GET http://localhost:3000/users/1
+Response
+{
+  "id": 1,
+  "name": "Naresh",
+  "email": "new@test.com",
+  "password": "123456"
+}
+❌ GET NOT FOUND
+GET http://localhost:3000/users/999
+{
+  "message": "User not found",
+  "error": "Not Found",
+  "statusCode": 404
+}
+✅ DELETE
+DELETE http://localhost:3000/users/1
+Response
+{
+  "message": "User deleted successfully",
+  "data": {
+    "id": 1,
+    "name": "Naresh",
+    "email": "new@test.com",
+    "password": "123456"
+  }
+}
+✅ Verify Delete
+GET http://localhost:3000/users
+
+👉 Should return empty array []
+================================================================================
+================================================================================
+================================================================================
+TERMINAL OUTPUT:
+===============
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>nest g resource users
+√ What transport layer do you use? REST API
+√ Would you like to generate CRUD entry points? Yes
+CREATE src/users/users.controller.ts (928 bytes)
+CREATE src/users/users.controller.spec.ts (586 bytes)
+CREATE src/users/users.module.ts (257 bytes)
+CREATE src/users/users.service.ts (635 bytes)
+CREATE src/users/users.service.spec.ts (471 bytes)
+CREATE src/users/dto/create-user.dto.ts (31 bytes)
+CREATE src/users/dto/update-user.dto.ts (173 bytes)
+CREATE src/users/entities/user.entity.ts (22 bytes)
+UPDATE src/app.module.ts (324 bytes)
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm add class-validator class-transformer
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +10 -5
+++++++++++-----
+Progress: resolved 674, reused 654, downloaded 1, added 10, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ class-transformer 0.5.1
++ class-validator 0.15.1
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17.                                             │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 3m 58.6s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+================================================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm add drizzle-orm pg
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +15
++++++++++++++++
+Progress: resolved 689, reused 670, downloaded 0, added 15, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ drizzle-orm 0.45.2
++ pg 8.20.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17.                                             │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 2m 8.7s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm add dotenv
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
++
+Progress: resolved 690, reused 671, downloaded 0, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ dotenv 17.3.1
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17.                                             │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 1m 21.4s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm add -D @types/pg
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +2 -1
+++-
+Progress: resolved 691, reused 672, downloaded 0, added 2, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/mapped-types 2.1.0
+  └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+devDependencies:
++ @types/pg 8.20.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17.                                             │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 5m 20.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+================================================================================
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm run db:studio
+
+> drizzle-nest-basicsx@0.0.1 db:studio E:\MURALI\NEST-JS\drizzle-nest-basicsx
+> drizzle-kit studio
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+Using 'pg' driver for database querying
+
+ Warning  Drizzle Studio is currently in Beta. If you find anything that is not working as expected or should be improved, feel free to create an issue on GitHub: https://github.com/drizzle-team/drizzle-kit-mirror/issues/new or write to us on Discord: https://discord.gg/WcRKz2FFxN
+
+Drizzle Studio is up and running on https://local.drizzle.studio
+================================================================================
+================================================================================
+================================================================================
+================================================================================
+================================================================================

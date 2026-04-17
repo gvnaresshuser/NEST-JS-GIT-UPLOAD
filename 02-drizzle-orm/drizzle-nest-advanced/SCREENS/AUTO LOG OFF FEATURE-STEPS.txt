@@ -1,0 +1,446 @@
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+
+AUTO LOG OFF FEATURE:
+--------------------
+Altered Files:
+--------------
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\common\guards\jwt\jwt.guard.ts
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\modules\auth\auth.service.ts
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\modules\users\users.controller.ts
+E:\MURALI\NEST-JS\drizzle-nest-advanced\src\modules\auth\auth.service.ts
+
+===================================================================================
+⚙️ STEP 1: Update Database Schema (VERY IMPORTANT)
+
+👉 Modify your schema.ts
+
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('nestjs_users', {
+    id: serial('id').primaryKey(),
+    email: text('email'),
+    password: text('password'),
+    role: text('role').notNull(),
+
+    // ✅ ADD THIS
+    lastActivity: timestamp('last_activity').defaultNow(),
+});
+===================================================================================
+
+⚙️ STEP 2: Run Migration (Drizzle)
+
+If using drizzle-kit:
+
+npx drizzle-kit generate
+npx drizzle-kit push
+
+👉 If not using migrations → manually run SQL:
+
+********************* DO THIS *******************
+ALTER TABLE nestjs_users ADD COLUMN last_activity TIMESTAMP DEFAULT NOW();
+********************* DO THIS *******************
+===================================================================================
+⚙️ STEP 3: Create Idle Timeout Guard
+📁 Create file:
+nest g guard common/guards/idle-timeout
+ADD CODE
+===================================================================================
+⚙️ STEP 4: Update Activity Middleware
+
+👉 You already have middleware folder 👍
+
+📁 Create file:
+nest g middleware common/middleware/activity
+ADD CODE
+===================================================================================
+⚙️ STEP 5: Apply Middleware Globally
+
+👉 In app.module.ts
+
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ActivityMiddleware } from './common/middleware/activity/activity.middleware';
+
+@Module({
+  // existing stuff
+})
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ActivityMiddleware).forRoutes('*');
+  }
+}
+===================================================================================
+✨ Create interceptor
+nest g interceptor common/interceptors/activity
+ADD CODE
+
+✨ Apply it
+@UseGuards(JwtGuard, IdleTimeoutGuard)
+@UseInterceptors(ActivityInterceptor)
+@Get()
+findAll() { ... }
+===================================================================================
+🎯 WHERE TO APPLY THE GUARD
+
+You have 3 ways to apply it:
+
+✅ Option 1 (RECOMMENDED) — Per Route / Controller
+
+👉 Best control + production safe
+
+⚠️ Option 2 — Global Guard
+
+👉 Applies everywhere (not ideal for public routes like login)
+
+✅ OPTION 1 — Apply in UsersController (BEST)
+👉 Update your users.controller.ts
+✨ Import Guard
+import { IdleTimeoutGuard } from '../../common/guards/idle-timeout/idle-timeout.guard';
+🔥 Apply along with JwtGuard
+@Throttle({ short: { ttl: 1000, limit: 1 } })
+@Get()
+@UseGuards(JwtGuard, IdleTimeoutGuard)   // ✅ ADD THIS
+findAll(@Query('limit') limit: string, @Query('offset') offset: string) {
+🔐 Admin Route
+@Get('admin')
+@UseGuards(JwtGuard, IdleTimeoutGuard, RolesGuard) // ✅ ADD HERE
+@Roles('ADMIN')
+adminRoute(@GetUser() user) {
+📌 Optional — Apply to entire controller
+
+If ALL routes require auth:
+
+@UseGuards(JwtGuard, IdleTimeoutGuard)
+@Controller('users')
+export class UsersController {
+
+👉 Then remove guards from individual methods
+
+🚀 OPTION 2 — Apply Globally (ADVANCED)
+
+If you want auto logout everywhere:
+
+👉 In app.module.ts
+import { IdleTimeoutGuard } from './common/guards/idle-timeout/idle-timeout.guard';
+Add provider:
+providers: [
+  {
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard,
+  },
+  {
+    provide: APP_GUARD,
+    useClass: IdleTimeoutGuard, // ✅ ADD THIS
+  },
+  MyLoggerService,
+],
+⚠️ IMPORTANT
+
+If global:
+
+👉 Your guard must skip public routes (login/register)
+
+Example:
+
+if (request.url.includes('/auth')) {
+  return true;
+}
+===================================================================================
+🚀 OPTION 1 — CREATE USERS VIA API (RECOMMENDED)
+
+POST http://localhost:3000/users
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+
+👉 Use your existing:
+
+POST /users
+📌 Requests (Thunder Client / Postman)
+👤 User 2
+POST http://localhost:3000/users
+{
+  "email": "user2@test.com",
+  "password": "222222",
+  "role": "USER"
+}
+👤 User 3
+POST http://localhost:3000/users
+{
+  "email": "user3@test.com",
+  "password": "333333",
+  "role": "USER"
+}
+👤 User 4
+POST http://localhost:3000/users
+{
+  "email": "user4@test.com",
+  "password": "444444",
+  "role": "USER"
+}
+👤 User 5
+POST http://localhost:3000/users
+{
+  "email": "user5@test.com",
+  "password": "555555",
+  "role": "USER"
+}
+===================================================================================
+TESTING PLAN:
+pnpm start:dev
+===================================================================================
+🧪 TEST PLAN (SUPER QUICK)
+1️.Login
+POST /auth/login
+
+2️.Call API
+GET /users
+Authorization: Bearer token
+
+✔ Works
+
+3️.Wait 10 seconds
+4️.Call again
+GET /users
+
+❌ Expected:
+
+{
+  "message": "Session expired due to inactivity"
+}
+===================
+```http
+POST http://localhost:3000/auth/login
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+```
+
+```
+
+### ➤ Expected Response
+
+```json
+{
+  "message": "Login successful"
+}
+```
+accesstoken : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NzgxMjcxLCJleHAiOjE3NzQ3ODM5NzF9.cOsyrkjZHW1Zf8KyJrn1IvFNbb4aRJvZafTBlDmSLzg
+
+refreshtoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NzgxMjcxLCJleHAiOjE3NzUzODYwNzF9.c8KBGG15GDz8qpyb3kKw2P_KJTzBJ3Sjklf7qUcucT8
+
+
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NzgxMjcxLCJleHAiOjE3NzQ3ODM5NzF9.cOsyrkjZHW1Zf8KyJrn1IvFNbb4aRJvZafTBlDmSLzg
+
+---
+
+===================================================================================
+2️.Call API
+GET http://localhost:3000/users
+Authorization: Bearer token
+
+✔ Works
+
+3️.Wait 10 seconds
+4️.Call again
+GET http://localhost:3000/users
+
+❌ Expected:
+
+{
+  "message": "Session expired due to inactivity"
+}
+===================================================================================
+
+Authorization: Bearer <accessToken>
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NDc4NTQ2MywiZXhwIjoxNzc0Nzg4MTYzfQ.Y6bXs3rCaQrqQD6QFCfv-zHdQoPVQEcOyxIg97ipgzk
+
+===================================================================================
+[5:06:57 pm] Starting compilation in watch mode...
+
+[5:07:04 pm] Found 0 errors. Watching for file changes.
+
+DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [NestFactory] Starting Nest application...
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] LoggerModule dependencies initialized +17ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] ConfigHostModule dependencies initialized +1ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +2ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] MailModule dependencies initialized +1ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 12636  - 29/03/2026, 5:07:06 pm     LOG [InstanceLoader] UsersModule dependencies initialized +1ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RoutesResolver] UsersController {/users}: +2220ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/users, POST} route +4ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/users, GET} route +1ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/users/admin, GET} route +1ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/users/:id, GET} route +0ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +1ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +0ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RoutesResolver] AuthController {/auth}: +1ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/auth/login, POST} route +0ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/auth/logout, POST} route +1ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/auth/refresh, POST} route +0ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RoutesResolver] MailController {/mail}: +1ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [RouterExplorer] Mapped {/mail/send, POST} route +0ms
+[Nest] 12636  - 29/03/2026, 5:07:08 pm     LOG [NestApplication] Nest application successfully started +3ms
+
+===================================================================================
+delete from nestjs_users  where id=1
+delete from nestjs_users  where id=2
+delete from nestjs_users  where id=3
+delete from nestjs_users  where id=4
+select * from nestjs_users
+===================================================================================
+NOTES ON forwardRef
+Cirfcular Dependency
+Rules to apply forwardRef
+full work flow for testing IdleTimeoutGuard
+===================================================================================
+🔥 🔁 COMPLETE AUTH + IDLE TIMEOUT FLOW
+🧭 1. LOGIN FLOW
+Client (Thunder / Frontend)
+        ↓
+POST /auth/login
+        ↓
+AuthController
+        ↓
+UsersService.findByEmail()
+        ↓
+AuthService.comparePassword()
+        ↓
+Update lastActivity (DB)
+        ↓
+AuthService.generateTokens()
+        ↓
+Response → accessToken + refreshToken
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>nest g guard common/guards/idle-timeout
+CREATE src/common/guards/idle-timeout/idle-timeout.guard.ts (317 bytes)
+CREATE src/common/guards/idle-timeout/idle-timeout.guard.spec.ts (196 bytes)
+
+===================================================================================
+
+E:\MURALI\NEST-JS\drizzle-nest-advanced>nest g middleware common/middleware/activity
+CREATE src/common/middleware/activity/activity.middleware.ts (208 bytes)
+CREATE src/common/middleware/activity/activity.middleware.spec.ts (203 bytes)
+
+===================================================================================
+[4:15:15 pm] Starting compilation in watch mode...
+
+[4:15:37 pm] Found 0 errors. Watching for file changes.
+
+DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [NestFactory] Starting Nest application...
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] LoggerModule dependencies initialized +15ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] ConfigHostModule dependencies initialized +1ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +2ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] MailModule dependencies initialized +0ms
+[Nest] 20020  - 29/03/2026, 4:16:47 pm     LOG [InstanceLoader] UsersModule dependencies initialized +1ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RoutesResolver] UsersController {/users}: +1749ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/users, POST} route +4ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/users, GET} route +1ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/users/admin, GET} route +0ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/users/:id, GET} route +1ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/users/:id, PATCH} route +1ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/users/:id, DELETE} route +0ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RoutesResolver] AuthController {/auth}: +1ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/auth/login, POST} route +0ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/auth/logout, POST} route +1ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/auth/refresh, POST} route +1ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RoutesResolver] MailController {/mail}: +0ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [RouterExplorer] Mapped {/mail/send, POST} route +6ms
+[Nest] 20020  - 29/03/2026, 4:16:49 pm     LOG [NestApplication] Nest application successfully started +5ms
+
+===================================================================================
+E:\MURALI\NEST-JS\drizzle-nest-advanced>nest g interceptor common/interceptors/activity
+CREATE src/common/interceptors/activity/activity.interceptor.ts (323 bytes)
+CREATE src/common/interceptors/activity/activity.interceptor.spec.ts (207 bytes)
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================
+===================================================================================

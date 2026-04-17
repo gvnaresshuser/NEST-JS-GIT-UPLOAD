@@ -1,0 +1,178 @@
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+
+KEEP sslmode=verify-full
+
+
+MVC Pattern
+
+npm vs pnmp
+
+FP
+npm run start:dev
+Thunder Client in VS Code Editor
+
+npm install -g pnpm
+pnpm -v
+----------------------------
+✅ 2️.Node version issue (VERY COMMON)
+
+PNPM + Nest sometimes fails with:
+
+Old Node version
+Experimental Node version
+
+Check:
+
+node -v
+
+👉 Recommended for NestJS:
+
+Node 18  OR  Node 20
+
+✔ If using Node 16 / 21 → installation may fail.
+----------------------------
+
+pnpm -v
+node -v
+npm -v
+------------------------
+E:\MURALI\NEST-JS>pnpm -v
+10.32.1
+
+E:\MURALI\NEST-JS>node -v
+v20.19.3
+
+E:\MURALI\NEST-JS>npm -v
+11.7.0
+
+E:\MURALI\NEST-JS>nest -v
+11.0.16
+------------------------
+
+✅ STEP-1 Create Nest Project (PNPM)
+*************************************
+pnpm dlx @nestjs/cli new drizzle-nest-basics
+select pnpm
+cd drizzle-nest-basics
+
+Run project:
+pnpm run start:dev
+pnpm start:dev
+*************************************
+
+--watch means nest js watches if any files have been modified and then automatically restarts the server.
+
+===============================================================================================
+Microsoft Windows [Version 10.0.26100.6899]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS>pnpm dlx @nestjs/cli new drizzle-nest-basics
+Packages: +212
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 212, reused 211, downloaded 1, added 212, done
+✨  We will scaffold your app in a few seconds..
+
+√ Which package manager would you ❤️  to use? pnpm
+CREATE drizzle-nest-basics/.prettierrc (56 bytes)
+CREATE drizzle-nest-basics/eslint.config.mjs (934 bytes)
+CREATE drizzle-nest-basics/nest-cli.json (179 bytes)
+CREATE drizzle-nest-basics/package.json (2061 bytes)
+CREATE drizzle-nest-basics/README.md (5134 bytes)
+CREATE drizzle-nest-basics/tsconfig.build.json (101 bytes)
+CREATE drizzle-nest-basics/tsconfig.json (702 bytes)
+CREATE drizzle-nest-basics/src/app.controller.ts (286 bytes)
+CREATE drizzle-nest-basics/src/app.module.ts (259 bytes)
+CREATE drizzle-nest-basics/src/app.service.ts (150 bytes)
+CREATE drizzle-nest-basics/src/main.ts (236 bytes)
+CREATE drizzle-nest-basics/src/app.controller.spec.ts (639 bytes)
+CREATE drizzle-nest-basics/test/jest-e2e.json (192 bytes)
+CREATE drizzle-nest-basics/test/app.e2e-spec.ts (694 bytes)
+
+√ Installation in progress... ☕
+
+🚀  Successfully created project drizzle-nest-basics
+👉  Get started with the following commands:
+
+$ cd drizzle-nest-basics
+$ pnpm run start
+
+
+                          Thanks for installing Nest 🙏
+                 Please consider donating to our open collective
+                        to help us maintain this package.
+
+
+               🍷  Donate: https://opencollective.com/nest
+
+
+E:\MURALI\NEST-JS>
+===============================================================================================
+nest generate module users
+OR
+nest g mo users
+===============================================================================================
+🔥 If you also want full setup (recommended)
+
+Generate module + controller + service together:
+
+nest g resource users
+
+👉 This will create:
+
+users.module.ts
+users.controller.ts
+users.service.ts
+DTO files
+CRUD structure (if you select REST)
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================
+===============================================================================================

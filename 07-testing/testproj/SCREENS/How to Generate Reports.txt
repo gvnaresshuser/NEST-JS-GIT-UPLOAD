@@ -1,0 +1,259 @@
+
+How to Generate Reports
+
+# ✅ 1. What You Already Have (Good Setup ✔)
+
+From your `package.json`, you already defined:
+
+| Type                 | Script                          |
+| -------------------- | ------------------------------- |
+| Unit tests           | `pnpm run test`                 |
+| Watch mode           | `pnpm run test:watch`           |
+| Coverage report      | `pnpm run test:cov`             |
+| Debug mode           | `pnpm run test:debug`           |
+| e2e tests            | `pnpm run test:e2e`             |
+| Integration tests    | `pnpm run test:integration`     |
+| Integration coverage | `pnpm run test:integration:cov` |
+
+👉 This is **industry-level structure** 👍
+
+---
+
+# ✅ 2. How to Generate Reports (Main Answer)
+
+## 🔹 A. Full Coverage Report (Unit + All `.spec.ts`)
+
+```bash
+pnpm run test:cov
+```
+
+# 📂 Output:
+
+```
+coverage/
+ ├── lcov-report/
+ ├── index.html   ✅ (main report)
+```
+
+👉 Open:
+
+```
+coverage/lcov-report/index.html
+```
+
+✔ This gives:
+
+* Line coverage
+* Function coverage
+* Branch coverage
+* File-wise breakdown
+
+---
+
+## 🔹 B. Integration Test Report
+
+```bash
+pnpm run test:integration:cov
+```
+
+👉 Only runs:
+
+```
+*.integration.spec.ts
+```
+
+✔ Useful when:
+
+* Testing DB (Drizzle/Postgres)
+* Testing services with real dependencies
+
+---
+
+## 🔹 C. e2e Test Report
+
+```bash
+pnpm run test:e2e
+```
+
+👉 Uses:
+
+```
+test/jest-e2e.json
+```
+
+⚠️ By default → **no coverage generated**
+
+👉 If you want coverage for e2e:
+
+Update script:
+
+```json
+"test:e2e:cov": "jest --config ./test/jest-e2e.json --coverage"
+```
+
+---
+
+# ✅ 3. Important Observation (Very Important 🔥)
+
+Your config:
+
+```json
+"rootDir": "src",
+"coverageDirectory": "../coverage"
+```
+
+👉 Means:
+
+* Tests run inside `src/`
+* Coverage goes **outside → project root `/coverage`**
+
+✔ This is correct and clean
+
+---
+
+# ✅ 4. How Jest Decides What to Run
+
+From your config:
+
+```json
+"testRegex": ".*\\.spec\\.ts$"
+```
+
+👉 Runs:
+
+```
+users.service.spec.ts
+products.controller.spec.ts
+```
+
+---
+
+## 🔹 Integration Tests (Custom)
+
+```json
+"test:integration": "jest src/**/*.integration.spec.ts"
+```
+
+👉 Runs:
+
+```
+users.integration.spec.ts
+orders.integration.spec.ts
+```
+
+---
+
+## 🔹 e2e Tests
+
+```
+test/app.e2e-spec.ts
+```
+
+Handled separately via:
+
+```
+jest-e2e.json
+```
+
+---
+
+# ✅ 5. Best Practice Naming (You Are Following 👍)
+
+| Type        | Naming                  |
+| ----------- | ----------------------- |
+| Unit        | `*.spec.ts`             |
+| Integration | `*.integration.spec.ts` |
+| e2e         | `*.e2e-spec.ts`         |
+
+---
+
+# ✅ 6. Want Better Reports? (Optional Upgrade 🚀)
+
+# 🔹 Add HTML Report (Nice UI)
+
+```bash
+pnpm add -D jest-html-reporter
+```
+
+Update:
+
+```json
+"jest": {
+  ...
+  "reporters": [
+    "default",
+    [
+      "jest-html-reporter",
+      {
+        "outputPath": "./test-report.html"
+      }
+    ]
+  ]
+}
+```
+
+👉 Run:
+
+```
+pnpm run test
+```
+
+👉 Output:
+
+```
+test-report.html
+```
+
+---
+
+# 🔹 CI/CD Report (Jenkins / GitHub)
+
+```bash
+pnpm add -D jest-junit
+```
+
+---
+
+# ✅ 7. Final Understanding (Very Important Concept)
+
+👉 Your project supports:
+
+* ✔ Unit → fast, isolated
+* ✔ Integration → DB + services
+* ✔ e2e → full API (via Supertest)
+
+---
+
+# 🔥 About your earlier question (confirming)
+
+✔ YES — in e2e:
+
+* Nest creates **app instance**
+* Supertest calls:
+
+```ts
+request(app.getHttpServer())
+```
+
+👉 It spins up an **in-memory HTTP server**, not actual port
+
+✔ So your understanding is **100% correct**
+
+---
+
+# ✅ Final Summary
+
+👉 Just run these:
+
+```bash
+pnpm run test:cov                 # Full coverage
+pnpm run test:integration:cov     # Integration coverage
+pnpm run test:e2e                 # e2e tests
+```
+
+👉 Open:
+
+```
+coverage/lcov-report/index.html
+```
+

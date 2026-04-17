@@ -1,0 +1,249 @@
+What You Can Do Inside Middleware in NestJS
+
+
+
+---
+
+# 🔥 What You Can Do Inside Middleware in NestJS
+
+Middleware runs **before the request reaches your controller**, so it’s perfect for cross-cutting concerns.
+
+---
+
+## ✅ 1. Authentication (Basic / Token Check)
+
+You can validate headers, tokens, or sessions.
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers['authorization'];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  // You can decode JWT here
+  req['user'] = { id: 1 }; // attach user info
+
+  next();
+}
+```
+
+👉 Used for:
+
+* JWT validation (basic level)
+* API key checking
+
+---
+
+## ✅ 2. Request Modification (Add Custom Data)
+
+You can inject extra data into the request.
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  req['requestTime'] = new Date();
+  next();
+}
+```
+
+👉 Later in controller:
+
+```ts
+console.log(req['requestTime']);
+```
+
+---
+
+## ✅ 3. Input Sanitization / Transformation
+
+Clean or modify incoming data before it hits your controllers.
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  if (req.body.name) {
+    req.body.name = req.body.name.trim().toLowerCase();
+  }
+  next();
+}
+```
+
+---
+
+## ✅ 4. Rate Limiting (Basic)
+
+Prevent abuse by tracking request count.
+
+```ts
+const requests = {};
+
+use(req: Request, res: Response, next: NextFunction) {
+  const ip = req.ip;
+  requests[ip] = (requests[ip] || 0) + 1;
+
+  if (requests[ip] > 100) {
+    return res.status(429).send('Too many requests');
+  }
+
+  next();
+}
+```
+
+👉 (For production → use libraries like `@nestjs/throttler`)
+
+---
+
+## ✅ 5. Logging (Advanced)
+
+You already did response time 👍
+You can also log:
+
+```ts
+console.log({
+  method: req.method,
+  url: req.url,
+  body: req.body,
+  query: req.query,
+  ip: req.ip,
+});
+```
+
+---
+
+## ✅ 6. CORS / Headers Control
+
+You can manually set headers:
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  res.setHeader('X-Custom-Header', 'NestJS');
+  next();
+}
+```
+
+---
+
+## ✅ 7. Redirect or Block Requests
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  if (req.originalUrl === '/admin') {
+    return res.redirect('/login');
+  }
+  next();
+}
+```
+
+---
+
+## ✅ 8. Request Validation (Basic)
+
+(Not recommended for complex validation → use Pipes instead)
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  if (!req.body.email) {
+    return res.status(400).json({ message: 'Email required' });
+  }
+  next();
+}
+```
+
+---
+
+## ✅ 9. Response Manipulation
+
+You can intercept response:
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  const oldSend = res.send;
+
+  res.send = function (data) {
+    console.log('Response:', data);
+    return oldSend.call(this, data);
+  };
+
+  next();
+}
+```
+
+---
+
+## ✅ 10. Multi-Tenancy / Context Setup
+
+Attach tenant or org info:
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  const tenant = req.headers['x-tenant-id'];
+  req['tenant'] = tenant;
+  next();
+}
+```
+
+---
+
+# ⚠️ Important Interview Insight
+
+👉 Middleware vs Guards vs Pipes vs Interceptors
+
+| Feature            | Middleware | Guard  | Pipe   | Interceptor |
+| ------------------ | ---------- | ------ | ------ | ----------- |
+| Runs before route  | ✅          | ✅      | ❌      | ❌           |
+| Access to request  | ✅          | ✅      | ✅      | ✅           |
+| Authentication     | ⚠️ basic   | ✅ best | ❌      | ❌           |
+| Validation         | ❌          | ❌      | ✅ best | ❌           |
+| Response transform | ❌          | ❌      | ❌      | ✅           |
+
+---
+
+# 🧠 Pro Tip (Very Important)
+
+👉 Use Middleware for:
+
+* Logging
+* Request modification
+* Simple auth checks
+* Headers
+
+👉 DON’T use Middleware for:
+
+* Complex validation → use Pipes
+* Role-based auth → use Guards
+* Response transformation → use Interceptors
+
+---
+
+# 💡 Advanced Idea (Production Level)
+
+You can combine everything:
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  const start = Date.now();
+
+  // Attach metadata
+  req['requestId'] = Math.random().toString(36).substring(7);
+
+  res.on('finish', () => {
+    const time = Date.now() - start;
+
+    console.log({
+      id: req['requestId'],
+      method: req.method,
+      url: req.originalUrl,
+      status: res.statusCode,
+      time: `${time}ms`,
+    });
+  });
+
+  next();
+}
+```
+
+---
+
+If you want, next I can show you:
+👉 **How to apply middleware to specific routes only (very important for interviews)**
+👉 OR how middleware differs from **Interceptor in real projects**

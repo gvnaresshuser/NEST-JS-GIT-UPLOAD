@@ -1,0 +1,171 @@
+[4:32:47 am] File change detected. Starting incremental compilation...
+
+[4:32:48 am] Found 0 errors. Watching for file changes.
+
+[Nest] 16860 - 08/04/2026, 4:34:32 am LOG [NestFactory] Starting Nest application...
+[Nest] 16860 - 08/04/2026, 4:34:32 am LOG [InstanceLoader] AppModule dependencies initialized +19ms
+[Nest] 16860 - 08/04/2026, 4:34:32 am LOG [RoutesResolver] AppController {/}: +11ms
+[Nest] 16860 - 08/04/2026, 4:34:32 am LOG [RouterExplorer] Mapped {/, GET} route +6ms
+[Nest] 16860 - 08/04/2026, 4:34:32 am LOG [NestApplication] Nest application successfully started +4ms
+^C
+E:\MURALI\NEST-JS\testproj>pnpm add drizzle-orm pg @types/pg dotenv
+
+╭──────────────────────────────────────────╮
+│ │
+│ Update available! 10.32.1 → 10.33.0. │
+│ Changelog: https://pnpm.io/v/10.33.0 │
+│ To update, run: pnpm add -g pnpm │
+│ │
+╰──────────────────────────────────────────╯
+
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +17
++++++++++++++++++
+Progress: resolved 685, reused 666, downloaded 0, added 17, done
+
+dependencies:
+
+- @types/pg 8.20.0
+- dotenv 17.4.1
+- drizzle-orm 0.45.2
+- pg 8.20.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│ │
+│ Ignored build scripts: @nestjs/core@11.1.17, unrs-resolver@1.11.1. │
+│ Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts. │
+│ │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 5m 29.7s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>pnpm add -D drizzle-kit
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +13
++++++++++++++
+Progress: resolved 769, reused 677, downloaded 2, added 13, done
+
+devDependencies:
+
+- drizzle-kit 0.31.10
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ │
+│ Ignored build scripts: @nestjs/core@11.1.17, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.7, │
+│ unrs-resolver@1.11.1. │
+│ Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts. │
+│ │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 14.5s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>pnpm add @nestjs/config
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +4
+++++
+Progress: resolved 773, reused 683, downloaded 0, added 4, done
+
+dependencies:
+
+- @nestjs/config 4.0.3
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ │
+│ Ignored build scripts: @nestjs/core@11.1.17, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.7, │
+│ unrs-resolver@1.11.1. │
+│ Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts. │
+│ │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 3.9s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>pnpm add class-validator class-transformer
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +10 -5
+++++++++++-----
+Progress: resolved 778, reused 687, downloaded 1, added 10, done
+
+dependencies:
+
+- class-transformer 0.5.1
+- class-validator 0.15.1
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ │
+│ Ignored build scripts: @nestjs/core@11.1.17, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.7, │
+│ unrs-resolver@1.11.1. │
+│ Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts. │
+│ │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 26s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>pnpm add jsonwebtoken @types/jsonwebtoken
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +14
+++++++++++++++
+Progress: resolved 792, reused 702, downloaded 0, added 14, done
+
+dependencies:
+
+- @types/jsonwebtoken 9.0.10
+- jsonwebtoken 9.0.3
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ │
+│ Ignored build scripts: @nestjs/core@11.1.17, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.7, │
+│ unrs-resolver@1.11.1. │
+│ Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts. │
+│ │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 5.5s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>pnpm add bcrypt
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +3
++++
+Progress: resolved 795, reused 705, downloaded 0, added 3, done
+
+dependencies:
+
+- bcrypt 6.0.0
+
+╭ Warning ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ │
+│ Ignored build scripts: @nestjs/core@11.1.17, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.7, │
+│ unrs-resolver@1.11.1. │
+│ Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts. │
+│ │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 6s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>pnpm add -D @types/bcrypt
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +1
+
+- Progress: resolved 796, reused 706, downloaded 0, added 1, done
+
+devDependencies:
+
+- @types/bcrypt 6.0.0
+
+╭ Warning ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ │
+│ Ignored build scripts: @nestjs/core@11.1.17, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.7, │
+│ unrs-resolver@1.11.1. │
+│ Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts. │
+│ │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 4.2s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>nest g module users
+CREATE src/users/users.module.ts (86 bytes)
+UPDATE src/app.module.ts (322 bytes)
+
+E:\MURALI\NEST-JS\testproj>nest g controller users
+CREATE src/users/users.controller.ts (103 bytes)
+CREATE src/users/users.controller.spec.ts (503 bytes)
+UPDATE src/users/users.module.ts (174 bytes)
+
+E:\MURALI\NEST-JS\testproj>nest g service users
+CREATE src/users/users.service.ts (93 bytes)
+CREATE src/users/users.service.spec.ts (471 bytes)
+UPDATE src/users/users.module.ts (251 bytes)
+
+E:\MURALI\NEST-JS\testproj>

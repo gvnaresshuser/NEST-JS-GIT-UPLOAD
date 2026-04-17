@@ -1,0 +1,488 @@
+Steps to create NestJS - Drizzle ORM CRUD App.
+
+pnpm add @nestjs/config
+
+---
+
+# 🚀 1. Project Setup (Nest CLI)
+
+```bash
+pnpm dlx @nestjs/cli new drizzle-nest-basicsx
+cd drizzle-nest-basicsx
+pnpm start:dev
+```
+
+---
+
+# 📦 2. Install Required Packages
+
+```bash
+pnpm add drizzle-orm pg dotenv class-validator class-transformer
+pnpm add -D drizzle-kit @types/pg
+pnpm add @nestjs/config
+```
+
+---
+
+# 🧱 3. Generate Resource (Users Module)
+
+```bash
+nest g resource users
+```
+
+👉 Select:
+
+* REST API
+* CRUD → YES
+
+### 🔥 Then DELETE:
+
+```bash
+src/users/entities ❌
+```
+
+✔ Because you are using **Drizzle ORM**, not TypeORM
+
+---
+
+# 🗄️ 4. Database Setup (Drizzle)
+
+## 📁 Create folder
+
+```bash
+src/database/
+```
+
+---
+
+## ✅ `db.ts`
+
+```ts
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export const db = drizzle(pool);
+```
+
+---
+
+## ✅ `users.schema.ts`
+
+```ts
+import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('nestjs_users_new', {
+  id: serial('id').primaryKey(),
+  name: text('name'),
+  email: text('email'),
+  password: text('password'),
+});
+```
+
+---
+
+# ⚙️ 5. Drizzle Config
+
+## 📁 Root: `drizzle.config.ts`
+
+```ts
+import 'dotenv/config';
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  schema: './src/database/users.schema.ts',
+  out: './drizzle',
+  dialect: 'postgresql',
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+---
+
+# 🧪 6. Scripts (Already correct ✅)
+
+```json
+"db:generate": "drizzle-kit generate",
+"db:migrate": "drizzle-kit migrate",
+"db:push": "drizzle-kit push",
+"db:studio": "drizzle-kit studio"
+```
+
+---
+
+# ▶️ 7. Run DB Commands
+
+```bash
+pnpm db:generate
+pnpm db:push
+pnpm db:studio
+```
+
+---
+
+# 🧠 8. Service Layer (Correct ✅)
+
+Your `UsersService` is already perfect 👇
+
+✔ create
+✔ update
+✔ findAll
+✔ findOne
+✔ delete
+
+👉 This is **exactly how Drizzle is used inside NestJS**
+
+---
+
+# 🌐 9. Controller (Correct ✅)
+
+✔ Using DTO
+✔ Using `ParseIntPipe`
+✔ Clean REST structure
+
+---
+
+# 🧾 10. DTOs (Correct ✅)
+
+```ts
+name!: string;
+```
+
+✔ Using `!` → correct for DTOs
+✔ Using validation decorators → perfect
+
+---
+
+# 🛡️ 11. Global Validation Pipe (Perfect ✅)
+
+```ts
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }),
+);
+```
+
+---
+
+# ⚠️ 12. IMPORTANT: dotenv vs ConfigModule
+
+This is where things get interesting 👇
+
+---
+
+## 🟡 Option 1: `dotenv` (what you’re using now)
+
+```ts
+import 'dotenv/config';
+```
+
+✔ Simple
+✔ Works immediately
+❌ Not NestJS-native
+❌ Harder to scale
+
+---
+
+## 🟢 Option 2: NestJS ConfigModule (Recommended)
+
+Use @nestjs/config
+
+---
+
+# 🔥 Setup ConfigModule
+
+## Step 1: Install
+
+```bash
+pnpm add @nestjs/config
+```
+
+---
+
+## Step 2: Update `app.module.ts`
+
+```ts
+import { ConfigModule } from '@nestjs/config';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    UsersModule,
+  ],
+})
+export class AppModule {}
+```
+
+---
+
+## Step 3: Use in `db.ts`
+
+```ts
+import { ConfigService } from '@nestjs/config';
+```
+
+👉 Better approach: inject config (advanced)
+
+But for now:
+
+```ts
+import 'dotenv/config';
+```
+
+OR later refactor to:
+
+```ts
+const configService = new ConfigService();
+configService.get('DATABASE_URL');
+```
+
+---
+
+# 🧠 dotenv vs ConfigModule
+
+| Feature            | dotenv | ConfigModule |
+| ------------------ | ------ | ------------ |
+| NestJS integration | ❌      | ✅            |
+| Type-safe          | ❌      | ✅            |
+| Scalable           | ❌      | ✅            |
+| Quick setup        | ✅      | ✅            |
+
+---
+
+# 🏆 Best Practice (Production)
+
+👉 Use BOTH:
+
+* `dotenv` → for Drizzle CLI (`drizzle.config.ts`)
+* `ConfigModule` → for NestJS app
+
+---
+
+# 📂 Final Folder Structure
+
+```plaintext
+src/
+ ├── database/
+ │    ├── db.ts
+ │    └── users.schema.ts
+ ├── users/
+ │    ├── dto/
+ │    ├── users.controller.ts
+ │    ├── users.service.ts
+ │    └── users.module.ts
+ ├── app.module.ts
+ └── main.ts
+```
+
+---
+
+# 🚀 Final Flow
+
+```plaintext
+Controller → Service → Drizzle → PostgreSQL
+```
+
+---
+
+# 🎯 What you did RIGHT (Important)
+
+✔ Correct Drizzle setup
+✔ DTO validation
+✔ Proper service logic
+✔ Clean controller
+✔ Global pipes
+
+👉 Honestly, this is **intermediate-to-advanced level NestJS already**
+
+---
+
+# 🔥 Next Level (I recommend)
+
+If you want, I can help you with:
+
+✅ Auth (JWT) using Drizzle
+✅ Password hashing (bcrypt)
+✅ Pagination + filtering
+✅ Transactions in Drizzle
+✅ Repository pattern with Drizzle (advanced)
+
+Just tell 👍
+
+---
+
+# ✅ 1. Create `.env` file (ROOT folder)
+
+Create a file named:
+
+```id="qbhq0l"
+.env
+```
+
+Add your DB URL:
+
+```env id="a8hccy"
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+```
+
+---
+
+# ⚠️ 2. Important Fix (SSL for Render PostgreSQL)
+
+Since you're using **Render PostgreSQL**, you MUST enable SSL.
+
+Update your `db.ts` 👇
+
+```ts id="9cqlr2"
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // IMPORTANT for Render
+  },
+});
+
+export const db = drizzle(pool);
+```
+
+---
+
+# 🚀 3. Restart Server (Very Important)
+
+After adding `.env`:
+
+```bash id="qzsgsq"
+pnpm start:dev
+```
+
+👉 `.env` is loaded only at startup
+
+---
+
+# 🧪 4. Test API
+
+Try:
+
+```bash id="35a9bc"
+POST http://localhost:3000/users
+```
+
+Body:
+
+```json id="lxb4ot"
+{
+  "name": "Naresh",
+  "email": "naresh@test.com",
+  "password": "123456"
+}
+```
+
+---
+
+# 🔍 5. If still not working
+
+Check:
+
+### ✅ Is `.env` in root?
+
+```
+drizzle-nest-basicsx/
+ ├── .env ✅
+ ├── src/
+```
+
+---
+
+### ✅ Add debug log
+
+In `db.ts`:
+
+```ts id="7ov42y"
+console.log('DB URL:', process.env.DATABASE_URL);
+```
+
+---
+
+### ❌ If undefined
+
+👉 Means `.env` not loaded
+→ Fix path or restart server
+
+---
+
+# ⚠️ 6. Important for Drizzle CLI
+
+Your `drizzle.config.ts` already has:
+
+```ts id="k03q3c"
+import 'dotenv/config';
+```
+
+✔ Good — CLI will read `.env`
+
+---
+
+# 🧠 Summary
+
+✔ Add `.env`
+✔ Enable SSL for Render
+✔ Restart server
+✔ Test API
+
+---
+
+# 🔥 Pro Tip (Production Ready)
+
+Later, switch to:
+
+👉 @nestjs/config
+for better config handling
+
+---
+****************
+pnpm db:generate
+****************
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm db:generate
+
+> drizzle-nest-basicsx@0.0.1 db:generate E:\MURALI\NEST-JS\drizzle-nest-basicsx
+> drizzle-kit generate
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+1 tables
+nestjs_users_new 6 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0000_reflective_sersi.sql 🚀
+
+***************
+pnpm db:migrate
+***************
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm db:migrate
+
+> drizzle-nest-basicsx@0.0.1 db:migrate E:\MURALI\NEST-JS\drizzle-nest-basicsx
+> drizzle-kit migrate
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] migrations applied successfully!
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+
+CHECK IF TABLE CREATED IN POSTGRESQL DATABASE.
+select * from nestjs_users_new

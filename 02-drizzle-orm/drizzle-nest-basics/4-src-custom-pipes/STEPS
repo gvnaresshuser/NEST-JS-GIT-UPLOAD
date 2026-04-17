@@ -1,0 +1,129 @@
+E:\MURALI\NEST-JS\testapp>nest g module users
+CREATE src/users/users.module.ts (86 bytes)
+UPDATE src/app.module.ts (322 bytes)
+
+E:\MURALI\NEST-JS\testapp>nest g controller users
+CREATE src/users/users.controller.ts (103 bytes)
+CREATE src/users/users.controller.spec.ts (503 bytes)
+UPDATE src/users/users.module.ts (174 bytes)
+
+E:\MURALI\NEST-JS\testapp>nest g pipe users/pipes/trim
+CREATE src/users/pipes/trim/trim.pipe.ts (228 bytes)
+CREATE src/users/pipes/trim/trim.pipe.spec.ts (163 bytes)
+
+# E:\MURALI\NEST-JS\testapp>
+
+**NestJS CLI commands** to generate everything needed for the controller + custom pipe setup.
+
+---
+
+# 🚀 1. Generate Users Module
+
+```bash
+nest g module users
+```
+
+---
+
+# 🚀 2. Generate Users Controller
+
+```bash
+nest g controller users
+```
+
+---
+
+# 🚀 3. (Optional but Recommended) Generate Service
+
+Even if not used now, good practice:
+
+```bash
+nest g service users
+```
+
+---
+
+# 🚀 4. Generate Custom Pipe
+
+```bash
+nest g pipe users/pipes/trim
+```
+
+👉 This will create:
+
+```
+src/users/pipes/trim.pipe.ts
+```
+
+---
+
+# 📁 Final Folder Structure
+
+After running above commands:
+
+```
+src/
+ ├── app.module.ts
+ ├── users/
+ │    ├── users.module.ts
+ │    ├── users.controller.ts
+ │    ├── users.service.ts
+ │    └── pipes/
+ │         └── trim.pipe.ts
+```
+
+---
+
+# 🔧 5. Install Required Packages (IMPORTANT)
+
+For ValidationPipe + Transform:
+
+```bash
+npm install class-validator class-transformer
+```
+
+---
+
+# 🔧 6. Enable Global ValidationPipe
+
+Update `main.ts`:
+
+```ts
+import { ValidationPipe } from '@nestjs/common';
+
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+  }),
+);
+```
+
+---
+
+# 🔧 7. Import UsersModule into AppModule
+
+```ts
+import { UsersModule } from './users/users.module';
+
+@Module({
+  imports: [UsersModule],
+})
+export class AppModule {}
+```
+
+---
+
+# 🔥 That’s it!
+
+Now paste:
+
+- ✅ `users.controller.ts` → inside `users` folder
+- ✅ `trim.pipe.ts` → inside `users/pipes`
+
+Run:
+
+```bash
+npm run start:dev
+```

@@ -1,0 +1,798 @@
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+
+**************************************
+pnpm dlx @nestjs/cli new customers-app
+**************************************
+cd customers-app
+=================================================================================================
+🧩 3. GENERATE MODULE / CONTROLLER / SERVICE
+
+👉 With pnpm, use:
+
+pnpm nest g module modules/customers
+pnpm nest g controller modules/customers
+pnpm nest g service modules/customers
+=================================================================================================
+⚠️ If pnpm nest not working
+
+👉 Use this instead:
+
+pnpm dlx @nestjs/cli g module modules/customers
+pnpm dlx @nestjs/cli g controller modules/customers
+pnpm dlx @nestjs/cli g service modules/customers
+=================================================================================================
+📦 4. INSTALL PACKAGES (PNPM STYLE)
+pnpm add @nestjs/config
+pnpm add drizzle-orm pg
+=================================================================================================
+📁 5. CREATE DTO FILES
+
+👉 Windows:
+
+mkdir src\modules\customers\dto
+type nul > src\modules\customers\dto\params.dto.ts
+type nul > src\modules\customers\dto\search-customers.dto.ts
+=================================================================================================
+▶️ 6. RUN PROJECT
+pnpm start:dev
+=================================================================================================
+🎯 7. COMPLETE PNPM COMMAND SUMMARY
+pnpm create nest-app customers-app
+cd customers-app
+
+pnpm dlx @nestjs/cli g module modules/customers
+pnpm dlx @nestjs/cli g controller modules/customers
+pnpm dlx @nestjs/cli g service modules/customers
+
+pnpm add @nestjs/config drizzle-orm pg
+
+pnpm start:dev
+=================================================================================================
+“pnpm is just a faster npm — NestJS code does not change, only commands change.”
+=================================================================================================
+📁 1. FOLDER STRUCTURE
+src/
+  modules/
+    customers/
+      dto/
+        params.dto.ts
+        search-customers.dto.ts
+      customers.controller.ts
+=================================================================================================
+📦 2. CREATE DTO FILES
+📁 params.dto.ts
+export class ParamsDto {
+  customerId: string;
+  orderId: string;
+  itemId: string;
+}
+=================================================================================================
+📁 search-customers.dto.ts
+export class SearchCustomersDto {
+  type?: 'PREMIUM' | 'NORMAL' | 'VIP';
+  age?: number;
+  city?: string;
+}
+=================================================================================================
+📥 3. IMPORT IN CONTROLLER
+📁 customers.controller.ts
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+} from '@nestjs/common';
+
+// ✅ Import DTOs
+import { ParamsDto } from './dto/params.dto';
+import { SearchCustomersDto } from './dto/search-customers.dto';
+
+@Controller('customers')
+export class CustomersController {
+
+  // ✅ Using Params DTO
+  @Get(':customerId/orders/:orderId/items/:itemId')
+  getAllParams(@Param() params: ParamsDto) {
+    return {
+      message: 'Params DTO working',
+      params
+    };
+  }
+
+  // ✅ Using Query DTO
+  @Get('search')
+  search(@Query() query: SearchCustomersDto) {
+    return {
+      message: 'Query DTO working',
+      query
+    };
+  }
+}
+=================================================================================================
+=================================================================================================
+class ParamsDto {
+    customerId: string;
+    orderId: string;
+    itemId: string;
+}
+
+class SearchCustomersDto {
+    type?: 'PREMIUM' | 'NORMAL' | 'VIP';
+    age?: number;
+    city?: string;
+}
+=================================================================================================
+import {
+    Controller,
+    Get,
+    Post,
+    Body,
+    Query,
+    Delete,
+    Param,
+    Patch,
+} from '@nestjs/common';
+
+
+// ✅ Import DTOs
+import { ParamsDto } from './dto/params.dto';
+import { SearchCustomersDto } from './dto/search-customers.dto';
+
+
+@Controller('customers')
+export class CustomersController {
+
+    // ✅ 1. Query Params
+    @Get()
+    findAll(
+        @Query('type') type?: string,
+        @Query('age') age?: number
+    ) {
+        return {
+            endpoint: 'GET /customers',
+            queryReceived: {
+                type: type ?? null,
+                age: age ?? null
+            }
+        };
+    }
+
+    // ✅ 2. Static Route
+    @Get('vip')
+    getVipCustomers() {
+        return [
+            { id: 1, name: 'VIP A' },
+            { id: 2, name: 'VIP B' }
+        ];
+    }
+
+    // ✅ 3. Dynamic Route
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return {
+            endpoint: 'GET /customers/:id',
+            id
+        };
+    }
+
+    // ✅ 4. Nested Route
+    @Get(':customerId/orders/:orderId')
+    getOrder(
+        @Param('customerId') customerId: string,
+        @Param('orderId') orderId: string
+    ) {
+        return {
+            customerId,
+            orderId
+        };
+    }
+
+    // ✅ 5. POST
+    @Post()
+    create(@Body() body: any) {
+        return {
+            message: 'Customer created',
+            body
+        };
+    }
+
+    // ✅ 6. PATCH
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() body: any) {
+        return {
+            message: 'Customer updated',
+            id,
+            body
+        };
+    }
+
+    // ✅ 7. DELETE
+    @Delete(':id')
+    delete(@Param('id') id: string) {
+        return {
+            message: 'Customer deleted',
+            id
+        };
+    }
+
+    // ✅ 8. Collect ALL Query Params
+    @Get('search')
+    search(@Query() query: SearchCustomersDto) {
+        return {
+            message: 'All query params',
+            query
+        };
+    }
+
+    // ✅ 9. Collect ALL Params (DTO)
+    @Get(':customerId/orders/:orderId/items/:itemId')
+    getAllParams(@Param() params: ParamsDto) {
+        return {
+            message: 'All params DTO',
+            params
+        };
+    }
+
+    // ✅ 10. Combine Params + Query
+    @Get(':customerId/orders/:orderId/items/:itemId/full')
+    getFull(
+        @Param() params: any,
+        @Query() query: any
+    ) {
+        return {
+            params,
+            query
+        };
+    }
+}
+=================================================================================================
+🚀 OPTIONAL (CLEANER IMPORTS)
+
+👉 Create index file:
+
+📁 dto/index.ts
+export * from './params.dto';
+export * from './search-customers.dto';
+
+👉 Then import like:
+
+import { ParamsDto, SearchCustomersDto } from './dto';
+
+🔥 Cleaner & professional
+=================================================================================================
+pnpm start:dev
+=================================================================================================
+INSTALL THUNDER CLIENT EXTENSION IN VS CODE EDITOR FOR TESTING BELOW END POINTS
+=================================================================================================
+T E S T I N G   --  E N D - P O I N T S
+=================================================================================================
+Perfect 👍 — here are **ALL testing URLs (with full `http://localhost:3000/`) + expected outputs** for your **CustomersController**.
+
+---
+
+# 🌐 BASE URL
+
+```http
+http://localhost:3000/customers
+```
+
+---
+
+# 🚀 1. GET ALL CUSTOMERS (No Query)
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers
+```
+
+### ✅ Output
+
+```json
+{
+  "endpoint": "GET /customers",
+  "queryReceived": {
+    "type": null,
+    "age": null
+  }
+}
+```
+
+---
+
+# 🔎 2. GET WITH TYPE
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers?type=VIP
+```
+
+### ✅ Output
+
+```json
+{
+  "queryReceived": {
+    "type": "VIP",
+    "age": null
+  }
+}
+```
+
+---
+
+# 🔎 3. GET WITH TYPE + AGE
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers?type=PREMIUM&age=30
+```
+
+### ✅ Output
+
+```json
+{
+  "queryReceived": {
+    "type": "PREMIUM",
+    "age": 30
+  }
+}
+```
+
+---
+
+# 🔁 4. QUERY ORDER DOES NOT MATTER
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers?age=30&type=PREMIUM
+```
+
+### ✅ Output
+
+```json
+{
+  "queryReceived": {
+    "type": "PREMIUM",
+    "age": 30
+  }
+}
+```
+
+---
+
+# 📌 5. STATIC ROUTE (IMPORTANT)
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/vip
+```
+
+### ✅ Output
+
+```json
+[
+  { "id": 1, "name": "VIP A" },
+  { "id": 2, "name": "VIP B" }
+]
+```
+
+---
+
+# 🔢 6. GET CUSTOMER BY ID
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/1
+```
+
+### ✅ Output
+
+```json
+{
+  "endpoint": "GET /customers/:id",
+  "id": "1"
+}
+```
+
+---
+
+# 🔗 7. NESTED ROUTE
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/10/orders/200
+```
+
+### ✅ Output
+
+```json
+{
+  "customerId": "10",
+  "orderId": "200"
+}
+```
+
+---
+
+# 📦 8. POST CREATE CUSTOMER
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers
+```
+
+### ✅ Method: POST
+
+### ✅ Body
+
+```json
+{
+  "name": "Ravi",
+  "email": "ravi@gmail.com",
+  "type": "PREMIUM",
+  "age": 25
+}
+```
+
+### ✅ Output
+
+```json
+{
+  "message": "Customer created",
+  "body": {
+    "name": "Ravi",
+    "email": "ravi@gmail.com",
+    "type": "PREMIUM",
+    "age": 25
+  }
+}
+```
+
+---
+
+# ✏️ 9. PATCH UPDATE CUSTOMER
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/1
+```
+
+### ✅ Method: PATCH
+
+### ✅ Body
+
+```json
+{
+  "name": "Ravi Updated",
+  "type": "VIP"
+}
+```
+
+### ✅ Output
+
+```json
+{
+  "message": "Customer updated",
+  "id": "1",
+  "body": {
+    "name": "Ravi Updated",
+    "type": "VIP"
+  }
+}
+```
+
+---
+
+# ❌ 10. DELETE CUSTOMER
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/1
+```
+
+### ✅ Method: DELETE
+
+### ✅ Output
+
+```json
+{
+  "message": "Customer deleted",
+  "id": "1"
+}
+```
+
+---
+
+# 🔍 11. SEARCH (ALL QUERY PARAMS WITH DTO)
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/search?type=VIP&age=40&city=Delhi
+```
+
+### ✅ Output
+
+```json
+{
+  "message": "All query params",
+  "query": {
+    "type": "VIP",
+    "age": "40",
+    "city": "Delhi"
+  }
+}
+```
+
+---
+
+# 🧩 12. ALL PARAMS (DTO)
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/10/orders/200/items/5
+```
+
+### ✅ Output
+
+```json
+{
+  "message": "All params DTO",
+  "params": {
+    "customerId": "10",
+    "orderId": "200",
+    "itemId": "5"
+  }
+}
+```
+
+---
+
+# 🔗 13. PARAMS + QUERY
+
+### ✅ URL
+
+```http
+http://localhost:3000/customers/10/orders/200/items/5/full?status=active
+```
+
+### ✅ Output
+
+```json
+{
+  "params": {
+    "customerId": "10",
+    "orderId": "200",
+    "itemId": "5"
+  },
+  "query": {
+    "status": "active"
+  }
+}
+```
+
+---
+
+# ⚠️ BONUS TEST CASES
+
+---
+
+## ❌ Invalid type
+
+```http
+http://localhost:3000/customers?type=UNKNOWN
+```
+
+👉 Accepted (no validation yet)
+
+---
+
+## ❌ Invalid age
+
+```http
+http://localhost:3000/customers?age=abc
+```
+
+👉 Comes as string
+
+---
+
+# 🎯 FINAL SUMMARY
+
+| Type       | Example                    |
+| ---------- | -------------------------- |
+| Basic GET  | `/customers`               |
+| Query      | `/customers?type=VIP`      |
+| Static     | `/customers/vip`           |
+| Dynamic    | `/customers/1`             |
+| Nested     | `/customers/10/orders/200` |
+| POST       | `/customers`               |
+| PATCH      | `/customers/1`             |
+| DELETE     | `/customers/1`             |
+| All Query  | `/customers/search?...`    |
+| All Params | `/customers/.../.../...`   |
+
+---
+
+# 🎓 TEACHING TRICK 🔥
+
+👉 What happens if we write:
+
+```ts
+@Get(':id')
+@Get('vip')
+```
+
+✔ Answer:
+👉 `/customers/vip` becomes `{ id: "vip" }`
+
+---
+
+✅ Thunder Client collection
+Warning: Collections are not supported in the free version.
+
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+
+
+
+
+
+
+
+=================================================================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS>pnpm dlx @nestjs/cli new customers-app
+Packages: +212
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 212, reused 209, downloaded 3, added 212, done
+✨  We will scaffold your app in a few seconds..
+
+√ Which package manager would you ❤️  to use? pnpm
+CREATE customers-app/.prettierrc (56 bytes)
+CREATE customers-app/eslint.config.mjs (934 bytes)
+CREATE customers-app/nest-cli.json (179 bytes)
+CREATE customers-app/package.json (2055 bytes)
+CREATE customers-app/README.md (5134 bytes)
+CREATE customers-app/tsconfig.build.json (101 bytes)
+CREATE customers-app/tsconfig.json (702 bytes)
+CREATE customers-app/src/app.controller.ts (286 bytes)
+CREATE customers-app/src/app.module.ts (259 bytes)
+CREATE customers-app/src/app.service.ts (150 bytes)
+CREATE customers-app/src/main.ts (236 bytes)
+CREATE customers-app/src/app.controller.spec.ts (639 bytes)
+CREATE customers-app/test/jest-e2e.json (192 bytes)
+CREATE customers-app/test/app.e2e-spec.ts (694 bytes)
+
+√ Installation in progress... ☕
+
+🚀  Successfully created project customers-app
+👉  Get started with the following commands:
+
+$ cd customers-app
+$ pnpm run start
+
+
+                          Thanks for installing Nest 🙏
+                 Please consider donating to our open collective
+                        to help us maintain this package.
+
+
+               🍷  Donate: https://opencollective.com/nest
+
+
+E:\MURALI\NEST-JS>
+=================================================================================================
+
+E:\MURALI\NEST-JS\customers-app>pnpm nest g module modules/customers
+CREATE src/modules/customers/customers.module.ts (90 bytes)
+UPDATE src/app.module.ts (346 bytes)
+
+E:\MURALI\NEST-JS\customers-app>pnpm nest g controller modules/customers
+CREATE src/modules/customers/customers.controller.ts (111 bytes)
+CREATE src/modules/customers/customers.controller.spec.ts (531 bytes)
+UPDATE src/modules/customers/customers.module.ts (190 bytes)
+
+E:\MURALI\NEST-JS\customers-app>pnpm nest g service modules/customers
+CREATE src/modules/customers/customers.service.ts (97 bytes)
+CREATE src/modules/customers/customers.service.spec.ts (499 bytes)
+UPDATE src/modules/customers/customers.module.ts (279 bytes)
+
+E:\MURALI\NEST-JS\customers-app>code .
+
+E:\MURALI\NEST-JS\customers-app>pnpm add @nestjs/config
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +4
+++++
+Progress: resolved 672, reused 653, downloaded 0, added 4, done
+
+dependencies:
++ @nestjs/config 4.0.3
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17, unrs-resolver@1.11.1.                       │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 4.3s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\customers-app>pnpm add drizzle-orm pg
+ WARN  3 deprecated subdependencies found: glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +15
++++++++++++++++
+Progress: resolved 687, reused 667, downloaded 1, added 15, done
+
+dependencies:
++ drizzle-orm 0.45.2
++ pg 8.20.0
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @nestjs/core@11.1.17, unrs-resolver@1.11.1.                       │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 2m 38.4s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\customers-app>
+=================================================================================================
+[12:15:18 pm] Starting compilation in watch mode...
+
+[12:15:26 pm] Found 0 errors. Watching for file changes.
+
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [NestFactory] Starting Nest application...
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [InstanceLoader] CustomersModule dependencies initialized +11ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RoutesResolver] AppController {/}: +6ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/, GET} route +4ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RoutesResolver] CustomersController {/customers}: +0ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers, GET} route +1ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/vip, GET} route +1ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/:id, GET} route +3ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/:customerId/orders/:orderId, GET} route +2ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers, POST} route +0ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/:id, PATCH} route +1ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/:id, DELETE} route +0ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/search, GET} route +1ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/:customerId/orders/:orderId/items/:itemId, GET} route +1ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [RouterExplorer] Mapped {/customers/:customerId/orders/:orderId/items/:itemId/full, GET} route +1ms
+[Nest] 7940  - 29/03/2026, 12:16:20 pm     LOG [NestApplication] Nest application successfully started +3ms
+
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+=================================================================================================
+“package.json tells WHAT to install, pnpm-lock.yaml tells EXACTLY HOW to install.

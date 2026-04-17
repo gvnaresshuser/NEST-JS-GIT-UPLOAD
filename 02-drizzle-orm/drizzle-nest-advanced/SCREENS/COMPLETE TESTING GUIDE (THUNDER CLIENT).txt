@@ -1,0 +1,676 @@
+DATABASE_URL="postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full"
+
+COMPLETE TESTING GUIDE (THUNDER CLIENT)
+👉 Open VS Code → Thunder Client → New Request
+
+Perfect 👌 — now you are at **production-level setup + DB synced** ✅
+Let’s do a **complete Thunder Client testing suite** that covers EVERYTHING in your project.
+
+---
+
+# 🚀 🧪 FULL TESTING SCRIPT (THUNDER CLIENT)
+
+👉 Follow this exact order (important)
+
+---
+TEST-1 [ THUNDER CLIENT ]
+
+# 🔐 1. LOGIN (JWT + Cookies)
+
+### ➤ Request
+
+```http
+POST http://localhost:3000/auth/login
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+```
+
+### ➤ Expected Response
+
+```json
+{
+  "message": "Login successful"
+}
+```
+accesstoken : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTI4ODgsImV4cCI6MTc3NDU5Mzc4OH0.KRqlExW_TCEcqGEY04DiI8VrdGG7QE8PsTr6exR_uo0
+
+refreshtoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTI4ODgsImV4cCI6MTc3NTE5NzY4OH0.PBCf-nSoKFzuOeptMLc0WqRa-furvVv1GqtqnFL2rmE
+
+
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTI4ODgsImV4cCI6MTc3NDU5Mzc4OH0.KRqlExW_TCEcqGEY04DiI8VrdGG7QE8PsTr6exR_uo0
+---
+
+### ✅ Verify
+
+👉 Go to **Cookies tab**
+You should see:
+
+* `accessToken`
+* `refreshToken`
+
+---
+
+### ✅ Concepts Tested
+
+✔ Controller
+✔ Service
+✔ JWT
+✔ ConfigService
+✔ Cookies
+
+---
+TEST-2 [ THUNDER CLIENT ]
+
+# 👤 2. CREATE USER (DTO + Pipe + Drizzle INSERT)
+
+### ➤ Request
+
+```http
+POST http://localhost:3000/users
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "user1@test.com",
+  "password": "123456",
+  "role": "USER"
+}
+```
+
+### ➤ Expected
+
+```json
+{
+  "success": true,
+  "data": [...]
+}
+```
+
+---
+
+### ❌ TEST VALIDATION ERROR
+
+```json
+{
+  "password": "123456"
+}
+```
+
+👉 Expected:
+
+```json
+{
+  "success": false,
+  "message": "Email is required"
+}
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ DTO
+✔ Validation Pipe
+✔ Exception Filter
+✔ Drizzle insert
+
+---
+TEST-3 [ THUNDER CLIENT ]
+
+# 🔒 3. GET USERS (Guard + Interceptor + DB SELECT)
+
+### ➤ Request
+
+```http
+GET http://localhost:3000/users
+```
+UNDER HTTP HEADERS 
+RAW CHECKED
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTI4ODgsImV4cCI6MTc3NDU5Mzc4OH0.KRqlExW_TCEcqGEY04DiI8VrdGG7QE8PsTr6exR_uo0
+---
+
+### ❌ Without login
+
+```json
+{
+  "statusCode": 403
+}
+```
+
+---
+
+### ✅ With login (cookies present)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "email": "user1@test.com",
+      "role": "USER"
+    }
+  ]
+}
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ JwtGuard
+✔ Interceptor
+✔ Drizzle select
+
+---
+TEST-4 [ THUNDER CLIENT ]
+
+IF ACCESS TOKEN IS EXPIRED, THEN LOGIN AGAIN AND SAVE THE NEW ACCESS TOKEN
+++++++++++++++++++++++++++++++++++++++++++++++++
+```http
+POST http://localhost:3000/auth/login
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+```
+accesstoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTM5ODUsImV4cCI6MTc3NDU5NjY4NX0.6-aXj6tBvDkQNBaX2dB8dBQE50WGgCwr7gBpnpz-b1Q
+
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTM5ODUsImV4cCI6MTc3NDU5NjY4NX0.6-aXj6tBvDkQNBaX2dB8dBQE50WGgCwr7gBpnpz-b1Q
+++++++++++++++++++++++++++++++++++++++++++++++++
+TEST-4 [ THUNDER CLIENT ]
+
+# 🛡️ 4. ROLE-BASED ACCESS (Custom Decorator + Guard)
+
+### ➤ Request
+
+```http
+GET http://localhost:3000/users/admin
+```
+
+---
+
+### ✅ If ADMIN
+
+```json
+{
+  "message": "Welcome ADMIN"
+}
+```
+
+---
+
+### ❌ If USER
+
+```json
+{
+  "statusCode": 403
+}
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ RolesGuard
+✔ @Roles decorator
+✔ @GetUser decorator
+
+---
+TEST-5 [ THUNDER CLIENT ]
+
+# 📊 5. PAGINATION (Query Params + Drizzle)
+
+CREATE SOME MORE USERS FROM STEP 2
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+POST http://localhost:3000/users
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "user2@test.com",
+  "password": "222222",
+  "role": "USER"
+}
+```
+{
+  "email": "user3@test.com",
+  "password": "333333",
+  "role": "USER"
+}
+```
+{
+  "email": "user4@test.com",
+  "password": "444444",
+  "role": "USER"
+}
+{
+  "email": "user5@test.com",
+  "password": "555555",
+  "role": "USER"
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+### ➤ Request
+
+```http
+GET http://localhost:3000/users?limit=2&offset=0
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ Query params
+✔ Pagination
+✔ Drizzle limit/offset
+
+---
+TEST-6 [ THUNDER CLIENT ]
+
+# 🔍 6. GET SINGLE USER (Drizzle WHERE)
+
+### ➤ Request
+
+```http
+GET http://localhost:3000/users/1
+```
+
+---
+
+### Expected
+
+```json
+[
+  {
+    "id": 1,
+    "email": "user1@test.com"
+  }
+]
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ Drizzle `where(eq())`
+
+---
+TEST-7 [ THUNDER CLIENT ]
+
+# ✏️ 7. UPDATE USER (Drizzle UPDATE)
+
+### ➤ Request
+
+```http
+PATCH http://localhost:3000/users/1
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "updated@test.com"
+}
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ Drizzle update
+
+---
+TEST-8 [ THUNDER CLIENT ]
+
+# ❌ 8. DELETE USER (Drizzle DELETE)
+
+### ➤ Request
+
+```http
+DELETE http://localhost:3000/users/1
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ Drizzle delete
+
+---
+TEST-9 [ THUNDER CLIENT ]
+
+# 📧 9. SEND EMAIL (Mail Module)
+
+### ➤ Request
+
+```http
+POST http://localhost:3000/mail/send
+```
+
+### ➤ Body
+
+```json
+{
+  "to": "your_email@gmail.com",
+  "subject": "Test Email",
+  "text": "Hello from NestJS 🚀"
+}
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ Nodemailer
+✔ Config usage
+
+---++++++++++++++++++++++++++++++++++++++++++++++++
+```http
+POST http://localhost:3000/auth/login
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+```
+accesstoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTc5OTQsImV4cCI6MTc3NDYwMDY5NH0.jlKeT_11SLFMUz9YWYAttH3wWoM-5b3k-DiEpmlPwIc
+
+
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ1OTc5OTQsImV4cCI6MTc3NDYwMDY5NH0.jlKeT_11SLFMUz9YWYAttH3wWoM-5b3k-DiEpmlPwIc
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+TEST-10 [ THUNDER CLIENT ]
+
+# ⚙️ 10. MIDDLEWARE TEST
+
+👉 Check console:
+
+GET http://localhost:3000/users
+
+```bash
+POST http://localhost:3000/auth/login
+GET http://localhost:3000/users
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ LoggerMiddleware
+
+---
+TEST-11 [ THUNDER CLIENT ]
+
+# 🔁 11. INTERCEPTOR TEST
+
+👉 All responses should be:
+
+```json
+{
+  "success": true,
+  "data": ...
+}
+```
+
+---
+
+### ✅ Concepts Tested
+
+✔ TransformInterceptor
+
+---++++++++++++++++++++++++++++++++++++++++++++++++
+```http
+POST http://localhost:3000/auth/login
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+```
+accesstoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ2MDA3ODEsImV4cCI6MTc3NDYwMzQ4MX0.CjZVy9geSLvB-U-H2n2AfFWCPd6E8cV9LABbR3gAngw
+
+
+
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NzQ2MDA3ODEsImV4cCI6MTc3NDYwMzQ4MX0.CjZVy9geSLvB-U-H2n2AfFWCPd6E8cV9LABbR3gAngw
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+GET http://localhost:3000/users
+{
+  "success": true,
+  "data": [
+    {
+      "id": 2,
+      "email": "user2@test.com",
+      "password": "222222",
+      "role": "USER"
+    },
+    {....
+	
+GET http://localhost:3000/users/admin
+{
+  "success": true,
+  "data": {
+    "message": "Welcome ADMIN"
+  }
+}
+---
+TEST-12 [ THUNDER CLIENT ]
+
+# ❌ 12. GLOBAL EXCEPTION FILTER TEST
+
+### ➤ Trigger error:
+POST http://localhost:3000/auth/login
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+POST http://localhost:3000/auth/logout
+{
+  "success": true,
+  "data": {
+    "message": "Logged out successfully"
+  }
+}
+```http
+GET http://localhost:3000/users/admin
+```
+
+(without login)
+
+---
+
+### Expected:
+
+```json
+{
+  "success": false,
+  "message": "Internal Server Error"
+}
+OR
+{
+  "success": false,
+  "message": "No token provided"
+}
+```
+GET http://localhost:3000/users
+IN CONSOLE WE GET...
+TOKEN: undefined
+COOKIES: [Object: null prototype] {}
+AUTH HEADER: undefined
+---
+
+### ✅ Concepts Tested
+
+✔ Global Exception Filter
+
+---
+
+# 🎯 FINAL COVERAGE (YOU TESTED EVERYTHING)
+
+| Feature           | Status |
+| ----------------- | ------ |
+| Modules           | ✅      |
+| Controllers       | ✅      |
+| Services          | ✅      |
+| Middleware        | ✅      |
+| Guards            | ✅      |
+| Pipes             | ✅      |
+| Interceptors      | ✅      |
+| Filters           | ✅      |
+| Custom Decorators | ✅      |
+| JWT               | ✅      |
+| Cookies           | ✅      |
+| Drizzle ORM       | ✅      |
+| Nodemailer        | ✅      |
+
+---
+
+# 🧠 PRO TIP (THUNDER CLIENT)
+
+👉 Enable:
+
+* ✔ “Persist Cookies”
+* ✔ “Send Cookies Automatically”
+
+---
+
+# 🚀 DEMO FLOW FOR CLASS (BEST)
+
+1. Login
+2. Create user
+3. Fail validation
+4. Get users (fail without token)
+5. Get users (success)
+6. Admin route
+7. Update + delete
+8. Send email
+
+---
+REFRESH TOKEN TESTING:
+=====================
+🧪 TEST FLOW (VERY IMPORTANT)
+🔁 Step 1: Login
+POST http://localhost:3000/auth/login
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+
+👉 Cookies set:
+
+accessToken
+refreshToken
+
+accesstoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NjA0NTk4LCJleHAiOjE3NzQ2MDcyOTh9.d1NiTE31zRRXGI7p3Pvb7HhUsmZAopyS2LYn_2nNH3E
+
+refreshtoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NjA0NTk4LCJleHAiOjE3NzUyMDkzOTh9.W65XSsjMRwNLl3OAjBnI28EX2mNeSc3XUWPTfDXtZs0
+
+
+🔁 Step 2: Remove access token (simulate expiry)
+
+👉 In Thunder Client → Cookies → delete:
+
+accessToken ❌
+🔁 Step 3: Call refresh
+POST http://localhost:3000/auth/refresh
+✅ Expected
+{
+  "message": "Token refreshed"
+}
+
+👉 New accessToken cookie will be set ✅
+
+NEW ACCESS TOKEN
+accesstoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NjA1NDA2LCJleHAiOjE3NzQ2MDgxMDZ9.7GdCLBQj_jazlcp-AzS-oLrSkKkTT1vM4IIX8kyDkZ0
+
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NjA1NDA2LCJleHAiOjE3NzQ2MDgxMDZ9.7GdCLBQj_jazlcp-AzS-oLrSkKkTT1vM4IIX8kyDkZ0
+
+
+
+🔁 Step 4: Call protected API
+GET http://localhost:3000/users
+
+👉 Works again ✅
+
+{
+  "email": "admin@test.com",
+  "role": "ADMIN",
+  "iat": 1774605406,
+  "exp": 1774608106
+}
+
+3:26:46 TO 4:11:46 = 45 MINUTES
+
+RATE LIMIT:
+==========
+pnpm add @nestjs/throttler
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+```http
+POST http://localhost:3000/auth/login
+```
+
+### ➤ Body
+
+```json
+{
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+```
+accesstoken
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NjIzODI1LCJleHAiOjE3NzQ2MjY1MjV9.VNJfBOggBmtxkAvSoruaDQYAX3BqAcOx395c7tJRjew
+
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0NjIzODI1LCJleHAiOjE3NzQ2MjY1MjV9.VNJfBOggBmtxkAvSoruaDQYAX3BqAcOx395c7tJRjew
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+GET http://localhost:3000/users
+
+HIT MORE THAN 3 TIMES WE GET
+{
+  "success": false,
+  "message": "ThrottlerException: Too Many Requests"
+}

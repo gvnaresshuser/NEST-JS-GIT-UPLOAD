@@ -1,0 +1,406 @@
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS\testproj>code .
+
+E:\MURALI\NEST-JS\testproj>pnpm exec jest test/users.e2e-spec.ts
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In E:\MURALI\NEST-JS\testproj\src
+  40 files checked.
+  testMatch:  - 0 matches
+  testPathIgnorePatterns: \\node_modules\\ - 40 matches
+  testRegex: .*\.spec\.ts$ - 11 matches
+Pattern: test/users.e2e-spec.ts - 0 matches
+
+E:\MURALI\NEST-JS\testproj>pnpm exec jest --config ./test/jest-e2e.json test/users.e2e-spec.ts
+  console.log
+    DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+
+      at Object.<anonymous> (../src/db/drizzle.ts:5:9)
+
+  console.log
+    USER: { name: 'E2E User', email: 'e2e@mail.com', password: '1234' }
+
+      at UsersService.create (../src/users/users.service.ts:16:17)
+
+  console.log
+    [POST] /users - 2626ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    USER: { name: 'Login User', email: 'login@mail.com', password: '1234' }
+
+      at UsersService.create (../src/users/users.service.ts:16:17)
+
+  console.log
+    [POST] /users - 192ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    [SERVICE] - login
+
+      at UsersService.login (../src/users/users.service.ts:34:17)
+
+  console.log
+    DB User: {
+      id: 84,
+      name: 'Login User',
+      email: 'login@mail.com',
+      password: '$2b$10$RMQmS1C/j2PyeujMgj9giuauHJIdGs76N0VVB5S8rqK4bp8cReVMq'
+    }
+
+      at UsersService.login (../src/users/users.service.ts:48:17)
+
+  console.log
+    Password Match: true
+
+      at UsersService.login (../src/users/users.service.ts:58:17)
+
+  console.log
+    [POST] /users/login - 259ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    USER: { name: 'Fail User', email: 'fail@mail.com', password: '1234' }
+
+      at UsersService.create (../src/users/users.service.ts:16:17)
+
+  console.log
+    [POST] /users - 198ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    [SERVICE] - login
+
+      at UsersService.login (../src/users/users.service.ts:34:17)
+
+  console.log
+    DB User: {
+      id: 85,
+      name: 'Fail User',
+      email: 'fail@mail.com',
+      password: '$2b$10$Rsg8yTYCxlaFmt.ZCBYVuOu.V2v6JZ33jUxNRNUbx47ORbAjtnvm6'
+    }
+
+      at UsersService.login (../src/users/users.service.ts:48:17)
+
+  console.log
+    Password Match: false
+
+      at UsersService.login (../src/users/users.service.ts:58:17)
+
+  console.log
+    [POST] /users/login - 195ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    USER: { name: 'User1', email: 'u1@mail.com', password: '1234' }
+
+      at UsersService.create (../src/users/users.service.ts:16:17)
+
+  console.log
+    [POST] /users - 222ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    Incoming Request Headers: {
+      host: '127.0.0.1:62940',
+      'accept-encoding': 'gzip, deflate',
+      connection: 'close'
+    }
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:14:13)
+
+  console.log
+    [GET] /users - 69ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    USER: { name: 'Secure User', email: 'secure@mail.com', password: '1234' }
+
+      at UsersService.create (../src/users/users.service.ts:16:17)
+
+  console.log
+    [POST] /users - 204ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    [SERVICE] - login
+
+      at UsersService.login (../src/users/users.service.ts:34:17)
+
+  console.log
+    DB User: {
+      id: 87,
+      name: 'Secure User',
+      email: 'secure@mail.com',
+      password: '$2b$10$AUsThLq2Sh0zV.65l3g/eO03QC2qRJ98stXJBzjDSP/mRUQglLxpa'
+    }
+
+      at UsersService.login (../src/users/users.service.ts:48:17)
+
+  console.log
+    Password Match: true
+
+      at UsersService.login (../src/users/users.service.ts:58:17)
+
+  console.log
+    [POST] /users/login - 228ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    Incoming Request Headers: {
+      host: '127.0.0.1:62946',
+      'accept-encoding': 'gzip, deflate',
+      connection: 'close'
+    }
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:14:13)
+
+  console.log
+    [GET] /users/secure - 8ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    Incoming Request Headers: {
+      host: '127.0.0.1:62948',
+      'accept-encoding': 'gzip, deflate',
+      authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODcsIm5hbWUiOiJTZWN1cmUgVXNlciIsImlhdCI6MTc3NjEzNTM3NSwiZXhwIjoxNzc2MTM4OTc1fQ.8g78GQr4twsj1HvzX-W9AVcmMD6I5-5BJJP4EPFWWro',
+      connection: 'close'
+    }
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:14:13)
+
+  console.log
+    Extracted Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODcsIm5hbWUiOiJTZWN1cmUgVXNlciIsImlhdCI6MTc3NjEzNTM3NSwiZXhwIjoxNzc2MTM4OTc1fQ.8g78GQr4twsj1HvzX-W9AVcmMD6I5-5BJJP4EPFWWro
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:23:13)
+
+  console.log
+    Decoded Token: { id: 87, name: 'Secure User', iat: 1776135375, exp: 1776138975 }
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:27:15)
+
+  console.log
+    [GET] /users/secure - 102ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    USER: { name: 'Single', email: 'single@mail.com', password: '1234' }
+
+      at UsersService.create (../src/users/users.service.ts:16:17)
+
+  console.log
+    [POST] /users - 187ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    [SERVICE] - login
+
+      at UsersService.login (../src/users/users.service.ts:34:17)
+
+  console.log
+    DB User: {
+      id: 88,
+      name: 'Single',
+      email: 'single@mail.com',
+      password: '$2b$10$Z3OqPPeW3Db1YOgBPeZix.OnPhyxGPAdcFlnCNZZ0y0MeJU8rsc3G'
+    }
+
+      at UsersService.login (../src/users/users.service.ts:48:17)
+
+  console.log
+    Password Match: true
+
+      at UsersService.login (../src/users/users.service.ts:58:17)
+
+  console.log
+    [POST] /users/login - 270ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    Incoming Request Headers: {
+      host: '127.0.0.1:62954',
+      'accept-encoding': 'gzip, deflate',
+      authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODgsIm5hbWUiOiJTaW5nbGUiLCJpYXQiOjE3NzYxMzUzNzYsImV4cCI6MTc3NjEzODk3Nn0.sRNtKObaJCqx0sunAAj3zai4X1NV_OVJQGLx-xs9yYo',
+      connection: 'close'
+    }
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:14:13)
+
+  console.log
+    Extracted Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODgsIm5hbWUiOiJTaW5nbGUiLCJpYXQiOjE3NzYxMzUzNzYsImV4cCI6MTc3NjEzODk3Nn0.sRNtKObaJCqx0sunAAj3zai4X1NV_OVJQGLx-xs9yYo
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:23:13)
+
+  console.log
+    Decoded Token: { id: 88, name: 'Single', iat: 1776135376, exp: 1776138976 }
+
+      at JwtAuthGuard.canActivate (../src/users/guards/jwt-auth/jwt-auth.guard.ts:27:15)
+
+  console.log
+    [GET] /users/88 - 110ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    USER: { name: 'Delete', email: 'delete@mail.com', password: '1234' }
+
+      at UsersService.create (../src/users/users.service.ts:16:17)
+
+  console.log
+    [POST] /users - 195ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    [DELETE] /users/89 - 72ms
+
+      at ServerResponse.<anonymous> (../src/common/middleware/logger.middleware.ts:23:13)
+
+  console.log
+    NodePgDatabase {
+      query: {},
+      '$with': [Function: $with],
+      '$cache': undefined,
+      authToken: undefined,
+      dialect: PgDialect {
+        casing: CasingCache {
+          cache: {},
+          cachedTables: {},
+          convert: [Function: noopCase]
+        }
+      },
+      session: NodePgSession {
+        dialect: PgDialect { casing: [CasingCache] },
+        logger: NoopLogger {},
+        cache: NoopCache {},
+        client: BoundPool {
+          _events: [Object: null prototype] {},
+          _eventsCount: 0,
+          _maxListeners: undefined,
+          options: [Object],
+          log: [Function (anonymous)],
+          Client: [Function],
+          Promise: [Function: Promise],
+          _clients: [Array],
+          _idle: [Array],
+          _expired: [WeakSet],
+          _pendingQueue: [],
+          _endCallback: undefined,
+          ending: false,
+          ended: false,
+          [Symbol(shapeMode)]: false,
+          [Symbol(kCapture)]: false
+        },
+        schema: undefined,
+        options: { logger: undefined, cache: undefined }
+      },
+      _: {
+        schema: undefined,
+        fullSchema: {},
+        tableNamesMap: {},
+        session: NodePgSession {
+          dialect: [PgDialect],
+          logger: NoopLogger {},
+          cache: NoopCache {},
+          client: [BoundPool],
+          schema: undefined,
+          options: [Object]
+        }
+      },
+      '$client': BoundPool {
+        _events: [Object: null prototype] {},
+        _eventsCount: 0,
+        _maxListeners: undefined,
+        options: {
+          connectionString: 'postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full',
+          ssl: [Object],
+          max: 20,
+          min: 0,
+          maxUses: Infinity,
+          allowExitOnIdle: false,
+          maxLifetimeSeconds: 0,
+          idleTimeoutMillis: 10000
+        },
+        log: [Function (anonymous)],
+        Client: [class Client extends EventEmitter] {
+          Query: [class Query extends EventEmitter]
+        },
+        Promise: [Function: Promise],
+        _clients: [ [Client] ],
+        _idle: [ [IdleItem] ],
+        _expired: WeakSet { <items unknown> },
+        _pendingQueue: [],
+        _endCallback: undefined,
+        ending: false,
+        ended: false,
+        [Symbol(shapeMode)]: false,
+        [Symbol(kCapture)]: false
+      }
+    }
+
+      at Object.<anonymous> (users.e2e-spec.ts:31:13)
+
+  console.log
+    [
+      'query',   '$with',
+      '$cache',  'authToken',
+      'dialect', 'session',
+      '_',       '$client'
+    ]
+
+      at Object.<anonymous> (users.e2e-spec.ts:32:13)
+
+ FAIL  test/users.e2e-spec.ts (229.364 s)
+  UsersController (E2E)
+    √ POST /users → create user (4277 ms)
+    √ POST /users/login → get token (584 ms)
+    √ POST /users/login → fail (504 ms)
+    × GET /users → get all users (499 ms)
+    √ GET /users/secure → requires token (681 ms)
+    √ GET /users/:id → with JWT (683 ms)
+    √ DELETE /users/:id (374 ms)
+
+  ● UsersController (E2E) › GET /users → get all users
+
+    expected 200 "OK", got 401 "Unauthorized"
+
+      111 |     const res = await request(app.getHttpServer())
+      112 |       .get('/users')
+    > 113 |       .expect(200);
+          |        ^
+      114 |
+      115 |     expect(res.body.length).toBeGreaterThan(0);
+      116 |   });
+
+      at Object.<anonymous> (users.e2e-spec.ts:113:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 6 passed, 7 total
+Snapshots:   0 total
+Time:        234.34 s
+Ran all test suites matching test/users.e2e-spec.ts.
+
+E:\MURALI\NEST-JS\testproj>

@@ -1,0 +1,155 @@
+DEPENDENCIES USED
+=================
+
+---
+
+# 🚀 ✅ 1. Core NestJS (auto-installed)
+
+When you ran:
+
+```bash
+pnpm dlx @nestjs/cli new drizzle-nest-basicsx
+```
+
+👉 These were already installed:
+
+* `@nestjs/common`
+* `@nestjs/core`
+* `@nestjs/platform-express`
+* `reflect-metadata`
+* `rxjs`
+
+---
+
+# 📦 ✅ 2. Drizzle + PostgreSQL
+
+```bash
+pnpm add drizzle-orm pg
+```
+
+👉 Used for:
+
+* DB queries
+* PostgreSQL connection
+
+---
+
+# 🧪 ✅ 3. Drizzle CLI (Dev Dependency)
+
+```bash
+pnpm add -D drizzle-kit
+```
+
+👉 Used for:
+
+* migrations
+* schema generation
+* studio
+
+---
+
+# 🌱 ✅ 4. Environment Variables
+
+```bash
+pnpm add dotenv
+```
+
+👉 Used in:
+
+```ts
+import 'dotenv/config';
+```
+
+---
+
+# 🛡️ ✅ 5. Validation & Transformation
+
+```bash
+pnpm add class-validator class-transformer
+```
+
+👉 Used in DTOs:
+
+* `@IsEmail()`
+* `@IsNotEmpty()`
+* `@MinLength()`
+* `@Type(() => Number)`
+
+---
+
+# 🔧 ✅ 6. Types (Dev)
+
+```bash
+pnpm add -D @types/pg
+```
+
+---
+
+# ⚙️ ✅ 7. (Optional but Recommended) Config Module
+
+👉 Better than dotenv inside NestJS:
+
+```bash
+pnpm add @nestjs/config
+```
+
+---
+
+# 🎯 ✅ FINAL COMBINED COMMANDS
+
+## 🔹 Production dependencies
+
+```bash
+pnpm add drizzle-orm pg dotenv class-validator class-transformer
+```
+
+---
+
+## 🔹 Dev dependencies
+
+```bash
+pnpm add -D drizzle-kit @types/pg
+```
+
+---
+
+## 🔹 Optional (Recommended)
+
+```bash
+pnpm add @nestjs/config
+```
+
+---
+
+# 📦 Your Current Stack (Summary)
+
+* NestJS framework
+* Drizzle ORM
+* PostgreSQL (`pg`)
+* Validation (`class-validator`)
+* Transformation (`class-transformer`)
+* Env handling (`dotenv`)
+* Migration tool (`drizzle-kit`)
+
+---
+
+# 🧠 Pro Tip
+
+👉 You **do NOT need**:
+
+* ❌ TypeORM
+* ❌ Prisma
+* ❌ Sequelize
+
+---
+
+# 🚀 If you want next level
+
+I can give you:
+
+✅ One command to bootstrap FULL project
+✅ Add JWT auth + bcrypt
+✅ Add pagination + filtering
+✅ Add production-ready folder structure
+
+Just tell 👍

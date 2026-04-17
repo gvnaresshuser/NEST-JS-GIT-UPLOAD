@@ -1,0 +1,224 @@
+http://localhost:3000/api
+
+Add Swagger step-by-step:
+========================
+
+🚀 STEP 1: Install Swagger Dependencies
+
+Run this inside your project root:
+
+pnpm add @nestjs/swagger swagger-ui-express
+==============================================================
+👉 Optional (but recommended for DTO validation + Swagger compatibility):
+pnpm add class-validator class-transformer
+==============================================================
+🚀 STEP 2: Enable Swagger in main.ts
+
+Go to:
+
+src/main.ts
+//------------------- SWAGGER ------------------------------
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+// 🔥 Swagger imports
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // 🔥 Swagger Config
+  const config = new DocumentBuilder()
+    .setTitle('Test Project API')
+    .setDescription('NestJS Users Module with Drizzle ORM')
+    .setVersion('1.0')
+    .addBearerAuth() // for JWT
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(3000);
+}
+bootstrap();
+//------------------- SWAGGER ------------------------------
+==============================================================
+🚀 STEP 3: Run Project
+npm run start:dev
+
+👉 Open Swagger UI:
+
+http://localhost:3000/api
+
+🎉 Now you’ll see your API docs UI.
+==============================================================
+🚀 STEP 4: Add Swagger to Users Controller
+Go to:
+src/users/users.controller.ts
+ADD CODE
+==============================================================
+🚀 STEP 5: Add Swagger to DTOs (VERY IMPORTANT ⭐)
+Go to:
+src/users/dto/create-user.dto.ts
+ADD CODE
+
+✅ Login DTO:
+src/users/dto/login.dto.ts
+ADD CODE
+==============================================================
+🚀 STEP 8: Swagger + JWT (Your Guard Integration)
+
+You already have:
+
+users/guards/jwt-auth/jwt-auth.guard.ts
+
+👉 To make Swagger support JWT:
+
+Add in controller:
+@ApiBearerAuth()
+In Swagger UI:
+
+👉 Click Authorize 🔒
+
+Bearer <your_token>
+==============================================================
+🚀 STEP 9: Global Swagger Decorators (Optional Clean Setup)
+
+If you want consistent response format:
+
+@ApiResponse({ status: 401, description: 'Unauthorized' })
+@ApiResponse({ status: 500, description: 'Internal Server Error' })
+==============================================================
+🚀 STEP 10: Swagger for Response Types (Advanced ⭐)
+
+Create interface response model:
+
+src/users/interface/user.interface.ts
+
+Convert to class for Swagger:
+
+import { ApiProperty } from '@nestjs/swagger';
+
+export class UserResponse {
+
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  email: string;
+}
+==============================================================
+🚀 STEP 11: Test Swagger
+
+Now test:
+
+GET /users
+POST /users
+GET /users/:id
+
+👉 You’ll see:
+
+Request body
+Response schema
+Status codes
+Auth support
+==============================================================
+🧠 FLOW WITH YOUR EXISTING ARCHITECTURE
+Your request lifecycle now:
+Middleware → Guard → Pipe → Interceptor → Controller → Service → Drizzle → Response → Interceptor → Filter
+==============================================================
+Swagger sits here 👇
+Swagger → Documents everything above
+==============================================================
+🔥 FINAL RESULT
+
+You now have:
+
+✅ Swagger UI
+✅ DTO-based request validation
+✅ JWT auth support in Swagger
+✅ Fully documented APIs
+✅ Works with your existing:
+
+Middleware ✅
+Guards ✅
+Pipes ✅
+Interceptors ✅
+Filters ✅
+Drizzle ORM ✅
+Tests ✅
+==============================================================
+🔥 HOW IT CONNECTS
+Controller throws error
+        ↓
+Filter catches error
+        ↓
+Formats response
+        ↓
+Swagger documents that format ✅
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============================================================
+
+E:\MURALI\NEST-JS\testproj>pnpm add @nestjs/swagger swagger-ui-express
+ WARN  5 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, glob@10.5.0, glob@7.2.3, inflight@1.0.6
+Packages: +23 -16
++++++++++++++++++++++++----------------
+Progress: resolved 803, reused 712, downloaded 1, added 23, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @nestjs/swagger 11.2.6
+  └─┬ @nestjs/mapped-types 2.1.0
+    └── ✕ unmet peer class-validator@"^0.13.0 || ^0.14.0": found 0.15.1
+
+dependencies:
++ @nestjs/swagger 11.2.6
++ swagger-ui-express 5.0.1
+
+devDependencies:
+- typescript-eslint 8.57.2
++ typescript-eslint 8.58.0 already in devDependencies, was not moved to dependencies.
+
+╭ Warning ─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                      │
+│   Ignored build scripts: @nestjs/core@11.1.17, @scarf/scarf@1.4.0, bcrypt@6.0.0, esbuild@0.18.20, esbuild@0.25.12,   │
+│   esbuild@0.27.4, unrs-resolver@1.11.1.                                                                              │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.                             │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 8m 16.7s using pnpm v10.32.1
+
+E:\MURALI\NEST-JS\testproj>
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================
+==============================================================

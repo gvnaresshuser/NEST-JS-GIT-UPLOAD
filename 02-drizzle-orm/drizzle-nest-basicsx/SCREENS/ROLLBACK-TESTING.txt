@@ -1,0 +1,121 @@
+import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('nestjs_users_new', {
+  id: serial('id').primaryKey(),
+  name: text('name'),
+  email: text('email'),
+  password: text('password'),
+  address: text('address'),
+  profession: text('profession'),
+  occupation: text("occupation"), // ✅ NEW FIELD
+});
+------------------------------------------------------
+
+pnpm drizzle-kit generate
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm drizzle-kit generate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+1 tables
+nestjs_users_new 7 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0001_groovy_zzzax.sql 🚀
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+------------------------------------------------------
+
+pnpm drizzle-kit generate
+
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm drizzle-kit generate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+1 tables
+nestjs_users_new 7 columns 0 indexes 0 fks
+
+No schema changes, nothing to migrate 😴
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+------------------------------------------------------
+pnpm drizzle-kit migrate
+
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm drizzle-kit migrate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] migrations applied successfully!
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+------------------------------------------------------
+
+START STUDIO
+
+>pnpm db:studio
+
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm db:studio
+
+> drizzle-nest-basicsx@0.0.1 db:studio E:\MURALI\NEST-JS\drizzle-nest-basicsx
+> drizzle-kit studio
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+Using 'pg' driver for database querying
+
+ Warning  Drizzle Studio is currently in Beta. If you find anything that is not working as expected or should be improved, feel free to create an issue on GitHub: https://github.com/drizzle-team/drizzle-kit-mirror/issues/new or write to us on Discord: https://discord.gg/WcRKz2FFxN
+
+Drizzle Studio is up and running on https://local.drizzle.studio
+
+------------------------------------------------------
+Open this url in chrome browser
+
+https://local.drizzle.studio
+
+shoud see occupation field in database table...nestjs_users_new
+------------------------------------------------------
+ROLLBACK OPERATION:
+------------------
+
+Remove field from schema
+
+import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('nestjs_users_new', {
+  id: serial('id').primaryKey(),
+  name: text('name'),
+  email: text('email'),
+  password: text('password'),
+  address: text('address'),
+  profession: text('profession'),
+});
+------------------------------------------------------
+pnpm drizzle-kit generate
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm drizzle-kit generate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+1 tables
+nestjs_users_new 6 columns 0 indexes 0 fks
+
+[✓] Your SQL migration file ➜ drizzle\0002_secret_steve_rogers.sql 🚀
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+
+------------------------------------------------------
+CHECK IN THE FILE:drizzle\0002_secret_steve_rogers.sql
+
+ALTER TABLE "nestjs_users_new" DROP COLUMN "occupation";
+------------------------------------------------------
+pnpm drizzle-kit migrate
+
+
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>pnpm drizzle-kit migrate
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'E:\MURALI\NEST-JS\drizzle-nest-basicsx\drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] migrations applied successfully!
+E:\MURALI\NEST-JS\drizzle-nest-basicsx>
+------------------------------------------------------
+shoud not see occupation field in database table...nestjs_users_new
+------------------------------------------------------
+

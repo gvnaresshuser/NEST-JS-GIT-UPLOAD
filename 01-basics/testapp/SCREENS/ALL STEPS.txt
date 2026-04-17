@@ -1,0 +1,2222 @@
+Full power NestJS demo app, that makes concepts click 💡
+Step-by-step using your existing `testapp` and integrate **Drizzle ORM + PostgreSQL + all NestJS features**.
+
+---
+
+*************************************
+pnpm dlx @nestjs/cli new testapp
+select pnpm
+cd testapp
+
+Run project:
+pnpm run start:dev
+pnpm start:dev
+*************************************
+
+# 🚀 Step 1: Project Structure Plan
+
+We’ll create a **Users module** and plug everything into it:
+
+```
+src/
+ └── users/
+      ├── users.module.ts
+      ├── users.controller.ts
+      ├── users.service.ts
+      ├── dto/
+      ├── pipes/
+      ├── guards/
+      ├── decorators/
+      ├── interceptors/
+      ├── filters/
+      ├── interfaces/
+```
+
+---
+
+# ⚙️ Step 2: Install Required Packages
+
+Run this inside your project:
+
+```bash
+pnpm add drizzle-orm pg @types/pg dotenv
+pnpm add -D drizzle-kit
+pnpm add @nestjs/config
+pnpm add class-validator class-transformer
+pnpm add jsonwebtoken @types/jsonwebtoken
+pnpm add bcrypt
+pnpm add -D @types/bcrypt
+```
+
+---
+
+# 🧱 Step 3: Generate Core Module
+
+nest g resource users - DON'T USE THIS 
+
+```bash
+nest g module users
+nest g controller users
+nest g service users
+```
+
+---
+
+# 📁 Step 4: Generate Feature Folders
+
+```bash
+mkdir src/users/dto
+mkdir src/users/pipes
+mkdir src/users/guards
+mkdir src/users/decorators
+mkdir src/users/interceptors
+mkdir src/users/filters
+mkdir src/users/interfaces
+```
+
+---
+
+# 🧠 Step 5: Generate Individual Components
+
+# ✅ Pipe
+
+```bash
+nest g pipe users/pipes/parse-int-custom
+```
+
+# ✅ Guard (JWT)
+
+```bash
+nest g guard users/guards/jwt-auth
+```
+
+# ✅ Interceptor
+
+```bash
+nest g interceptor users/interceptors/logging
+```
+
+# ✅ Exception Filter
+
+```bash
+nest g filter users/filters/http-exception
+```
+
+# ✅ Custom Decorator (manual file)
+
+```bash
+touch src/users/decorators/get-user.decorator.ts
+```
+
+# ✅ Interface (manual file)
+
+```bash
+touch src/users/interfaces/user.interface.ts
+```
+
+---
+
+# 🛢️ Step 6: Setup Drizzle ORM
+
+Create:
+
+```
+src/db/
+   ├── drizzle.ts
+   ├── schema.ts
+```
+
+---
+
+# 📄 drizzle.ts
+
+```ts
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export const db = drizzle(pool);
+```
+
+---
+
+# 📄 schema.ts
+
+```ts
+import { pgTable, serial, varchar } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }),
+  email: varchar('email', { length: 100 }),
+});
+```
+
+---
+
+# 🔐 Step 7: Enable Config Module
+
+Update `app.module.ts`:
+
+```ts
+import { ConfigModule } from '@nestjs/config';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+---
+
+# 🧪 Step 8: Add ENV file
+
+Create `.env`:
+
+```
+DATABASE_URL=postgresql://pern_store_user:xxxxx@render.com/...
+JWT_SECRET=mysecret
+```
+
+---
+
+# 🧩 What We’ll Build Next (Step-by-Step)
+
+Now comes the **real learning part** 🔥
+
+In upcoming steps, we will implement:
+
+# 1️.Controller + Service (CRUD with Drizzle)
+
+# 2️.DTO + ValidationPipe (whitelist, transform)
+
+# 3️.Custom Pipe (e.g., string → number transformation)
+
+# 4️.JWT Guard (protect routes)
+
+# 5️.Middleware (request logging)
+
+# 6️.Interceptor (response shaping + timing)
+
+# 7️.Custom Decorator (`@GetUser()`)
+
+# 8️.Exception Filter (global error handling)
+
+# 9️.Interface usage (type safety)
+
+---
+
+# 🧭 Suggested Flow (Important)
+
+We should go in this order:
+
+1. ✅ Basic CRUD with Drizzle
+2. ✅ DTO + Validation
+3. ✅ Pipes
+4. ✅ Middleware
+5. ✅ Guard (JWT)
+6. ✅ Decorator
+7. ✅ Interceptor
+8. ✅ Exception Filter
+
+---
+
+# 👉 Next Step
+
+Let’s proceed with:
+
+## 👉 **Step 2: Users CRUD using Drizzle (Controller + Service)**
+
+* full service code (Drizzle queries)
+* controller endpoints
+* testing URLs
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Core CRUD with Drizzle ORM — this is the backbone of everything else.
+
+---
+
+# 🚀 Step 2: Users CRUD (Controller + Service + Drizzle)
+
+We’ll implement:
+
+* ✅ Create User
+* ✅ Get All Users
+* ✅ Get User By ID
+* ✅ Delete User
+
+---
+
+# 📄 1. Interface (Type Safety)
+
+📁 `src/users/interfaces/user.interface.ts`
+
+```ts
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+```
+
+---
+
+# 📄 2. Service (Drizzle Queries)
+
+📁 `src/users/users.service.ts`
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { db } from '../db/drizzle';
+import { users } from '../db/schema';
+import { eq } from 'drizzle-orm';
+import { User } from './interfaces/user.interface';
+
+@Injectable()
+export class UsersService {
+
+  async create(user: Omit<User, 'id'>) {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
+  }
+
+  async findAll() {
+    return await db.select().from(users);
+  }
+
+  async findOne(id: number) {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
+
+  async remove(id: number) {
+    const result = await db.delete(users).where(eq(users.id, id)).returning();
+    return result[0];
+  }
+}
+```
+
+---
+
+# 📄 3. Controller
+
+📁 `src/users/users.controller.ts`
+
+```ts
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  // CREATE
+  @Post()
+  create(@Body() body: { name: string; email: string }) {
+    return this.usersService.create(body);
+  }
+
+  // GET ALL
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
+
+  // GET BY ID
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOne(id);
+  }
+
+  // DELETE
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.remove(id);
+  }
+}
+```
+
+---
++++++++++++++++++------------------------------++++++++++++++++++++++++++++++++++++++++
+🚀 Step-by-Step Fix
+✅ Option 1: Using Drizzle Kit (Recommended 🔥)
+1️.Create drizzle config
+
+📁 drizzle.config.ts
+
+import type { Config } from 'drizzle-kit';
+
+export default {
+  schema: './src/db/schema.ts',
+  out: './drizzle',
+  driver: 'pg',
+  dbCredentials: {
+    connectionString: process.env.DATABASE_URL!,
+  },
+} satisfies Config;
+2️.Generate SQL
+pnpm drizzle-kit generate
+
+👉 This creates:
+
+drizzle/
+  └── 0000_*.sql
+3️.Push to Database (🔥 easiest)
+pnpm drizzle-kit push
+
+👉 This will create tables automatically
+
+✅ Option 2: Manual SQL Execution
+
+If you prefer manual:
+
+Open generated SQL file and run:
+E:\MURALI\NEST-JS\testapp\drizzle\0000_sturdy_maggott.sql
+E:\MURALI\NEST-JS\testapp\drizzle\0000_sturdy_maggott.sql
+E:\MURALI\NEST-JS\testapp\drizzle\0000_sturdy_maggott.sql
+
+--------------- RUN THIS IN PG ADMIN TOOL -----------------
+CREATE TABLE "nestjs_concepts_users" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(100),
+	"email" varchar(100)
+);
+
+--------------- RUN THIS IN PG ADMIN TOOL -----------------
+
+
+CREATE TABLE "nestjs_concepts_users" (
+  "id" serial PRIMARY KEY,
+  "name" varchar(100),
+  "email" varchar(100)
+);
+
+👉 Run this in:
+
+pgAdmin
+DBeaver
+Render DB console
+⚠️ VERY IMPORTANT CHECK
+
+Your table name must MATCH this:
+
+export const users = pgTable('nestjs_concepts_users', {
+
+👉 If mismatch → same error again
+
+🧪 After Fix → Test Again
+POST http://localhost:3000/users
+{
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+🔥 Pro Tip (Interview Gold)
+
+👉 Difference:
+
+Command	Purpose
+generate	Creates SQL files
+push	Applies schema directly (no history)
++++++++++++++++++------------------------------++++++++++++++++++++++++++++++++++++++++
+
+# 🧪 4. Test APIs (VERY IMPORTANT)
+
+# ✅ Create User
+
+```
+POST http://localhost:3000/users
+```
+
+```json
+{
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+```
+RESPONSE:
+---------
+{
+  "id": 1,
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+
+---
+
+# ✅ Get All Users
+
+```
+GET http://localhost:3000/users
+```
+RESPONSE:
+---------
+[
+  {
+    "id": 1,
+    "name": "Naresh",
+    "email": "naresh@gmail.com"
+  }
+]
+
+---
+
+# ✅ Get User By ID
+
+```
+GET http://localhost:3000/users/1
+```
+RESPONSE:
+---------
+{
+  "id": 1,
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+
+---
+
+# ✅ Delete User
+
+```
+DELETE http://localhost:3000/users/1
+```
+RESPONSE:
+---------
+{
+  "id": 1,
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+
+---
+```
+GET http://localhost:3000/users
+```
+RESPONSE:
+---------
+[]
+
+
+# ⚠️ Important Notes
+
+# 🔹 ParseIntPipe
+
+* Automatically converts `id` from string → number
+* Throws error if invalid
+
+# 🔹 Drizzle `.returning()`
+
+* PostgreSQL only
+* Returns inserted/deleted row
+
+---
+
+# 🧠 What You Just Learned
+
+This step already demonstrates:
+
+* ✔ Service layer separation
+* ✔ Controller routing
+* ✔ Built-in pipe (`ParseIntPipe`)
+* ✔ ORM integration (Drizzle)
+* ✔ Interface usage
+
+---
+
+# 🚀 Next Step
+
+Now we upgrade this to **enterprise-level validation**
+
+👉 **Step 3: DTO + ValidationPipe + class-validator + class-transformer**
+
+We’ll implement:
+
+* DTO validation
+* whitelist
+* forbidNonWhitelisted
+* transform
+* nested validation (🔥 important)
+
+---
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Perfect — now we move into **real NestJS power 🔥**
+This is where your app starts behaving like a **production-grade backend**.
+
+---
+
+# 🚀 Step 3: DTO + ValidationPipe
+
+We will implement:
+
+* ✅ DTO (Data Transfer Object)
+* ✅ `class-validator`
+* ✅ `class-transformer`
+* ✅ Global ValidationPipe
+* ✅ whitelist + forbidNonWhitelisted
+* ✅ transform
+
+---
+
+# 📄 1. Create DTO
+
+📁 `src/users/dto/create-user.dto.ts` - CREATED MANUALLY
+
+```ts id="dto1"
+import { IsEmail, IsString, Length } from 'class-validator';
+
+export class CreateUserDto {
+
+  @IsString()
+  @Length(3, 50)
+  name: string;
+
+  @IsEmail()
+  email: string;
+}
+```
+
+---
+
+# 📄 2. Update Controller to Use DTO
+
+📁 `users.controller.ts`
+
+```ts id="ctrl1"
+import { CreateUserDto } from './dto/create-user.dto';
+
+@Post()
+create(@Body() body: CreateUserDto) {
+  return this.usersService.create(body);
+}
+```
+
+---
+
+# ⚙️ 3. Enable Global ValidationPipe
+
+📁 `main.ts`
+
+```ts id="main1"
+import { ValidationPipe } from '@nestjs/common';
+
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }),
+);
+```
+
+---
+
+# 🧪 4. Test Cases (VERY IMPORTANT)
+
+---
+POST http://localhost:3000/users
+body
+{
+  "name": "Naresh",
+  "email": "wrong-email"
+}
+------------------
+RESPONSE:
+--------
+{
+  "message": [
+    "email must be an email"
+  ],
+  "error": "Bad Request",
+  "statusCode": 400
+}
+------------------
+{
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+------------------
+RESPONSE:
+--------
+{
+  "id": 2,
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+------------------
+
+## ✅ Valid Request
+
+```json id="valid"
+{
+  "name": "Naresh",
+  "email": "naresh@gmail.com"
+}
+```
+
+✔ Works fine
+
+---
+
+## ❌ Invalid Email
+
+```json id="invalid1"
+{
+  "name": "Naresh",
+  "email": "wrong-email"
+}
+```
+
+👉 Response:
+
+```json
+{
+  "message": ["email must be an email"],
+  "error": "Bad Request",
+  "statusCode": 400
+}
+```
+
+---
+
+## ❌ Extra Field (🔥 Important)
+
+```json id="invalid2"
+{
+  "name": "Naresh3",
+  "email": "naresh@gmail.com",
+  "role": "admin"
+}
+```
+RESPONSE:
+--------
+{
+  "message": [
+    "property role should not exist"
+  ],
+  "error": "Bad Request",
+  "statusCode": 400
+}
+
+👉 Response:
+
+```json
+{
+  "message": ["property role should not exist"],
+  "error": "Bad Request",
+  "statusCode": 400
+}
+```
+
+---
+
+# 🧠 Deep Understanding (VERY IMPORTANT)
+
+# 🔹 `whitelist: true`
+
+* Removes properties NOT in DTO
+
+# 🔹 `forbidNonWhitelisted: true`
+
+* Throws error instead of silently removing
+
+# 🔹 `transform: true`
+
+* Converts payload → DTO instance
+* Enables `class-transformer`
+
+---
+
+# 🔥 BONUS: Add Transform Example
+
+Let’s add **age as number**
+
+---
+
+📁 Update DTO:
+
+```ts id="dto2"
+import { Type } from 'class-transformer';
+import { IsNumber, IsOptional } from 'class-validator';
+
+@IsOptional()
+@Type(() => Number)
+@IsNumber()
+age?: number;
+```
+
+---
+
+## 🧪 Test
+POST http://localhost:3000/users
+
+```json id="test-age"
+{
+  "name": "Naresh3",
+  "email": "naresh@gmail.com",
+  "age": "25"
+}
+```
+RESPONSE:
+---------
+{
+  "id": 3,
+  "name": "Naresh3",
+  "email": "naresh@gmail.com"
+}
+AGE NOT INSERTED AS IT IS NOT IN TABLE...BUT NO ERROR..RECORD CREATED
+
+👉 Output:
+
+```json
+{
+  "age": 25
+}
+```
+
+✔ string → number automatically
+
+---
+
+# 🧠 What You Just Learned
+
+This step demonstrates:
+
+* ✔ DTO pattern (VERY IMPORTANT in NestJS)
+* ✔ Validation using decorators
+* ✔ Request sanitization (security 🔐)
+* ✔ Transformation using `@Type`
+* ✔ Global pipes usage
+
+---
+
+# 🚀 Next Step
+
+Now we move to:
+
+## 👉 Step 4: Custom Pipe (🔥 your Angular pipe → NestJS)
+
+We will:
+
+* create your **custom filter pipe**
+* apply it in controller
+* create test URL
+
+---
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Nice 🔥 — now we connect your **Angular pipe knowledge → NestJS custom pipe**
+This is where NestJS really starts feeling like **Angular on the backend**.
+
+---
+
+# 🚀 Step 4: Custom Pipe (Your Angular Filter Pipe in NestJS)
+
+# 🎯 Goal
+
+Filter users based on a query (like your Angular `filter` pipe)
+
+Example:
+
+```
+GET http://localhost:3000/users?search=na
+```
+RESPONSE:
+--------
+[
+  {
+    "id": 2,
+    "name": "Naresh",
+    "email": "naresh@gmail.com"
+  },
+  {
+    "id": 3,
+    "name": "Naresh3",
+    "email": "naresh@gmail.com"
+  }
+]
+
+👉 Should return only users whose name contains `"na"`
+
+---
+
+# 📄 1. Create Custom Pipe
+
+📁 `src/users/pipes/filter.pipe.ts`
+
+```ts
+import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
+
+@Injectable()
+export class FilterPipe implements PipeTransform {
+
+  transform(value: any, metadata: ArgumentMetadata) {
+    // value = query params
+    if (!value.search) return value;
+
+    value.search = value.search.toLowerCase().trim();
+    return value;
+  }
+}
+```
+
+---
+
+# 📄 2. Update Controller to Use Pipe
+
+📁 `users.controller.ts`
+
+```ts
+import { Query, UsePipes } from '@nestjs/common';
+import { FilterPipe } from './pipes/filter.pipe';
+
+@Get()
+@UsePipes(FilterPipe)
+findAll(@Query() query: { search?: string }) {
+  return this.usersService.findAllFiltered(query.search);
+}
+```
+
+---
+
+# 📄 3. Update Service
+
+📁 `users.service.ts`
+
+```ts
+async findAllFiltered(search?: string) {
+  const allUsers = await db.select().from(users);
+
+  if (!search) return allUsers;
+
+  return allUsers.filter(user =>
+    user.name?.toLowerCase().includes(search)
+  );
+}
+//ADD ? FOR user.name?
+```
+
+---
+
+# 🧪 4. Test URLs
+
+---
+
+## ✅ Get All Users
+
+```
+GET http://localhost:3000/users
+```
+
+---
+
+## 🔍 Filter Users
+
+```
+GET http://localhost:3000/users?search=na
+RESPONSE:
+--------
+[
+  {
+    "id": 2,
+    "name": "Naresh",
+    "email": "naresh@gmail.com"
+  },
+  {
+    "id": 3,
+    "name": "Naresh3",
+    "email": "naresh@gmail.com"
+  }
+]
+GET http://localhost:3000/users?search=h3
+RESPONSE:
+--------
+[
+  {
+    "id": 3,
+    "name": "Naresh3",
+    "email": "naresh@gmail.com"
+  }
+]
+```
+
+👉 Example Output:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Naresh",
+    "email": "naresh@gmail.com"
+  }
+]
+```
+
+---
+
+# 🧠 Deep Concept (IMPORTANT)
+
+# 🔹 Angular Pipe vs NestJS Pipe
+
+| Angular Pipe       | NestJS Pipe             |
+| ------------------ | ----------------------- |
+| Transforms UI data | Transforms request data |
+| Used in templates  | Used in controllers     |
+| Runs on frontend   | Runs on backend         |
+
+---
+
+# 🔥 Real Power of Pipes in NestJS
+
+You can use pipes for:
+
+* ✅ Validation
+* ✅ Transformation
+* ✅ Sanitization
+* ✅ Parsing (like `ParseIntPipe`)
+
+---
+
+# 💡 Pro Upgrade (DB-Level Filtering 🔥)
+
+Instead of filtering in memory, you can do:
+
+```ts
+import { ilike } from 'drizzle-orm';
+
+return db
+  .select()
+  .from(users)
+  .where(ilike(users.name, `%${search}%`));
+```
+
+👉 This is **production-level filtering**
+
+---
+
+# 🧠 What You Just Learned
+
+* ✔ Custom Pipe creation
+* ✔ Using `@UsePipes()`
+* ✔ Transforming query params
+* ✔ Angular → NestJS concept mapping
+* ✔ Filtering logic (basic + advanced)
+
+---
+
+# 🚀 Next Step
+
+Now things get more interesting 🔐
+
+## 👉 Step 5: Middleware (Request Logging)
+
+We will:
+
+* log request method + URL
+* apply middleware globally
+* understand lifecycle
+---
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Middleware, which sits *before everything* in the request lifecycle.
+
+---
+
+# 🚀 Step 5: Middleware (Request Logging)
+
+# 🎯 Goal
+
+Log every incoming request like:
+
+```
+[GET] /users
+[POST] /users
+```
+
+---
+
+# 🧠 Where Middleware Runs?
+
+👉 Flow in NestJS:
+
+```
+Middleware → Guard → Interceptor → Controller → Service
+```
+
+So middleware is the **first layer** ⚡
+
+---
+
+# 📄 1. Create Middleware
+
+📁 `src/common/middleware/logger.middleware.ts` - CREATED MANUALLY
+
+```ts
+import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+
+  use(req: Request, res: Response, next: NextFunction) {
+    console.log(`[${req.method}] ${req.originalUrl}`);
+    next();
+  }
+}
+```
+
+---
+
+# 📄 2. Apply Middleware (IMPORTANT)
+
+📁 `app.module.ts`
+
+```ts
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { UsersModule } from './users/users.module';
+
+@Module({
+  imports: [UsersModule],
+})
+export class AppModule implements NestModule {
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*'); // apply to all routes
+  }
+}
+```
+
+---
+
+# 🧪 3. Test
+
+Call any API:
+
+```id="testmid1"
+GET http://localhost:3000/users
+```
+
+👉 Console output:
+
+```
+[GET] /users
+```
+CHECKED CONSOLE...
+[GET] /users
+---
+
+# 🔥 Advanced Version (Response Time ⏱️)
+
+Upgrade your middleware:
+
+```ts
+use(req: Request, res: Response, next: NextFunction) {
+  const start = Date.now();
+
+  res.on('finish', () => {
+    const time = Date.now() - start;
+    console.log(`[${req.method}] ${req.originalUrl} - ${time}ms`);
+  });
+
+  next();
+}
+```
+
+👉 Output:
+
+```
+[GET] /users - 12ms
+```
+CHECKED CONSOLE
+[GET] /users - 1156ms
+
+---
+
+# 🧠 Key Concepts
+
+# 🔹 Middleware vs Interceptor
+
+| Feature              | Middleware              | Interceptor        |
+| -------------------- | ----------------------- | ------------------ |
+| Runs before route    | ✅                       | ✅                  |
+| Runs after response  | ❌                       | ✅                  |
+| Access response data | ❌                       | ✅                  |
+| Use case             | Logging, auth pre-check | Response transform |
+
+---
+
+# 🔥 Real Use Cases
+
+Middleware is used for:
+
+* ✅ Logging
+* ✅ Authentication (basic)
+* ✅ Rate limiting
+* ✅ Request modification
+
+---
+
+# 🧠 What You Just Learned
+
+* ✔ Middleware lifecycle
+* ✔ Global middleware setup
+* ✔ Request logging
+* ✔ Measuring response time
+
+---
+
+# 🚀 Next Step
+
+Now we go into **security 🔐**
+
+## 👉 Step 6: JWT Guard (Route Protection)
+
+We will:
+
+* create JWT token
+* protect routes using Guard
+* understand `ExecutionContext`
+
+---
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Now we’re entering **core security 🔐** — this is where NestJS feels like **Spring Security + Angular guards combined**.
+
+---
+
+# 🚀 Step 6: JWT Guard (Route Protection)
+
+# 🎯 Goal
+
+* Generate a JWT token
+* Protect routes using a Guard
+* Access user data inside controller
+
+---
+
+# 🧠 Flow
+
+```text
+Request → Middleware → Guard (JWT check) → Controller
+```
+
+---
+
+# 📦 1. Install JWT (already done ✔) - NO NEED AGAIN
+
+You already installed:
+
+```bash
+pnpm add jsonwebtoken
+```
+
+---
+
+# 📄 2. Create JWT Utility
+
+📁 `src/common/utils/jwt.util.ts`  -- CREATED MANUALLY
+
+```ts
+import * as jwt from 'jsonwebtoken';
+
+const SECRET = process.env.JWT_SECRET || 'mysecret';
+
+export const signToken = (payload: any) => {
+  return jwt.sign(payload, SECRET, { expiresIn: '1h' });
+};
+
+export const verifyToken = (token: string) => {
+  return jwt.verify(token, SECRET);
+};
+```
+
+---
+
+# 📄 3. Create Login Endpoint (Demo)
+
+📁 `users.controller.ts`
+
+```ts
+import { signToken } from '../common/utils/jwt.util';
+
+@Post('login')
+login() {
+  // dummy user (for demo)
+  const user = { id: 1, name: 'Naresh' };
+
+  const token = signToken(user);
+
+  return {
+    message: 'Login successful',
+    token,
+  };
+}
+```
+
+---
+
+# 🧪 Test Login
+
+```http
+POST http://localhost:3000/users/login
+```
+ALREADY SUPPLYING BODY IN THE CODE...FOR TESTING PURPOSE
+
+👉 Response:
+
+```json
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+RESPONSE:
+--------
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTA1NTk0NSwiZXhwIjoxNzc1MDU5NTQ1fQ.JPWHdJfmxJTRDLEfDObqV27OqXNKSKBXXHuqSWQ8AH4"
+}
+
+---
+
+# 📄 4. JWT Guard
+
+📁 `src/users/guards/jwt-auth.guard.ts`
+
+```ts
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { verifyToken } from '../../common/utils/jwt.util';
+
+@Injectable()
+export class JwtAuthGuard implements CanActivate {
+
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+
+    const authHeader = request.headers['authorization'];
+
+    if (!authHeader) {
+      throw new UnauthorizedException('No token provided');
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+      const decoded = verifyToken(token);
+      request.user = decoded; // attach user
+      return true;
+    } catch (err) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+}
+```
+
+---
+
+# 📄 5. Protect Routes
+
+📁 `users.controller.ts`
+
+```ts
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+
+@Get()
+@UseGuards(JwtAuthGuard)
+findAll(@Query() query: { search?: string }) {
+  return this.usersService.findAllFiltered(query.search);
+}
+```
+
+---
+
+# 🧪 Test Protected Route
+
+---
+
+## ❌ Without Token
+
+```http
+GET http://localhost:3000/users
+```
+
+👉 Response:
+
+```json
+{
+  "message": "No token provided",
+  "statusCode": 401
+}
+```
+RESPONSE:
+---------
+{
+  "message": "No token provided",
+  "error": "Unauthorized",
+  "statusCode": 401
+}
+
+---
+POST http://localhost:3000/users/login
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTA1NjI0MSwiZXhwIjoxNzc1MDU5ODQxfQ.HdRm9WC32sts4RCu2chRICdJoZBF7jrNUM7w9NCBKmg"
+}
+-------------------
+POST 2 records for testing
+POST http://localhost:3000/users
+{
+  "name": "Naresh4",
+  "email": "naresh@gmail.com",
+  "age": "25"
+}
+{
+  "name": "Naresh5",
+  "email": "naresh@gmail.com",
+  "age": "25"
+}
+-------------------
+select * from nestjs_concepts_users
+
+2	"Naresh"	"naresh@gmail.com"
+3	"Naresh3"	"naresh@gmail.com"
+4	"Naresh4"	"naresh@gmail.com"
+5	"Naresh5"	"naresh@gmail.com"
+-------------------
+## ✅ With Token
+
+```http
+GET http://localhost:3000/users?search=naresh
+Authorization: Bearer YOUR_TOKEN
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTA1NjI0MSwiZXhwIjoxNzc1MDU5ODQxfQ.HdRm9WC32sts4RCu2chRICdJoZBF7jrNUM7w9NCBKmg
+
+✔ Works
+RESPONSE:
+---------
+[
+  {
+    "id": 2,
+    "name": "Naresh",
+    "email": "naresh@gmail.com"
+  },
+  {
+    "id": 3,
+    "name": "Naresh3",
+    "email": "naresh@gmail.com"
+  },
+  {
+    "id": 4,
+    "name": "Naresh4",
+    "email": "naresh@gmail.com"
+  },
+  {
+    "id": 5,
+    "name": "Naresh5",
+    "email": "naresh@gmail.com"
+  }
+]
+
+---
+
+# 🧠 Deep Concept (IMPORTANT)
+
+# 🔹 ExecutionContext
+
+```ts
+context.switchToHttp().getRequest()
+```
+
+👉 Gives access to:
+
+* request
+* headers
+* body
+
+---
+
+# 🔥 Key Power Move
+
+```ts
+request.user = decoded;
+```
+
+👉 This enables:
+
+* Custom decorators (`@GetUser()`)
+* Role-based access later
+
+---
+
+# 🧠 What You Just Learned
+
+* ✔ JWT authentication flow
+* ✔ Guard lifecycle
+* ✔ Route protection
+* ✔ ExecutionContext usage
+* ✔ Attaching user to request
+
+---
+
+# 🚀 Next Step
+
+Now we unlock a **very powerful feature** 👇
+
+## 👉 Step 7: Custom Decorator (`@GetUser()`)
+
+We will:
+
+* extract user from request cleanly
+* avoid `req.user` everywhere
+* make code elegant ✨
+
+---
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Nice 🔥 — this is one of the **cleanest and most loved NestJS features**.
+
+You’ll now replace ugly code like:
+
+```ts
+req.user
+```
+
+with a beautiful, reusable decorator:
+
+```ts
+@GetUser()
+```
+
+---
+
+# 🚀 Step 7: Custom Decorator (`@GetUser()`)
+
+---
+
+# 🎯 Goal
+
+Instead of:
+
+```ts
+@Get()
+getProfile(@Req() req) {
+  return req.user;
+}
+```
+
+👉 We write:
+
+```ts
+@Get()
+getProfile(@GetUser() user) {
+  return user;
+}
+```
+
+✨ Clean. Reusable. Professional.
+
+---
+
+# 📄 1. Create Decorator
+
+📁 `src/users/decorators/get-user.decorator.ts`
+
+```ts
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+export const GetUser = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.user;
+  },
+);
+```
+
+---
+
+# 📄 2. Use in Controller
+
+📁 `users.controller.ts`
+
+```ts
+import { GetUser } from './decorators/get-user.decorator';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+
+@Get('profile')
+@UseGuards(JwtAuthGuard)
+getProfile(@GetUser() user: any) {
+  return {
+    message: 'User profile fetched successfully',
+    user,
+  };
+}
+```
+
+---
+
+# 🧪 3. Test API
+
+```http
+GET http://localhost:3000/users/profile
+Authorization: Bearer YOUR_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTA1NjI0MSwiZXhwIjoxNzc1MDU5ODQxfQ.HdRm9WC32sts4RCu2chRICdJoZBF7jrNUM7w9NCBKmg
+```
+RESPONSE:
+--------
+{
+  "message": "User profile fetched successfully",
+  "user": {
+    "id": 1,
+    "name": "Naresh",
+    "iat": 1775056241,
+    "exp": 1775059841
+  }
+}
+
+---
+
+👉 Response:
+
+```json
+{
+  "message": "User profile fetched successfully",
+  "user": {
+    "id": 1,
+    "name": "Naresh",
+    "iat": 1710000000,
+    "exp": 1710003600
+  }
+}
+```
+
+---
+
+# 🧠 Deep Concept (IMPORTANT)
+
+# 🔹 How it Works
+
+1. **Guard runs first**
+2. JWT decoded
+3. Attached to request:
+
+```ts
+request.user = decoded;
+```
+
+4. Decorator extracts it:
+
+```ts
+ctx.switchToHttp().getRequest().user
+```
+
+---
+
+# 🔥 Advanced Version (Field Extraction)
+
+You can even do:
+
+```ts
+export const GetUser = createParamDecorator(
+  (data: string, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    const user = request.user;
+
+    return data ? user?.[data] : user;
+  },
+);
+```
+
+---
+
+# ✅ Usage:
+
+```ts
+@Get('me')
+@UseGuards(JwtAuthGuard)
+getMyName(@GetUser('name') name: string) {
+  return { name };
+}
+```
+TEST:
+----
+GET http://localhost:3000/users/me
+---
+RESPONSE:
+---------
+{
+  "name": "Naresh"
+}
+
+# 🧠 Why This Is Powerful
+
+* ✔ Removes boilerplate (`req.user`)
+* ✔ Improves readability
+* ✔ Reusable across app
+* ✔ Clean architecture (very important in interviews)
+
+---
+
+# 🔥 Real-World Usage
+
+Used for:
+
+* Logged-in user
+* Roles (`@GetUser('role')`)
+* Permissions
+* Multi-tenant apps
+
+---
+
+# 🧠 What You Just Learned
+
+* ✔ Custom decorators in NestJS
+* ✔ ExecutionContext reuse
+* ✔ Clean controller design
+* ✔ Advanced parameter handling
+
+---
+
+# 🚀 Next Step
+
+Now we move to **response transformation magic ✨**
+
+## 👉 Step 8: Interceptor (Response Shaping + Logging)
+
+We will:
+
+* modify response globally
+* wrap response in standard format
+* measure execution time
+* understand RxJS flow
+
+---
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Now we hit **one of the most powerful features in NestJS 🔥**
+Interceptors = **Spring AOP + Angular HTTP interceptors combined**
+
+---
+
+# 🚀 Step 8: Interceptor (Response Shaping + Logging)
+
+---
+
+# 🎯 Goal
+
+Transform every response like this:
+
+```json
+{
+  "success": true,
+  "data": {...},
+  "timestamp": "2026-04-01T10:00:00Z"
+}
+```
+
+And also log execution time ⏱️
+
+---
+
+# 🧠 Where Interceptor Runs?
+
+```text
+Request → Middleware → Guard → Interceptor → Controller → Interceptor → Response
+```
+
+👉 Only component that works **before AND after** controller
+
+---
+
+# 📄 1. Create Interceptor
+
+📁 `src/users/interceptors/response.interceptor.ts` -- CREATED MANUALLY
+
+```ts
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
+import { Observable, map } from 'rxjs';
+
+@Injectable()
+export class ResponseInterceptor implements NestInterceptor {
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const start = Date.now();
+
+    return next.handle().pipe(
+      map((data) => {
+        const time = Date.now() - start;
+
+        return {
+          success: true,
+          data,
+          timestamp: new Date().toISOString(),
+          executionTime: `${time}ms`,
+        };
+      }),
+    );
+  }
+}
+```
+
+---
+
+# 📄 2. Apply Interceptor (Global)
+
+📁 `main.ts`
+
+```ts
+import { ResponseInterceptor } from './users/interceptors/response.interceptor';
+
+app.useGlobalInterceptors(new ResponseInterceptor());
+```
+
+---
+
+# 🧪 3. Test API
+
+```http
+GET http://localhost:3000/users
+GET http://localhost:3000/users?search=naresh
+Authorization: Bearer YOUR_TOKEN
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik5hcmVzaCIsImlhdCI6MTc3NTA1NjI0MSwiZXhwIjoxNzc1MDU5ODQxfQ.HdRm9WC32sts4RCu2chRICdJoZBF7jrNUM7w9NCBKmg
+```
+RESPONSE:
+--------
+{
+  "success": true,
+  "data": [
+    {
+      "id": 2,
+      "name": "Naresh",
+      "email": "naresh@gmail.com"
+    },
+    {
+      "id": 3,
+      "name": "Naresh3",
+      "email": "naresh@gmail.com"
+    },
+    {
+      "id": 4,
+      "name": "Naresh4",
+      "email": "naresh@gmail.com"
+    },
+    {
+      "id": 5,
+      "name": "Naresh5",
+      "email": "naresh@gmail.com"
+    }
+  ],
+  "timestamp": "2026-04-01T15:29:15.886Z",
+  "executionTime": "2062ms"
+}
+---
+
+👉 Response:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "Naresh",
+      "email": "naresh@gmail.com"
+    }
+  ],
+  "timestamp": "2026-04-01T10:00:00.000Z",
+  "executionTime": "5ms"
+}
+```
+
+---
+
+# 🧠 Deep Concept (VERY IMPORTANT)
+
+# 🔹 `next.handle()`
+
+```ts
+next.handle()
+```
+
+👉 Calls the controller
+
+---
+
+# 🔹 RxJS `map()`
+
+```ts
+map(data => ...)
+```
+
+👉 Transforms response before sending to client
+
+---
+
+# 🔥 Advanced: Logging Interceptor
+
+You can also log requests:
+
+```ts
+console.log('Before...');
+return next.handle().pipe(
+  map((data) => {
+    console.log('After...');
+    return data;
+  }),
+);
+```
+
+---
+
+# ⚡ Interceptor vs Middleware
+
+| Feature           | Middleware | Interceptor |
+| ----------------- | ---------- | ----------- |
+| Before controller | ✅          | ✅           |
+| After controller  | ❌          | ✅           |
+| Modify response   | ❌          | ✅           |
+| RxJS support      | ❌          | ✅           |
+
+---
+
+# 🔥 Real-World Use Cases
+
+Interceptors are used for:
+
+* ✅ Response formatting
+* ✅ Logging
+* ✅ Caching
+* ✅ Error mapping
+* ✅ Performance tracking
+
+---
+
+# 🧠 What You Just Learned
+
+* ✔ Interceptor lifecycle
+* ✔ Response transformation
+* ✔ RxJS usage in NestJS
+* ✔ Global interceptors
+
+---
+
+# 🚀 Final Step
+
+Now we complete the architecture 💥
+
+## 👉 Step 9: Exception Filter (Global Error Handling)
+
+We will:
+
+* catch all errors
+* customize error response
+* override default NestJS errors
+
+---
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Perfect 🔥 — now we complete your **enterprise NestJS architecture**
+
+This is the **final piece**: centralized error handling like in Spring Boot (`@ControllerAdvice`).
+
+---
+
+# 🚀 Step 9: Exception Filter (Global Error Handling)
+
+---
+
+# 🎯 Goal
+
+Instead of default errors like:
+
+```json
+{
+  "statusCode": 400,
+  "message": "Bad Request"
+}
+```
+
+👉 We return:
+
+```json
+{
+  "success": false,
+  "message": "Bad Request",
+  "timestamp": "2026-04-01T10:00:00Z",
+  "path": "/users"
+}
+```
+
+---
+
+# 📄 1. Create Exception Filter
+
+📁 `src/users/filters/http-exception.filter.ts`
+
+```ts
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+
+    const request = ctx.getRequest<Request>();
+    const response = ctx.getResponse<Response>();
+
+    const status = exception.getStatus();
+    const exceptionResponse = exception.getResponse();
+
+    const message =
+      typeof exceptionResponse === 'string'
+        ? exceptionResponse
+        : (exceptionResponse as any).message;
+
+    response.status(status).json({
+      success: false,
+      message,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    });
+  }
+}
+```
+
+---
+
+# 📄 2. Apply Globally
+
+📁 `main.ts`
+
+```ts
+import { HttpExceptionFilter } from './users/filters/http-exception.filter';
+
+app.useGlobalFilters(new HttpExceptionFilter());
+```
+
+---
+
+# 🧪 3. Test Cases
+
+---
+
+## ❌ Validation Error
+
+```json
+{
+  "email": "wrong"
+}
+```
+TEST:
+----
+POST http://localhost:3000/users
+{
+  "name": "Naresh6",
+  "email": "wrong",
+  "age": "25"
+}
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": [
+    "email must be an email"
+  ],
+  "timestamp": "2026-04-01T15:33:42.799Z",
+  "path": "/users"
+}
+
+👉 Response:
+
+```json
+{
+  "success": false,
+  "message": ["name must be longer than or equal to 3 characters", "email must be an email"],
+  "timestamp": "2026-04-01T10:00:00Z",
+  "path": "/users"
+}
+```
+
+---
+
+## ❌ Unauthorized (JWT)
+
+```json
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "...",
+  "path": "/users"
+}
+```
+TEST:
+----
+GET http://localhost:3000/users
+DON'T PROVIDE TOKEN IN Auth-->Bearer Token-->enter token
+RESPONSE:
+--------
+{
+  "success": false,
+  "message": "No token provided",
+  "timestamp": "2026-04-01T15:35:20.588Z",
+  "path": "/users"
+}
+
+---
+
+# 🧠 Deep Concept (IMPORTANT)
+
+# 🔹 `@Catch(HttpException)`
+
+Handles:
+
+* `BadRequestException`
+* `UnauthorizedException`
+* `NotFoundException`
+* etc.
+
+---
+
+# 🔹 `ArgumentsHost`
+
+```ts
+host.switchToHttp()
+```
+
+👉 Gives access to:
+
+* request
+* response
+
+---
+
+# 🔥 Advanced (Catch ALL Errors)
+
+```ts
+@Catch()
+```
+
+👉 Handles even:
+
+* unknown errors
+* DB errors
+
+---
+
+# 🧠 What You Just Learned
+
+* ✔ Global error handling
+* ✔ Custom error response
+* ✔ Exception lifecycle
+* ✔ Cleaner API responses
+
+---
+
+# 🎉 FINAL ARCHITECTURE (YOU BUILT THIS 🔥)
+
+```text
+Request
+  ↓
+Middleware (Logging)
+  ↓
+Guard (JWT Auth)
+  ↓
+Interceptor (Before)
+  ↓
+Controller
+  ↓
+Service (Drizzle ORM)
+  ↓
+Interceptor (After → Response shaping)
+  ↓
+Exception Filter (if error)
+```
+
+---
+
+# 💥 What You Have Now
+
+Your app includes:
+
+* ✅ Controller
+* ✅ Service
+* ✅ DTO + Validation
+* ✅ Custom Pipe
+* ✅ Middleware
+* ✅ JWT Guard
+* ✅ Custom Decorator
+* ✅ Interceptor
+* ✅ Exception Filter
+* ✅ Drizzle ORM
+
+👉 This is **production-grade NestJS architecture**
+
+---
+
+# 🧠 Your Statement Was 💯 Correct
+
+> “NestJS is like Angular + Spring Boot”
+
+✔ YES:
+
+| Angular      | NestJS       |
+| ------------ | ------------ |
+| Pipes        | Pipes        |
+| Interceptors | Interceptors |
+| DI           | DI           |
+| Modules      | Modules      |
+
+| Spring Boot | NestJS            |
+| ----------- | ----------------- |
+| Controllers | Controllers       |
+| Filters     | Exception Filters |
+| Security    | Guards            |
+| AOP         | Interceptors      |
+
+---
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

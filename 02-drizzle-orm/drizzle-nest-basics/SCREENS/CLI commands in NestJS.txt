@@ -1,0 +1,211 @@
+Complete and practical list of commonly used CLI commands in NestJS
+— especially useful for real-world projects like yours (modules, auth, guards, etc.).
+
+*************************************
+pnpm dlx @nestjs/cli new testapp
+select pnpm
+cd testapp
+
+Run project:
+pnpm run start:dev
+OR
+pnpm start:dev
+*************************************
+
+---
+
+# 🚀 1. Project Setup Commands
+
+### Create a new project
+
+```bash
+nest new project-name
+```
+
+### Run the app
+
+```bash
+npm run start
+npm run start:dev     # 🔥 hot reload (most used)
+npm run start:prod
+```
+
+---
+
+# 🧱 2. Generate Core Building Blocks
+
+## 📦 Modules
+
+```bash
+nest g module users
+nest g mo users
+```
+
+## 🎮 Controllers
+
+```bash
+nest g controller users
+nest g co users
+```
+
+## ⚙️ Services (Providers)
+
+```bash
+nest g service users
+nest g s users
+```
+
+---
+
+# 🔥 3. Generate Complete Resource (BEST PRACTICE)
+
+```bash
+nest g resource users
+```
+
+👉 This creates:
+
+* Module
+* Controller
+* Service
+* DTOs
+* CRUD endpoints
+
+---
+
+# 🧩 4. Advanced Components (VERY IMPORTANT)
+
+## 🛡️ Guards
+
+```bash
+nest g guard auth
+nest g gu auth
+```
+
+## 🔄 Interceptors
+
+```bash
+nest g interceptor logging
+nest g in logging
+```
+
+## 🚨 Exception Filters
+
+```bash
+nest g filter http-exception
+nest g f http-exception
+```
+
+## 🧪 Pipes (Validation / Transformation)
+
+```bash
+nest g pipe validation
+nest g pi validation
+```
+
+## 🔌 Middleware
+
+```bash
+nest g middleware logger
+nest g mi logger
+```
+
+---
+
+# 🧬 5. DTOs, Interfaces, Classes
+
+## DTO (manual usually, but CLI supported)
+
+```bash
+nest g class users/dto/create-user.dto
+```
+
+## Interface
+
+```bash
+nest g interface users/interfaces/user
+```
+
+---
+
+# 🔐 6. Auth & Security (Common in Real Projects)
+
+## Generate Auth Module
+
+```bash
+nest g module auth
+nest g controller auth
+nest g service auth
+```
+
+---
+
+# 🧪 7. Testing
+
+## Unit test
+
+```bash
+npm run test
+```
+
+## e2e test
+
+```bash
+npm run test:e2e
+```
+
+## Test coverage
+
+```bash
+npm run test:cov
+```
+
+---
+
+# ⚙️ 8. Useful CLI Utilities
+
+## Show all commands
+
+```bash
+nest --help
+```
+
+## Generate without spec file
+
+```bash
+nest g service users --no-spec
+```
+
+## Flat structure (no folder)
+
+```bash
+nest g controller users --flat
+```
+
+---
+
+# 🏗️ 9. Real-World Command Combo (Your Use Case)
+
+For a production-ready feature:
+
+```bash
+nest g resource users
+nest g guard auth/jwt
+nest g guard roles
+nest g interceptor logging
+nest g filter global-exception
+nest g pipe validation
+```
+
+---
+
+# 💡 Pro Tips (Very Important)
+
+✔ Use `resource` for fast CRUD
+✔ Use `guards` for auth (JWT, roles)
+✔ Use `pipes` for validation (class-validator)
+✔ Use `interceptors` for logging & response transform
+✔ Use `filters` for global error handling
+
+---
+

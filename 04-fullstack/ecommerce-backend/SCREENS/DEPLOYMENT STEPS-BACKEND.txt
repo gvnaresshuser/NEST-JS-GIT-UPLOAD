@@ -1,0 +1,590 @@
+LIVE FRONTEND REACT JS APP URL:
+------------------------------
+https://react-ecommerce-frontend-alpha.vercel.app/
+
+LIVE BACKEND URL:
+----------------
+https://ecommerce-backend-1msn.onrender.com
+------------------------------------------------------------------------
+Push backend app to git repo
+https://github.com/
+gvnaresshuser
+
+🧱 STEP 1: Push Code to GitHub
+✅ Initialize Git
+git init
+git add .
+git commit -m "Initial commit"
+
+✅ Create repo on GitHub
+
+Then:
+
+git remote add origin https://github.com/your-username/your-repo.git
+git remote add origin https://github.com/gvnaresshuser/ecommerce-backend.git
+git branch -M main
+git push -u origin main
+
+=============================================================================================
+🟢 STEP 3: Deploy NestJS (Render)
+🔥 Steps
+Go to Render
+Click New → Web Service
+Connect GitHub repo
+⚙️ Settings
+Setting	Value
+Runtime	Node
+🚀 Final Render Config (pnpm)
+Build Command:
+pnpm install -g pnpm && pnpm install && pnpm run build
+
+Start Command:
+pnpm run start:prod
+=============================================================================================
+https://render.com/
+https://dashboard.render.com/
+google login
+=============================================================================================
+✅ Alternative (even better)
+
+If your repo has:
+
+pnpm-lock.yaml
+
+👉 Render usually auto-detects pnpm
+
+Then you can simply use:
+
+pnpm install
+=============================================================================================
+🌐 Environment Variables
+
+Add:
+
+DATABASE_URL=your_db_url
+JWT_SECRET=your_secret
+NODE_ENV=production
+---------------------------------------------------------------
+PORT=3000
+DATABASE_URL=postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+JWT_SECRET=6cdadfa020cb901e7579a0da6f6fae70b735348462a65e7aeceb4f0886decf26
+RAZORPAY_KEY_ID=rzp_test_7loOYJatPLp2HD
+RAZORPAY_KEY_SECRET=eUO2oYhFEu7XlbzOopp6UYGL
+---------------------------------------------------------------
+=============================================================================================
+🚀 Deploy
+
+You’ll get:
+
+https://your-backend.onrender.com
+https://ecommerce-backend-1msn.onrender.com
+=============================================================================================
+ecommerce-backend
+Elixir
+Free
+Upgrade your instance
+
+Connect
+
+Manual Deploy
+Service ID:
+srv-d78tda4hg0os73dsucp0
+
+gvnaresshuser / ecommerce-backend
+main
+https://ecommerce-backend-1msn.onrender.com
+=============================================================================================
+LIVE BACKEND URL:
+----------------
+https://ecommerce-backend-1msn.onrender.com
+=============================================================================================
+ADD ENVIRONMENT VARIABLE IN FRONTEND WITH BACKEND URL - CONNECTING THE TWO
+🔗 STEP 4: Connect Frontend → Backend
+
+Update Axios base URL:
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+});
+=============================================================================================
+IN BACKEND SERVER ENSURE THE FOLLOWING:
+---------------------------------------
+🔥 STEP 5: Enable CORS (VERY IMPORTANT)
+
+E:\MURALI\NEST-JS\ecommerce-backend\src\main.ts
+
+In NestJS:
+
+app.enableCors({
+  origin: "https://your-app.vercel.app",
+  credentials: true,
+});
+-----------------------------------------------------
+.env
+FRONTEND_URL=http://localhost:5173
+#FRONTEND_URL=https://react-ecommerce-frontend-alpha.vercel.app
+
+import { ConfigService } from '@nestjs/config';
+  const configService = app.get(ConfigService);
+    app.enableCors({
+    origin: configService.get<string>('FRONTEND_URL'),// your Vite app
+    credentials: true,
+  });
+-----------------------------------------------------
+🔥 Alternative (Quick way without ConfigModule)
+
+If you want simple (not recommended for large apps):
+
+app.enableCors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+});
+
+
+=============================================================================================
+IN BACKEND SERVER ENSURE THE FOLLOWING:
+---------------------------------------
+🍪 STEP 6: Fix Cookies (JWT)
+
+In production:
+
+res.cookie('jwt', token, {
+  httpOnly: true,
+  secure: true, // ✅ REQUIRED for HTTPS
+  sameSite: 'none',
+});
+
+GIT PUSH AND REDEPLOY....
+=============================================================================================
+ANY CODE CHANGE...DO THIS
+
+git add .
+git commit -m "fixed backend"
+git push
+=============================================================================================
+BACKEND
+git add .
+git remote add origin https://github.com/gvnaresshuser/ecommerce-backend.git
+git commit -m "fixed backend"
+git push
+=============================================================================================
+FRONTEND
+git add .
+git remote add origin https://github.com/gvnaresshuser/react-ecommerce-frontend.git
+git commit -m "fixed frontend"
+git push
+=============================================================================================
+git rm --cached .env.development
+git rm --cached .env.production
+=============================================================================================
+
+E:\MURALI\NEST-JS\ecommerce-backend>git commit -m "removed env files"
+[master 64a0e16] removed env files
+ 2 files changed, 40 deletions(-)
+ delete mode 100644 .env.development
+ delete mode 100644 .env.production
+
+E:\MURALI\NEST-JS\ecommerce-backend>git push
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (2/2), 223 bytes | 223.00 KiB/s, done.
+Total 2 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/gvnaresshuser/ecommerce-backend.git
+   4c39dbd..64a0e16  master -> master
+
+E:\MURALI\NEST-JS\ecommerce-backend>
+=======================================================================
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git add .
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git remote add origin https://github.com/gvnaresshuser/react-ecommerce-frontend.git
+error: remote origin already exists.
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git commit -m "fixed frontend"
+[main 27f603e] fixed frontend
+ 5 files changed, 195 insertions(+), 3 deletions(-)
+ create mode 100644 SCREENS/DEPLOYMENT STEPS - Backend App.png
+ create mode 100644 SCREENS/DEPLOYMENT STEPS.png
+ create mode 100644 SCREENS/DEPLOYMENT STEPS.txt
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git push
+Enumerating objects: 16, done.
+Counting objects: 100% (16/16), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (9/9), done.
+Writing objects: 100% (10/10), 2.73 MiB | 866.00 KiB/s, done.
+Total 10 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To https://github.com/gvnaresshuser/react-ecommerce-frontend.git
+   02190bb..27f603e  main -> main
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>
+
+
+---------------------------------------------
+REMOVE .env FILES FROM REPO
+Add to .gitignore
+Open .gitignore and add:
+.env*
+
+git rm --cached .env.development
+git rm --cached .env.production
+
+git add .
+git commit -m "removed env files from repo"
+git push
+---------------------------------------------
+E:\MURALI\NEST-JS\ecommerce-backend>git rm --cached .env.production
+rm '.env.production'
+
+E:\MURALI\NEST-JS\ecommerce-backend>git rm --cached .env.development
+rm '.env.development'
+
+E:\MURALI\NEST-JS\ecommerce-backend>git add .
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\ecommerce-backend>git commit -m "removed env files from repo"
+[master 4c6ba0d] removed env files from repo
+ 4 files changed, 14 insertions(+), 41 deletions(-)
+ delete mode 100644 .env.development
+ delete mode 100644 .env.production
+
+E:\MURALI\NEST-JS\ecommerce-backend>git push
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 583 bytes | 583.00 KiB/s, done.
+Total 5 (delta 4), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (4/4), completed with 4 local objects.
+To https://github.com/gvnaresshuser/ecommerce-backend.git
+   0f57cdb..4c6ba0d  master -> master
+
+E:\MURALI\NEST-JS\ecommerce-backend>
+------------------------------------------------------
+ALWAYS DEPLOY TO MAIN BRANCH NOT MASTER BRANCH
+E:\MURALI\NEST-JS\ecommerce-backend>git branch
+* master
+
+E:\MURALI\NEST-JS\ecommerce-backend>
+
+git branch -M main
+git push -u origin main
+
+BUILD COMMAND IN RENDER.COM FOR BACKEND DEPLOY
+pnpm install -g pnpm && pnpm install && pnpm run build
+corepack enable && pnpm install && pnpm run build
+! Corepack is about to download https://registry.npmjs.org/pnpm/-/pnpm-10.33.0.tgz
+
+
+
+
+✅ Case 2: You set NODE_ENV
+Windows (your case):
+set NODE_ENV=development && pnpm run start:dev
+Mac/Linux:
+NODE_ENV=development pnpm run start:dev
+
+👉 Now NestJS loads:
+
+.env.development ✅
+
+FOR LOCALLY ALONE
+"start:dev": "nest start --watch"
+CHANGED TO
+"start:dev": "set NODE_ENV=development && nest start --watch"
+
+
+
+IN LIVE FRONTEND DON'T FORGET 
+VITE_API_URL
+https://ecommerce-backend-1msn.onrender.com
+
+
+
+
+VERY IMPORTANT
+"build": "nest build",
+"start:prod": "node dist/main.js",
+"start:prod": "node dist/src/main.js"
+-----------------------------------
+🔍 Verify locally (must do once)
+
+Run:
+
+pnpm run build
+
+Then check:
+
+dist/main.js ✅ must exist - "start:prod": "node dist/src/main.js"
+🚀 Then push fix
+git add .
+git commit -m "fixed start:prod path"
+git push
+-----------------------------------
+E:\MURALI\NEST-JS\ecommerce-backend>pnpm run build
+
+> ecommerce-backend@0.0.1 build E:\MURALI\NEST-JS\ecommerce-backend
+> nest build
+
+
+E:\MURALI\NEST-JS\ecommerce-backend>git add .
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\ecommerce-backend>git commit -m "fixed start:prod path"
+[main 807ca6d] fixed start:prod path
+ 4 files changed, 88 insertions(+), 3 deletions(-)
+
+E:\MURALI\NEST-JS\ecommerce-backend>git push
+Enumerating objects: 19, done.
+Counting objects: 100% (19/19), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (10/10), done.
+Writing objects: 100% (10/10), 1.75 KiB | 448.00 KiB/s, done.
+Total 10 (delta 9), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (9/9), completed with 9 local objects.
+To https://github.com/gvnaresshuser/ecommerce-backend.git
+   4c6ba0d..807ca6d  main -> main
+
+E:\MURALI\NEST-JS\ecommerce-backend>
+------------------------------------
+
+
+  //await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT || 3000);
+  
+
+  
+git add .
+git commit -m "fixed build output path"
+git push
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+==> Downloading cache...
+==> Cloning from https://github.com/gvnaresshuser/ecommerce-backend
+==> Checking out commit 84adf7faf8b8f886ec2b7997534ec67c53ff60c9 in branch main
+==> Downloaded 112MB in 2s. Extraction took 9s.
+==> Using Erlang version 28.0.2 (default)
+==> Using Elixir version 1.18.4 (default)
+==> Docs on specifying Elixir and Erlang versions: https://render.com/docs/elixir-erlang-versions
+* creating /opt/render/project/.mix/archives/hex-2.4.1-otp-27
+* creating /opt/render/project/.mix/elixir/1-18-otp-28/rebar3
+==> Running build command 'corepack enable && pnpm install && pnpm run build'...
+==> Using Node.js version 22.22.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+> ecommerce-backend@0.0.1 build /opt/render/project/src
+> nest build
+==> Uploading build...
+==> Uploaded in 4.0s. Compression took 9.1s
+Menu
+==> Build successful 🎉
+==> Deploying...
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+ Using Erlang version 28.0.2 (default)
+==> Using Elixir version 1.18.4 (default)
+==> Docs on specifying Elixir and Erlang versions: https://render.com/docs/elixir-erlang-versions
+==> Running 'pnpm run start:prod'
+! Corepack is about to download https://registry.npmjs.org/pnpm/-/pnpm-10.33.0.tgz
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  APP DB URL: postgresql://pern_store_user:vKYBVwPxADEKfk5ibKG0fieFsSGm2IE2@dpg-d6slnslm5p6s73atcljg-a.singapore-postgres.render.com/perns_store_r9l1?sslmode=verify-full
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [NestFactory] Starting Nest application...
+==> No open ports detected, continuing to scan...
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +202ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] JwtModule dependencies initialized +0ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] UsersModule dependencies initialized +0ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] AppModule dependencies initialized +1ms
+Menu
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] ProductsModule dependencies initialized +0ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] CartModule dependencies initialized +2ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] PaymentModule dependencies initialized +85ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 201  - 04/05/2026, 7:00:16 AM     LOG [InstanceLoader] OrdersModule dependencies initialized +0ms
+FRONTEND_URL: https://react-ecommerce-frontend-alpha.vercel.app
+3000
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RoutesResolver] AppController {/}: +6ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/, GET} route +3ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RoutesResolver] UsersController {/users}: +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RoutesResolver] ProductsController {/products}: +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/products, GET} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RoutesResolver] CartController {/cart}: +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/cart, POST} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/cart, GET} route +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/cart/:productId, DELETE} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RoutesResolver] OrdersController {/orders}: +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/orders/:id, GET} route +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/orders/razorpay/create-order, POST} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/orders/razorpay/verify, POST} route +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/orders, POST} route +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/orders, GET} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/orders/checkout, POST} route +85ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/orders/:id/status, PATCH} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RoutesResolver] PaymentController {/payment}: +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/payment/create-order, POST} route +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/payment/verify, POST} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RoutesResolver] AuthController {/auth}: +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/auth/register, POST} route +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/auth/login, POST} route +0ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/auth/logout, POST} route +1ms
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [RouterExplorer] Mapped {/auth/me, GET} route +1ms
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+[Nest] 201  - 04/05/2026, 7:00:17 AM     LOG [NestApplication] Nest application successfully started +197ms
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://ecommerce-backend-1msn.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+=============================================================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS\ecommerce-backend>git init
+Reinitialized existing Git repository in E:/MURALI/NEST-JS/ecommerce-backend/.git/
+
+E:\MURALI\NEST-JS\ecommerce-backend>git add .
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'drizzle/0000_flat_dormammu.sql', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'drizzle/0001_busy_nightcrawler.sql', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'drizzle/0002_medical_changeling.sql', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'drizzle/meta/0000_snapshot.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'drizzle/meta/0001_snapshot.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'drizzle/meta/0002_snapshot.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'drizzle/meta/_journal.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'pnpm-lock.yaml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/auth/auth.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/cart/cart.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/orders/orders.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/payment/payment.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/products/products.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/users/users.module.ts', LF will be replaced by CRLF the next time Git touches it
+
+E:\MURALI\NEST-JS\ecommerce-backend>git commit -m "Initial commit"
+[master (root-commit) 372b24e] Initial commit
+ 85 files changed, 12942 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 .prettierrc
+ create mode 100644 README.md
+ create mode 100644 SCREENS/Http Header.png
+ create mode 100644 SCREENS/Notes.png
+ create mode 100644 SCREENS/STEPS.txt
+ create mode 100644 SCREENS/TABLES.txt
+ create mode 100644 SCREENS/TERMINAL-OUTPUT.txt
+ create mode 100644 SCREENS/XTRA.txt
+ create mode 100644 drizzle.config.ts
+ create mode 100644 drizzle/0000_flat_dormammu.sql
+ create mode 100644 drizzle/0001_busy_nightcrawler.sql
+ create mode 100644 drizzle/0002_medical_changeling.sql
+ create mode 100644 drizzle/meta/0000_snapshot.json
+ create mode 100644 drizzle/meta/0001_snapshot.json
+ create mode 100644 drizzle/meta/0002_snapshot.json
+ create mode 100644 drizzle/meta/_journal.json
+ create mode 100644 ecommerce-backend-nest-js-05-04-2026.zip
+ create mode 100644 eslint.config.mjs
+ create mode 100644 nest-cli.json
+ create mode 100644 package.json
+ create mode 100644 pnpm-lock.yaml
+ create mode 100644 src/app.controller.spec.ts
+ create mode 100644 src/app.controller.ts
+ create mode 100644 src/app.module.ts
+ create mode 100644 src/app.service.ts
+ create mode 100644 src/common/decorators/current-user/current-user.decorator.ts
+ create mode 100644 src/common/filters/http-exception/http-exception.filter.spec.ts
+ create mode 100644 src/common/filters/http-exception/http-exception.filter.ts
+ create mode 100644 src/common/guards/jwt/jwt.guard.spec.ts
+ create mode 100644 src/common/guards/jwt/jwt.guard.ts
+ create mode 100644 src/common/interceptors/response/response.interceptor.spec.ts
+ create mode 100644 src/common/interceptors/response/response.interceptor.ts
+ create mode 100644 src/common/pipes/parse-int/parse-int.pipe.spec.ts
+ create mode 100644 src/common/pipes/parse-int/parse-int.pipe.ts
+ create mode 100644 src/common/pipes/reject-empty/reject-empty.pipe.spec.ts
+ create mode 100644 src/common/pipes/reject-empty/reject-empty.pipe.ts
+ create mode 100644 src/common/types/request-with-user.ts
+ create mode 100644 src/config/payment.config.ts
+ create mode 100644 src/db/drizzle.ts
+ create mode 100644 src/db/schema/index copy.ts
+ create mode 100644 src/db/schema/index.ts
+ create mode 100644 src/db/seed/seed.ts
+ create mode 100644 src/main.ts
+ create mode 100644 src/modules/auth/auth.controller.spec.ts
+ create mode 100644 src/modules/auth/auth.controller.ts
+ create mode 100644 src/modules/auth/auth.module.ts
+ create mode 100644 src/modules/auth/auth.service.spec.ts
+ create mode 100644 src/modules/auth/auth.service.ts
+ create mode 100644 src/modules/auth/jwt.strategy/jwt.strategy.spec.ts
+ create mode 100644 src/modules/auth/jwt.strategy/jwt.strategy.ts
+ create mode 100644 src/modules/cart/cart.controller.spec.ts
+ create mode 100644 src/modules/cart/cart.controller.ts
+ create mode 100644 src/modules/cart/cart.module.ts
+ create mode 100644 src/modules/cart/cart.service.spec.ts
+ create mode 100644 src/modules/cart/cart.service.ts
+ create mode 100644 src/modules/cart/dto/add-to-cart.dto.ts
+ create mode 100644 src/modules/orders/dto/create-order.dto.ts
+ create mode 100644 src/modules/orders/orders.controller.spec.ts
+ create mode 100644 src/modules/orders/orders.controller.ts
+ create mode 100644 src/modules/orders/orders.module.ts
+ create mode 100644 src/modules/orders/orders.service.spec.ts
+ create mode 100644 src/modules/orders/orders.service.ts
+ create mode 100644 src/modules/payment/payment.controller.spec.ts
+ create mode 100644 src/modules/payment/payment.controller.ts
+ create mode 100644 src/modules/payment/payment.module.ts
+ create mode 100644 src/modules/payment/payment.service.spec.ts
+ create mode 100644 src/modules/payment/payment.service.ts
+ create mode 100644 src/modules/products/dto/filter-products.dto.ts
+ create mode 100644 src/modules/products/products.controller.spec.ts
+ create mode 100644 src/modules/products/products.controller.ts
+ create mode 100644 src/modules/products/products.module.ts
+ create mode 100644 src/modules/products/products.service.spec.ts
+ create mode 100644 src/modules/products/products.service.ts
+ create mode 100644 src/modules/users/dto/login.dto.ts
+ create mode 100644 src/modules/users/dto/register.dto.ts
+ create mode 100644 src/modules/users/users.controller.spec.ts
+ create mode 100644 src/modules/users/users.controller.ts
+ create mode 100644 src/modules/users/users.module.ts
+ create mode 100644 src/modules/users/users.service.spec.ts
+ create mode 100644 src/modules/users/users.service.ts
+ create mode 100644 test/app.e2e-spec.ts
+ create mode 100644 test/jest-e2e.json
+ create mode 100644 tsconfig.build.json
+ create mode 100644 tsconfig.json
+
+E:\MURALI\NEST-JS\ecommerce-backend>
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================

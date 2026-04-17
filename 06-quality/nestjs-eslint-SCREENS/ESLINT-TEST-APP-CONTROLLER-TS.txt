@@ -1,0 +1,127 @@
+ERROR VERSION OF CODE:
+---------------------
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+import { AppService as AppService2 } from './app.service'; // ❌ no-duplicate-imports
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) { }
+
+  @Get('test1')
+  getHello1(): string {
+    return this.appService.getHello();
+  }
+
+  @Get()
+  getHello(): string {
+    let message = 'Hello'; // ❌ prefer-const
+
+    const a: any = 5;
+    const b = '5';
+
+    if (a == b) { // ❌ eqeqeq
+      console.log('Loose equality'); // ❌ no-console
+    }
+
+    return message + this.appService.getHello();
+  }
+}
+//http://localhost:3000/ - endpoints
+//Command to Show Errors Only
+//pnpm exec eslint src/app.controller.ts
+====================================================================================
+EXPECTED ERRORS:
+---------------
+**************************************
+pnpm exec eslint src/app.controller.ts
+**************************************
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/app.controller.ts
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\app.controller.ts
+   3:1   error    './app.service' import is duplicated                                               no-duplicate-imports
+   3:24  warning  'AppService2' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   7:57  error    Delete `·`                                                                         prettier/prettier
+  16:9   error    'message' is never reassigned. Use 'const' instead                                 prefer-const
+  21:11  error    Expected '===' and instead saw '=='                                                eqeqeq
+  21:18  error    Insert `⏎·····`                                                                    prettier/prettier
+  22:7   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+✖ 7 problems (5 errors, 2 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+====================================================================================
+FIXED VERSION OF CODE:
+---------------------
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get('test1')
+  getHello1(): string {
+    return this.appService.getHello();
+  }
+
+  @Get()
+  getHello(): string {
+    const message = 'Hello';
+
+    const a: any = 5;
+    const b = '5';
+
+    if (a === b) {
+      console.warn('Strict equality');
+    }
+
+    return message + this.appService.getHello();
+  }
+}
+============================================================================================================
+Test only this file:
+pnpm exec eslint src/app.controller.ts --fix
+
+Test entire project:
+pnpm exec eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+✅ What It WILL Fix Automatically
+
+These rules from your config are auto - fixable:
+
+✅ eqeqeq → converts == → ===
+✅ prefer -const → converts let → const
+✅ prettier / prettier → formatting issues(spacing, quotes, etc.)
+============================================================================================================
+
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/app.controller.ts
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\app.controller.ts
+   7:57  error    Delete `·`                                                                         prettier/prettier
+  21:11  error    Expected '===' and instead saw '=='                                                eqeqeq
+  23:7   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+✖ 3 problems (2 errors, 1 warning)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+============================================================================================================
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/app.controller.ts --fix
+
+E:\MURALI\NEST-JS\nestjs-eslint\src\app.controller.ts
+  21:11  error    Expected '===' and instead saw '=='                                                eqeqeq
+  23:7   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+✖ 2 problems (1 error, 1 warning)
+
+============================================================================================================
+E:\MURALI\NEST-JS\nestjs-eslint>pnpm exec eslint src/app.controller.ts --fix
+
+E:\MURALI\NEST-JS\nestjs-eslint>
+============================================================================================================
+  

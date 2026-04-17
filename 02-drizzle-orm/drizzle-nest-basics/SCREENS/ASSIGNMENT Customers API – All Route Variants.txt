@@ -1,0 +1,355 @@
+
+# 🧑‍🎓 📘 ASSIGNMENT: “Customers API – All Route Variants”
+
+## 🎯 Objective
+
+Create a **CustomersController** in NestJS demonstrating ALL routing concepts:
+
+* Query params
+* Static routes
+* Dynamic routes
+* Nested routes
+* DTO usage
+* Body handling
+* Combining params + query
+
+---
+
+# 📌 TASKS (STUDENT VERSION)
+
+---
+
+## 🔹 Base Route
+
+```http
+/customers
+```
+
+---
+
+## 1️⃣ Get All Customers (Query Params)
+
+👉 GET `/customers?type=PREMIUM&age=30`
+
+* type → PREMIUM | NORMAL | VIP
+* age → number
+
+---
+
+## 2️⃣ Static Route (IMPORTANT ORDER)
+
+👉 GET `/customers/vip`
+
+Return:
+
+```json
+[
+  { "id": 1, "name": "VIP A" },
+  { "id": 2, "name": "VIP B" }
+]
+```
+
+---
+
+## 3️⃣ Dynamic Route
+
+👉 GET `/customers/:id`
+
+---
+
+## 4️⃣ Nested Route
+
+👉 GET `/customers/:customerId/orders/:orderId`
+
+---
+
+## 5️⃣ Create Customer
+
+👉 POST `/customers`
+
+Body:
+
+```json
+{
+  "name": "Ravi",
+  "email": "ravi@gmail.com",
+  "type": "PREMIUM",
+  "age": 25
+}
+```
+
+---
+
+## 6️⃣ Update Customer
+
+👉 PATCH `/customers/:id`
+
+---
+
+## 7️⃣ Delete Customer
+
+👉 DELETE `/customers/:id`
+
+---
+
+## 8️⃣ Collect ALL Query Params
+
+👉 GET `/customers/search?type=VIP&age=40&city=Delhi`
+
+---
+
+## 9️⃣ Collect ALL Params using DTO
+
+👉 GET `/customers/:customerId/orders/:orderId/items/:itemId`
+
+---
+
+## 🔟 Combine Params + Query
+
+👉 GET
+
+```http
+/customers/10/orders/200/items/5?status=active
+```
+
+---
+
+# 🧪 TESTING URLS
+
+```http
+GET    /customers
+GET    /customers?type=VIP
+GET    /customers/vip
+GET    /customers/1
+GET    /customers/10/orders/200
+POST   /customers
+PATCH  /customers/1
+DELETE /customers/1
+GET    /customers/search?type=VIP&age=30
+GET    /customers/10/orders/200/items/5
+```
+
+---
+
+# 🧑‍🏫 ✅ SOLUTION (TEACHER VERSION)
+
+---
+
+## 📁 DTOs
+
+```ts
+class ParamsDto {
+    customerId: string;
+    orderId: string;
+    itemId: string;
+}
+
+class SearchCustomersDto {
+    type?: 'PREMIUM' | 'NORMAL' | 'VIP';
+    age?: number;
+    city?: string;
+}
+```
+
+---
+
+## 📁 customers.controller.ts
+
+```ts
+import {
+    Controller,
+    Get,
+    Post,
+    Body,
+    Query,
+    Delete,
+    Param,
+    Patch,
+} from '@nestjs/common';
+
+@Controller('customers')
+export class CustomersController {
+
+    // ✅ 1. Query Params
+    @Get()
+    findAll(
+        @Query('type') type?: string,
+        @Query('age') age?: number
+    ) {
+        return {
+            endpoint: 'GET /customers',
+            queryReceived: {
+                type: type ?? null,
+                age: age ?? null
+            }
+        };
+    }
+
+    // ✅ 2. Static Route
+    @Get('vip')
+    getVipCustomers() {
+        return [
+            { id: 1, name: 'VIP A' },
+            { id: 2, name: 'VIP B' }
+        ];
+    }
+
+    // ✅ 3. Dynamic Route
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return {
+            endpoint: 'GET /customers/:id',
+            id
+        };
+    }
+
+    // ✅ 4. Nested Route
+    @Get(':customerId/orders/:orderId')
+    getOrder(
+        @Param('customerId') customerId: string,
+        @Param('orderId') orderId: string
+    ) {
+        return {
+            customerId,
+            orderId
+        };
+    }
+
+    // ✅ 5. POST
+    @Post()
+    create(@Body() body: any) {
+        return {
+            message: 'Customer created',
+            body
+        };
+    }
+
+    // ✅ 6. PATCH
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() body: any) {
+        return {
+            message: 'Customer updated',
+            id,
+            body
+        };
+    }
+
+    // ✅ 7. DELETE
+    @Delete(':id')
+    delete(@Param('id') id: string) {
+        return {
+            message: 'Customer deleted',
+            id
+        };
+    }
+
+    // ✅ 8. Collect ALL Query Params
+    @Get('search')
+    search(@Query() query: SearchCustomersDto) {
+        return {
+            message: 'All query params',
+            query
+        };
+    }
+
+    // ✅ 9. Collect ALL Params (DTO)
+    @Get(':customerId/orders/:orderId/items/:itemId')
+    getAllParams(@Param() params: ParamsDto) {
+        return {
+            message: 'All params DTO',
+            params
+        };
+    }
+
+    // ✅ 10. Combine Params + Query
+    @Get(':customerId/orders/:orderId/items/:itemId/full')
+    getFull(
+        @Param() params: any,
+        @Query() query: any
+    ) {
+        return {
+            params,
+            query
+        };
+    }
+}
+```
+
+---
+
+# 🎯 EXPECTED OUTPUTS
+
+### GET /customers?type=VIP
+
+```json
+{
+  "queryReceived": {
+    "type": "VIP",
+    "age": null
+  }
+}
+```
+
+---
+
+### GET /customers/vip
+
+```json
+[
+  { "id": 1, "name": "VIP A" },
+  { "id": 2, "name": "VIP B" }
+]
+```
+
+---
+
+### GET /customers/10/orders/200
+
+```json
+{
+  "customerId": "10",
+  "orderId": "200"
+}
+```
+
+---
+
+# 🧠 WHAT STUDENTS LEARN
+
+This mirrors your original controller :
+
+✅ Static vs Dynamic priority
+✅ Query handling
+✅ Nested routing
+✅ DTO usage
+✅ Param collection
+✅ API testing skills
+
+---
+
+# 🧪 EVALUATION CHECKLIST (FOR YOU)
+
+✔ Static route placed BEFORE dynamic
+✔ Query params handled correctly
+✔ DTO used (not only `any`)
+✔ Nested routes working
+✔ Params + Query combined
+✔ All endpoints tested
+
+---
+
+# 🎓 FINAL TEACHING TRICK 🔥
+
+Ask this tricky question:
+
+👉 What happens if we write:
+
+```ts
+@Get(':id')
+@Get('vip')
+```
+
+✔ Correct answer:
+👉 `/customers/vip` becomes `{ id: "vip" }`
+
+---

@@ -1,0 +1,4 @@
+
+> nestjs-eslint@0.0.1 lint:check E:\MURALI\NEST-JS\nestjs-eslint
+> eslint "{src,apps,libs,test}/**/*.ts"
+

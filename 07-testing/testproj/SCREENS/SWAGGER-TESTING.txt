@@ -1,0 +1,251 @@
+http://localhost:3000/api
+http://localhost:3000/api
+http://localhost:3000/api
+
+POST /users.login
+-----------------
+Request body
+-----------------
+{
+"email":"gvnaressh@gmail.com",
+"password":"123456"
+}
+-----------------
+Responses
+-----------------
+{
+  "success": true,
+  "data": {
+    "message": "Login successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkdWIE5hcmVzc2giLCJpYXQiOjE3NzU2NDIyNTYsImV4cCI6MTc3NTY0NTg1Nn0.9B9EL_v-W-annSd9QHMvEG8z4wGgv0_IEi-GP6aYD7o",
+    "user": {
+      "id": 1,
+      "name": "GV Naressh",
+      "email": "gvnaressh@gmail.com"
+    }
+  },
+  "timestamp": "2026-04-08T09:57:36.683Z",
+  "executionTime": "2739ms"
+}
+--------------------------------------------------------------------------------------
+GET /users/profile
+--------------------------------------------------------------------------------------
+// 🔥 GLOBAL ERROR RESPONSES
+@ApiResponse({ status: 400, description: 'Bad Request', type: ErrorResponseDto })
+@ApiResponse({ status: 401, description: 'Unauthorized', type: ErrorResponseDto })
+@ApiResponse({ status: 404, description: 'Not Found', type: ErrorResponseDto })
+@ApiResponse({ status: 500, description: 'Internal Server Error', type: ErrorResponseDto })
+
+-----------------------------------------------
+E:\MURALI\NEST-JS\testproj\src\users\users.controller.ts
+
+users.controller.ts
+
+ADD THESE ABOVE CONTROLLER...
+@ApiResponse({
+    status: 500,
+    description: 'Internal Server Error',
+    type: ErrorResponseDto,
+})
+@Controller('users')
+export class UsersController {
+-----------------------------------------------
+ALSO CREATE A DTO (ErrorResponseDto) FOR ERRORS: [ E:\MURALI\NEST-JS\testproj\src\common\dto\error-response.dto.ts ]
+-----------------------------------------------
+@ApiResponse({
+    status: 500,
+    description: 'Internal Server Error',
+    type: ErrorResponseDto,
+})
+---------------------
+error-response.dto.ts
+---------------------
+// src/common/dto/error-response.dto.ts
+import { ApiProperty } from '@nestjs/swagger';
+
+export class ErrorResponseDto {
+
+    @ApiProperty({ example: false })
+    success!: boolean;
+
+    @ApiProperty({ example: 'Unauthorized' })
+    message!: string;
+
+    @ApiProperty({ example: '2026-04-08T10:00:00.000Z' })
+    timestamp!: string;
+
+    @ApiProperty({ example: '/users/1' })
+    path!: string;
+}
+---------------------
+
+
+HOW TO TEST ABOVE @ApiResponse:
+-------------------------------
+🚀 🧪 HOW TO TEST @ApiResponse (ERROR CASES)
+
+👉 Important understanding first:
+
+❗ @ApiResponse does NOT trigger errors
+👉 It only documents them in Swagger
+
+You must manually trigger errors to test them.
+
+🔥 ✅ 1. TEST IN SWAGGER UI
+
+Open:
+
+http://localhost:3000/api
+🧪 TEST CASES (REAL EXAMPLES)
+✅ 1. 400 Bad Request (Validation Error)
+Trigger:
+POST /users
+{
+  "name": "ab",   // ❌ too short (< 3)
+  "email": "wrong", // ❌ invalid email
+  "password": "123"
+}
+Result:
+{
+  "success": false,
+  "message": ["name must be longer...", "email must be an email"],
+  "timestamp": "...",
+  "path": "/users"
+}
+✅ 2. 401 Unauthorized (JWT Guard)
+Trigger:
+
+👉 Call protected route WITHOUT token:
+
+GET /users/secure
+Result:
+{
+  "success": false,
+  "message": "Unauthorized",
+  "timestamp": "...",
+  "path": "/users/secure"
+}
+✅ 3. 404 Not Found
+
+👉 You must throw this in service:
+
+if (!user) {
+  throw new NotFoundException('User not found');
+}
+Trigger:
+GET /users/9999
+Result:
+{
+  "success": false,
+  "message": "User not found",
+  "timestamp": "...",
+  "path": "/users/9999"
+}
+✅ 4. 500 Internal Server Error
+Trigger:
+
+👉 Temporarily break something:
+
+throw new Error('Something went wrong');
+
+OR invalid DB query
+
+Result:
+{
+  "success": false,
+  "message": "Internal Server Error",
+  "timestamp": "...",
+  "path": "/users"
+}
+🧠 VERY IMPORTANT
+❗ Swagger does NOT simulate errors
+
+👉 It only shows:
+
+Possible Responses:
+- 200 OK
+- 400 Bad Request
+- 401 Unauthorized
+...
+
+👉 You must trigger errors manually
+--------------------------------------------------------------------------------------
+🔥 HOW IT CONNECTS
+Controller throws error
+        ↓
+Filter catches error
+        ↓
+Formats response
+        ↓
+Swagger documents that format ✅
+---------------------------------
+| Task                    | Required?       |
+| ----------------------- | --------------- |
+| Add Swagger to filter   | ❌ No            |
+| Document error response | ✅ YES           |
+| Create Error DTO        | ✅ BEST PRACTICE |
+--------------------------------
+| Scenario                     | Use                |
+| ---------------------------- | ------------------ |
+| Same error format everywhere | ✅ Controller level |
+| Different errors per route   | ✅ Method level     |
+-------------------------------------------------------
+🚀 📊 SWAGGER USAGE TABLE (NESTJS)
+
+| Component                | Use Swagger? | How to Use              | Example                               |
+| ------------------------ | ------------ | ----------------------- | ------------------------------------- |
+| **Controller**           | ✅ YES        | Describe endpoints      | `@ApiTags`, `@ApiOperation`           |
+| **DTO (Request Body)**   | ✅ YES        | Document request fields | `@ApiProperty`                        |
+| **Query Params**         | ✅ YES        | Document query inputs   | `@ApiQuery`                           |
+| **Route Params**         | ✅ YES        | Document URL params     | `@ApiParam`                           |
+| **Response (Success)**   | ✅ YES        | Document output         | `@ApiResponse({ status: 200 })`       |
+| **Response (Error)**     | ✅ YES        | Reflect filter output   | `@ApiResponse({ status: 400 })`       |
+| **Authentication (JWT)** | ✅ YES        | Show auth requirement   | `@ApiBearerAuth()`                    |
+| **File Upload**          | ✅ YES        | Multipart support       | `@ApiConsumes('multipart/form-data')` |
+| **Headers**              | ✅ YES        | Custom headers          | `@ApiHeader()`                        |
+
+❌ NOT USED WITH SWAGGER
+
+| Component                | Use Swagger?         | Reason                                  |
+| ------------------------ | -------------------- | --------------------------------------- |
+| **Middleware**           | ❌ NO                 | Internal request processing             |
+| **Guards**               | ❌ NO (Indirect only) | Only show auth via `@ApiBearerAuth`     |
+| **Pipes**                | ❌ NO                 | Validation handled via DTO              |
+| **Interceptors**         | ❌ NO                 | Internal response transformation        |
+| **Filters**              | ❌ NO                 | Only document output via `@ApiResponse` |
+| **Service Layer**        | ❌ NO                 | Business logic only                     |
+| **Repository / Drizzle** | ❌ NO                 | Database layer                          |
+
+
+🧠 SIMPLE RULE (VERY IMPORTANT)
+
+👉 Swagger is ONLY for:
+
+INPUT  →  OUTPUT
+
+👉 Swagger is NOT for:
+
+HOW the system works internally
+🔄 YOUR PROJECT MAPPING
+
+Based on your structure:
+
+Client
+  ↓
+Swagger (DOCUMENTS THIS ONLY)
+  ↓
+Controller ✅
+  ↓
+--------------------------------
+Middleware ❌
+Guard ⚠️ (JWT shown)
+Pipe ❌
+Interceptor ❌
+Filter ❌ (only response documented)
+--------------------------------
+  ↓
+Service ❌
+  ↓
+Drizzle ORM ❌
+  ↓
+Database
