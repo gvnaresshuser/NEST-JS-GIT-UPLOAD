@@ -600,6 +600,40 @@ found 0 vulnerabilities
 E:\MURALI\NEST-JS\react-ecommerce-frontend>
 =============================================================
 =============================================================
+Microsoft Windows [Version 10.0.26100.8039]
+(c) Microsoft Corporation. All rights reserved.
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git add .
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   SCREENS/DEPLOYMENT STEPS - FRONTEND-RENDER-COM.txt
+        new file:   SCREENS/unwrap.png
+        modified:   src/components/Navbar.jsx
+        modified:   src/pages/Cart.jsx
+
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git commit -m "added files on 20-04-2026"
+[main 8e2ae3e] added files on 20-04-2026
+ 4 files changed, 111 insertions(+), 43 deletions(-)
+ create mode 100644 SCREENS/unwrap.png
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>git push
+Enumerating objects: 18, done.
+Counting objects: 100% (18/18), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (10/10), done.
+Writing objects: 100% (10/10), 282.23 KiB | 14.85 MiB/s, done.
+Total 10 (delta 8), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (8/8), completed with 8 local objects.
+To https://github.com/gvnaresshuser/react-ecommerce-frontend.git
+   0055e79..8e2ae3e  main -> main
+
+E:\MURALI\NEST-JS\react-ecommerce-frontend>
 =============================================================
 =============================================================
 =============================================================
